@@ -12,8 +12,8 @@ type Bindings = {
 
 const app = new Hono<{ Bindings: Bindings }>();
 
-app.get('/foo', async (c) => {
-  return c.html('<html><body><h1>Foo</h1></body></html>');
+app.get('/health', async (c) => {
+  return c.json({ message: "OK" });
 });
 
 export const onRequest = pagesHandle(app);
