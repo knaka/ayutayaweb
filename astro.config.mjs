@@ -1,5 +1,6 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
+import tsconfigPaths from 'vite-tsconfig-paths'
 
 const common = {
   srcDir: "./src-astro",
@@ -21,7 +22,8 @@ export default defineConfig((process.env.NODE_ENV === "development")? {
           target: `http://127.0.0.1:${process.env.ASTRO_DYNAMIC_PORT || 18080}`,
         }
       }
-    }
+    },
+    plugins: [tsconfigPaths()],
   }
 }: {
   ...common,

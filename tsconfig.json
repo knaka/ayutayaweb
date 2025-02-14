@@ -1,0 +1,17 @@
+// Astro needs the tsconfig.json in the root of the project to work properly.
+{
+  "compilerOptions": {
+    // To use JSX syntax in *.tsx files.
+    "module": "nodenext",
+    "moduleResolution": "nodenext",
+    "jsx": "react-jsx",
+    "types": [
+      // "bun-types"
+    ],
+    "baseUrl": "./src-astro",
+    "paths": {
+      "@src_astro/*": ["./*"],
+      "@src_pages/*": ["../src-pages/*"],
+    }
+  },
+}
