@@ -1,20 +1,7 @@
+#!/usr/bin/env sh
 # vim: set filetype=sh :
 # shellcheck shell=sh
 test "${sourced_897a0c7-}" = true && return 0; sourced_897a0c7=true
-
-# Update this script by replacing itself with the latest version.
-if test "${1+set}" = set && test "$1" = "update-me"
-then
-  temp_dir_path_6856fe8="$(mktemp -d)"
-  # shellcheck disable=SC2317
-  cleanup_7f0c4de() { rm -fr "$temp_dir_path_6856fe8"; }
-  trap cleanup_7f0c4de EXIT
-  curl_cmd_9f94dce=curl
-  command -v curl.exe && curl_cmd_9f94dce=curl.exe
-  "$curl_cmd_9f94dce" --fail --location --output "$temp_dir_path_6856fe8"/8c7b96d https://raw.githubusercontent.com/knaka/src/main/lib/task.sh
-  cat "$temp_dir_path_6856fe8"/8c7b96d >"$0"
-  exit 0
-fi
 
 # --------------------------------------------------------------------------
 # Constants.
@@ -30,29 +17,14 @@ rc_test_skipped=11
 # Directories.
 # --------------------------------------------------------------------------
 
-# Original directory in which the script is invoked.
+# Directory in which the script has been invoked.
+: "${WORKING_DIR:=}"
 
-WORKING_DIR="$(realpath "$PWD")"
-export WORKING_DIR
+# Directory in which the task files are located.
+: "${TASKS_DIR:=}"
 
-# Directory in which the main script is located.
-
-TASKS_DIR="$(realpath "$(realpath "$(dirname "$0")")")"
-export TASKS_DIR
-
-# Check if the working directory is in the script directory.
-in_script_dir() {
-  realpath "$PWD" | grep -q -e "^$TASKS_DIR$" -e "^$TASKS_DIR/"
-}
-
-PROJECT_DIR=
-
-if test "${ARG0+set}" = set
-then
-  PROJECT_DIR="$(realpath "$(dirname "$ARG0")")"
-fi
-
-export PROJECT_DIR
+# The root directory of the project.
+: "${PROJECT_DIR:=}"
 
 # --------------------------------------------------------------------------
 # Misc
@@ -218,15 +190,15 @@ restore_shell_flags() {
 }
 
 is_linux() {
-  test "$(uname -s)" = "Linux"
+  test -d /proc -o -d /sys
 }
 
 is_bsd() {
-  stat -f "%z" . > /dev/null 2>&1
+  stat -f "%z" . >/dev/null 2>&1
 }
 
 is_macos() {
-  test "$(uname -s)" = "Darwin"
+  test -r /System/Library/CoreServices/SystemVersion.plist
 }
 
 is_darwin() {
@@ -234,10 +206,7 @@ is_darwin() {
 }
 
 is_windows() {
-  case "$(uname -s)" in
-    (Windows_NT|CYGWIN*|MINGW*|MSYS*) return 0 ;;
-  esac
-  return 1
+  test -d "c:/windows" -a ! -d /proc
 }
 
 # Executable file extension.
@@ -266,6 +235,36 @@ memoize() {
     "$@" >"$cache_file_path"
   fi
   cat "$cache_file_path"
+}
+
+shell_path_6eac6eb() {
+  if test "${BASH+set}" = set
+  then
+    echo "$BASH"
+    return
+  fi
+  if is_windows && test "${SHELL+set}" = set && test "$SHELL" = "/bin/sh" && "$SHELL" --help 2>&1 | grep -q "BusyBox"
+  then
+    echo "$SHELL"
+    return
+  fi
+  local path=
+  if test -e /proc/$$/exe
+  then
+    path="$(realpath /proc/$$/exe)" || return 1
+  else
+    path="$(realpath "$(ps -p $$ -o comm=)")" || return 1
+  fi
+  echo "$path"
+}
+
+shell_path() {
+  memoize 5e862b5 shell_path_6eac6eb
+}
+
+shell_base() {
+  local shell_path="$(shell_path)"
+  echo "${shell_path##*/}"
 }
 
 shell_name_f0ebcb7() {
@@ -302,15 +301,15 @@ shell_name() {
 }
 
 is_dash() {
-  test "$(shell_name)" = "dash"
+  test "$(shell_base)" = "dash"
 }
 
 is_ash() {
-  test "$(shell_name)" = "ash"
+  test "$(shell_base)" = "ash"
 }
 
 is_bash() {
-  test "$(shell_name)" = "bash"
+  test "$(shell_base)" = "bash"
 }
 
 # Check if the file(s)/directory(s) is/are newer than the destination.
@@ -714,20 +713,20 @@ load_env() {
   # Load the files in the order of priority.
   if test "${APP_ENV+set}" = set
   then
-    load_env_file "$TASKS_DIR"/.env."$APP_ENV".dynamic
-    load_env_file "$TASKS_DIR"/.env."$APP_ENV".local
+    load_env_file "$PROJECT_DIR"/.env."$APP_ENV".dynamic
+    load_env_file "$PROJECT_DIR"/.env."$APP_ENV".local
   fi
   if test "${APP_ENV+set}" != set || test "${APP_ENV}" != "test"
   then
-    load_env_file "$TASKS_DIR"/.env.dynamic
-    load_env_file "$TASKS_DIR"/.env.local
+    load_env_file "$PROJECT_DIR"/.env.dynamic
+    load_env_file "$PROJECT_DIR"/.env.local
   fi
   if test "${APP_ENV+set}" = set
   then
-    load_env_file "$TASKS_DIR"/.env."$APP_ENV"
+    load_env_file "$PROJECT_DIR"/.env."$APP_ENV"
   fi
   # shellcheck disable=SC1091
-  load_env_file "$TASKS_DIR"/.env
+  load_env_file "$PROJECT_DIR"/.env
 }
 
 # Get a key from the user without echoing.
@@ -1187,35 +1186,66 @@ get_sh() {
 main() {
   set -o nounset -o errexit
 
-  local sh
-  sh="$(shell_name)"
-  while true
-  do
-    if is_windows
-    then
-      if test "$sh" = "ash"
+  if test "${SH+set}" != set
+  then
+    SH="$(shell_name)"
+    while true
+    do
+      if is_windows
       then
-        break
-      fi
-    elif is_macos
-    then
-      if test "$sh" = "dash"
-      then
-        break
-      fi
-    elif is_linux
-    then
-      case "$sh" in
-        (ash|dash|bash)
+        if test "$SH" = "ash"
+        then
           break
-          ;;
-      esac
-    fi
-    echo "Unsupported environment: $(uname -s)", "$sh" >&2
-    exit 1
-  done
-  SH="$sh"
-  export SH
+        fi
+      elif is_macos
+      then
+        if test "$SH" = "dash"
+        then
+          break
+        else
+          exec /bin/dash "$0" "$@"
+        fi
+      elif is_linux
+      then
+        case "$SH" in
+          (ash|dash|bash)
+            break
+            ;;
+        esac
+      fi
+      echo "Unsupported environment: $(uname -s)", "$SH" >&2
+      exit 1
+    done
+    export SH
+  fi
+
+  WORKING_DIR="$(realpath "$PWD")"
+  export WORKING_DIR
+
+  TASKS_DIR="$(realpath "$(realpath "$(dirname "$(realpath "$0")")")")"
+  export TASKS_DIR
+
+  if test "${ARG0+set}" = set
+  then
+    PROJECT_DIR="$(realpath "$(dirname "$ARG0")")"
+  else
+    dir="$PWD"
+    while true
+    do
+      if test -d "$dir"/tasks
+      then
+        PROJECT_DIR="$dir"
+        break
+      fi
+      if test "$dir" = "$(realpath "$dir"/..)"
+      then
+        echo "Project directory not found." >&2
+        exit 1
+      fi
+      dir="$(realpath "$dir"/..)"
+    done
+  fi
+  export PROJECT_DIR
 
   # Set the exit handlers caller.
   # Bash3 of macOS exits successfully if `nounset` error is trapped.
@@ -1255,6 +1285,7 @@ main() {
   local dir
   for dir in "$TASKS_DIR" "$PROJECT_DIR"
   do
+    # All the task files are sourced in the directory.
     push_dir "$TASKS_DIR"
     for task_file_path in "$dir"/task-*.sh
     do
@@ -1393,7 +1424,8 @@ main() {
 }
 
 # Run the main function if this script is executed as task runner.
-if test "$(basename "$0")" = "task.sh"
-then
-  main "$@"
-fi
+case "${0##*/}" in
+  (task|task.sh)
+    main "$@"
+    ;;
+esac
