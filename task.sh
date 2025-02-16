@@ -33,9 +33,17 @@ rc_test_skipped=11
 # Create a temporary directory if required.
 
 # Ash does not support `-t prefix`.
-temp_dir_path_d4a4197="$(mktemp -d --dry-run)"
+temp_dir_path_d4a4197=
+
+init_temp_dir_path() {
+  if test -z "$temp_dir_path_d4a4197"
+  then
+    temp_dir_path_d4a4197="$(mktemp -d --dry-run)"
+  fi
+}
 
 temp_dir_path() {
+  init_temp_dir_path
   if ! test -d "$temp_dir_path_d4a4197"
   then
     mkdir -p "$temp_dir_path_d4a4197"
@@ -206,7 +214,7 @@ is_darwin() {
 }
 
 is_windows() {
-  test -d "c:/windows" -a ! -d /proc
+  test -d "c:/" -a ! -d /proc
 }
 
 # Executable file extension.
@@ -294,10 +302,6 @@ shell_name_f0ebcb7() {
       ;;
   esac
   echo "$sh"
-}
-
-shell_name() {
-  memoize c3dcd27 shell_name_f0ebcb7
 }
 
 is_dash() {
@@ -390,13 +394,14 @@ invoke() {
     (*/*)
       if is_windows
       then
+        local cmd="$1"
         local ext
         for ext in .exe .cmd .bat
         do
-          if test -x "$1$ext"
+          if test -x "$cmd$ext"
           then
             shift
-            set -- "$1$ext" "$@"
+            set -- "$cmd$ext" "$@"
             break
           fi
         done
@@ -986,7 +991,7 @@ is_dir_empty() {
 # --------------------------------------------------------------------------
 
 kill_child_processes() {
-  if is_windows && is_ash
+  if is_windows
   then
     # Windows BusyBox ash
     # If the process is killed with pid, ash does not kill `exec`ed subprocesses.
@@ -1186,20 +1191,22 @@ get_sh() {
 main() {
   set -o nounset -o errexit
 
-  if test "${SH+set}" != set
+  # If launched by `task`, $SH is set. Otherwise, determine the shell.
+  if test -z "$SH"
   then
-    SH="$(shell_name)"
+    SH="$(shell_path)"
+    local sh_base="${SH##*/}"
     while true
     do
       if is_windows
       then
-        if test "$SH" = "ash"
+        if test "$sh_base" = "sh"
         then
           break
         fi
       elif is_macos
       then
-        if test "$SH" = "dash"
+        if test "$sh_base" = "dash"
         then
           break
         else
@@ -1207,7 +1214,7 @@ main() {
         fi
       elif is_linux
       then
-        case "$SH" in
+        case "$sh_base" in
           (ash|dash|bash)
             break
             ;;
@@ -1222,7 +1229,7 @@ main() {
   WORKING_DIR="$(realpath "$PWD")"
   export WORKING_DIR
 
-  TASKS_DIR="$(realpath "$(realpath "$(dirname "$(realpath "$0")")")")"
+  TASKS_DIR="$(realpath "$(dirname "$0")")"
   export TASKS_DIR
 
   if test "${ARG0+set}" = set
@@ -1232,7 +1239,7 @@ main() {
     dir="$PWD"
     while true
     do
-      if test -d "$dir"/tasks
+      if test -d "$dir"/tasks || test -f "$dir/task.sh"
       then
         PROJECT_DIR="$dir"
         break
@@ -1246,6 +1253,8 @@ main() {
     done
   fi
   export PROJECT_DIR
+
+  # echo "0454f8e WORKING_DIR=$WORKING_DIR, TASKS_DIR=$TASKS_DIR, PROJECT_DIR=$PROJECT_DIR" >&2
 
   # Set the exit handlers caller.
   # Bash3 of macOS exits successfully if `nounset` error is trapped.
@@ -1281,7 +1290,6 @@ main() {
 
   # Load all the task files in the tasks directory and the project directory.
   psv_task_file_paths="$(realpath "$0")|"
-
   local dir
   for dir in "$TASKS_DIR" "$PROJECT_DIR"
   do
@@ -1426,6 +1434,7 @@ main() {
 # Run the main function if this script is executed as task runner.
 case "${0##*/}" in
   (task|task.sh)
+    init_temp_dir_path
     main "$@"
     ;;
 esac
