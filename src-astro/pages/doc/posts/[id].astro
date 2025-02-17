@@ -4,6 +4,11 @@ import { readFileSync } from "fs";
 import { marked } from "marked";
 import { hello } from '@src_astro/lib/data'
 
+interface Post {
+  id: string;
+  title: string;
+}
+
 export function getStaticPaths() {
   return [
     {
@@ -36,13 +41,12 @@ const { id } = Astro.params;
 const title = `Title for ${id}`;
 const body = `Body for ${id}`;
 
-const markdown = readFileSync(`/Users/knaka/doc/2025/${Astro.params.id}`, "utf-8");
-console.log(markdown)
+const markdown = readFileSync(`/tmp/${Astro.params.id}`, "utf-8");
 const html = marked(markdown);
 
 ---
 <Layout title={title}>
-<h1>{title}</h1>
+<h1>181be01 {title}</h1>
 <div>Message: {id}, {title}, {body}!</div>
 <p>and {hello}</p>
 <div set:html={html}></div>

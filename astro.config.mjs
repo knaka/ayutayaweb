@@ -5,6 +5,9 @@ import tsconfigPaths from 'vite-tsconfig-paths'
 const common = {
   srcDir: "./src-astro",
   publicDir: "./public",
+  typescript: {
+    strict: true,
+  },
 };
 
 // https://astro.build/config
