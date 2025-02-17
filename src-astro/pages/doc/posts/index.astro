@@ -1,0 +1,41 @@
+---
+const data = [
+  {
+    params: {
+      id: "706ce3e",
+    },
+    props: {
+      title: "Hello",
+      body: "Hey, Hello!",
+    },
+  },
+  {
+    params: {
+      id: "b5291ad",
+    },
+    props: {
+      title: "World",
+      body: "It's a small world after all!",
+    },
+  },
+];
+
+import * as fs from "node:fs";
+
+const dir = "/Users/knaka/doc/2025";
+---
+<ul>
+  {data.map(({ params, props }) => (
+    <li>
+      <a href={`posts/${params.id}`}>{props.title}</a>
+    </li>
+  ))}
+</ul>
+
+<h2>Files</h2>
+
+<ul>
+  {fs.readdirSync(dir).map((file) => (
+    <li><a href=`posts/${file}`>{file}</a></li>
+  ))}
+</ul>
