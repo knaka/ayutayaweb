@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@astrojs/check": "^0.9.4",
+    "@astrojs/react": "^4.2.0",
     "@cloudflare/workers-types": "^4.20241004.0",
     "astro": "^4.16.15",
     "hono": "^4.6.11",

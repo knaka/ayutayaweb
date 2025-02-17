@@ -1,6 +1,7 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
 import tsconfigPaths from 'vite-tsconfig-paths'
+import react from '@astrojs/react';
 
 const common = {
   srcDir: "./src-astro",
@@ -8,6 +9,7 @@ const common = {
   typescript: {
     strict: true,
   },
+  integrations: [react()],
 };
 
 // https://astro.build/config
