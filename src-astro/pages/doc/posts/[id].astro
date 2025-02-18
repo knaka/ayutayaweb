@@ -11,24 +11,24 @@ interface Post {
 
 export function getStaticPaths() {
   return [
-    {
-      params: {
-        id: "706ce3e",
-      },
-      // props: {
-      //   title: "Hello",
-      //   body: "Hey, Hello!",
-      // },
-    },
-    {
-      params: {
-        id: "b5291ad",
-      },
-      // props: {
-      //   title: "World",
-      //   body: "It's a small world after all!",
-      // },
-    },
+    // {
+    //   params: {
+    //     id: "706ce3e",
+    //   },
+    //   // props: {
+    //   //   title: "Hello",
+    //   //   body: "Hey, Hello!",
+    //   // },
+    // },
+    // {
+    //   params: {
+    //     id: "b5291ad",
+    //   },
+    //   // props: {
+    //   //   title: "World",
+    //   //   body: "It's a small world after all!",
+    //   // },
+    // },
     {
       params: {
         id: "0100.md",
@@ -41,7 +41,7 @@ const { id } = Astro.params;
 const title = `Title for ${id}`;
 const body = `Body for ${id}`;
 
-const markdown = readFileSync(`/tmp/${Astro.params.id}`, "utf-8");
+const markdown = readFileSync(`/Users/knaka/doc/2025/${Astro.params.id}`, "utf-8");
 const html = marked(markdown);
 
 ---

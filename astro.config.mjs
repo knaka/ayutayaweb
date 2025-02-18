@@ -2,7 +2,7 @@
 import { defineConfig } from 'astro/config';
 import tsconfigPaths from 'vite-tsconfig-paths'
 import react from '@astrojs/react';
-
+ 
 const common = {
   srcDir: "./src-astro",
   publicDir: "./public",

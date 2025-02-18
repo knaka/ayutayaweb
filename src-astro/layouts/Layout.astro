@@ -1,9 +1,17 @@
 ---
+import styled from 'styled-components';
+
 interface Props {
 	title: string;
 }
 
 const { title } = Astro.props;
+
+// const DivWrapper = styled.div`
+// 	font-family: system-ui, sans-serif;
+// `;
+
+const theColor1 = 'blue';
 ---
 
 <!doctype html>
@@ -17,10 +25,13 @@ const { title } = Astro.props;
 		<title>{title}</title>
 	</head>
 	<body>
+	<!-- <DivWrapper client:only> -->
 		<slot />
+	<!-- </DivWrapper> -->
 	</body>
 </html>
 
+<!-- <style define:vars={{ theColor1 }} is:global> -->
 <style is:global>
 	:root {
 		--accent: 136, 58, 234;
@@ -35,7 +46,7 @@ const { title } = Astro.props;
 	}
 	html {
 		font-family: system-ui, sans-serif;
-		/* background: #13151a; */
+		background: #a0ffff;
 	}
 	code {
 		font-family:
@@ -48,4 +59,5 @@ const { title } = Astro.props;
 			Courier New,
 			monospace;
 	}
+
 </style>

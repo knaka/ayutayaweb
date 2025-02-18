@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import styled from "styled-components";
 
 type Issue = {
   id: number;
@@ -20,7 +21,15 @@ declare global {
   }
 }
 
-export default () => {
+// const MyH1Wrapper = styled.h1`
+//   background-color: #ffa0a0;
+// `
+
+type IssuePageProps = {
+  className?: string;
+}
+
+export default (props: IssuePageProps) => {
   const [issue, setIssue] = useState<Issue | null>(null);
   const [message, setMessage] = useState<string>("");
   useEffect(() => {
@@ -39,11 +48,13 @@ export default () => {
   }, []);
   return (
     <>
+      <div className="issue-page">
       {issue !== null ? (
         <h1>Issue Page for issue with ID: {issue.id}, Name: {issue.username}, Message: {message}</h1>
       ) : (
         <h1>Loading...</h1>
       )}
+      </div>
     </>
   )
 }

@@ -5,28 +5,13 @@ test "${sourced_f1649d9-}" = true && return 0; sourced_f1649d9=true
 . ./task.sh
 . ./task-node.lib.sh
 . ./task-pages.lib.sh
-  set_pages_functions_src_pattern "$PROJECT_DIR"/src-pages/functions/**/*.ts
-. ./task-astro.lib.sh
+  set_pages_functions_src_pattern "$PROJECT_DIR/src-pages/functions/**/*.ts"
+. ./task-pages-dev.lib.sh
+. ./task-astro-dev.lib.sh
 
-# --------------------------------------------------------------------------
-# Misc
-# --------------------------------------------------------------------------
-
-# Write the routes file for the Astro build.
-# Refer the site for `_routes.json` file. // Routing · Cloudflare Pages docs https://developers.cloudflare.com/pages/functions/routing/#create-a-_routesjson-file
-post_task_astro__build() {
-  cat <<'EOF' >dist/_routes.json
-{
-   "version": 1,
-  "include": [
-    "/var/*",
-    "/api/*"
-  ],
-  "exclude": [
-    "/*.txt",
-    "/*.html",
-    "/doc/*"
-  ]
-}
-EOF
+task_dev() {
+  # Launch Pages dev server with the interactive dev session disabled.
+  task_pages__dev --invocation-mode=background --show-interactive-dev-session=false
+  # Then, launch the Astro dev server.
+  task_astro__dev
 }
