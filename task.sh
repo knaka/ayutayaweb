@@ -208,7 +208,7 @@ is_macos() {
 
 is_bsd() {
   # stat -f "%z" . >/dev/null 2>&1
-  is_macos || test -r /etc/rc.subr -o -r /usr/share/misc/magic
+  is_macos || test -r /etc/rc.subr
 }
 
 is_windows() {
@@ -221,6 +221,10 @@ exe_ext() {
   then
     echo ".exe"
   fi
+}
+
+is_debian() {
+  test -f /etc/debian_version
 }
 
 is_alpine() {
@@ -1226,27 +1230,30 @@ main() {
   TASKS_DIR="$(realpath "$(dirname "$0")")"
   export TASKS_DIR
 
-  if test "${ARG0+set}" = set
+  if test "${PROJECT_DIR}" = ""
   then
-    PROJECT_DIR="$(realpath "$(dirname "$ARG0")")"
-  else
-    dir="$PWD"
-    while true
-    do
-      if test -d "$dir"/tasks || test -f "$dir/task.sh"
-      then
-        PROJECT_DIR="$dir"
-        break
-      fi
-      if test "$dir" = "$(realpath "$dir"/..)"
-      then
-        echo "Project directory not found." >&2
-        exit 1
-      fi
-      dir="$(realpath "$dir"/..)"
-    done
+    if test "${ARG0+set}" = set
+    then
+      PROJECT_DIR="$(realpath "$(dirname "$ARG0")")"
+    else
+      dir="$PWD"
+      while true
+      do
+        if test -d "$dir"/tasks || test -f "$dir/task.sh"
+        then
+          PROJECT_DIR="$dir"
+          break
+        fi
+        if test "$dir" = "$(realpath "$dir"/..)"
+        then
+          echo "Project directory not found." >&2
+          exit 1
+        fi
+        dir="$(realpath "$dir"/..)"
+      done
+    fi
+    export PROJECT_DIR
   fi
-  export PROJECT_DIR
 
   # echo "0454f8e WORKING_DIR=$WORKING_DIR, TASKS_DIR=$TASKS_DIR, PROJECT_DIR=$PROJECT_DIR" >&2
 
