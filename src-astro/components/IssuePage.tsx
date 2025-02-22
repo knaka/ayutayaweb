@@ -50,7 +50,7 @@ export default (props: IssuePageProps) => {
     <>
       <div className="issue-page">
       {issue !== null ? (
-        <h1>Issue Page for issue with ID: {issue.id}, Name: {issue.username}, Message: {message}</h1>
+        <h1>Issue Page for issue with ID: {issue.id}, Name (d0ba5e8): {issue.username}, Message: {message}</h1>
       ) : (
         <h1>Loading...</h1>
       )}
