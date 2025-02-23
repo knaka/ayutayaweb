@@ -1,6 +1,6 @@
 # vim: set filetype=sh tabstop=2 shiftwidth=2 expandtab :
 # shellcheck shell=sh
-test "${sourced_f1649d9-}" = true && return 0; sourced_f1649d9=true
+"${sourced_f1649d9-false}" && return 0 || sourced_f1649d9=true
 
 . ./task.sh
 . ./task-node.lib.sh
