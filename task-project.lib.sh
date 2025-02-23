@@ -9,19 +9,19 @@ test "${sourced_f1649d9-}" = true && return 0; sourced_f1649d9=true
 . ./task-pages-dev.lib.sh
 . ./task-astro-dev.lib.sh
 . ./task-ip-utils.lib.sh
-. ./task-dyn-env.lib.sh
+. ./task-dev-session.lib.sh
 
 task_dev() {
-  if ! test -r "$PROJECT_DIR"/.env.dynamic
-  then
-    local astro_dev_port="$(ip_random_free_port)"
-    local pages_dev_port="$(ip_random_free_port)"
-    set_dynamic_entry "ASTRO_DEV_PORT" "$astro_dev_port"
-    set_dynamic_entry "ASTRO_DYNAMIC_PORT" "$pages_dev_port"
-    set_dynamic_entry "PAGES_DEV_PORT" "$pages_dev_port"
-    set_dynamic_entry "PAGES_CONTENT_PORT" "$astro_dev_port"
-    add_cleanup_handler cleanup_dynamic_entries
-  fi
+  cleanup_session_env
+  local astro_dev_port="$(ip_random_free_port)"
+  local pages_dev_port="$(ip_random_free_port)"
+  set_session_env_entry \
+    "ASTRO_DEV_PORT" "$astro_dev_port" \
+    "ASTRO_DYNAMIC_PORT" "$pages_dev_port" \
+    "PAGES_DEV_PORT" "$pages_dev_port" \
+    "PAGES_CONTENT_PORT" "$astro_dev_port" \
+    # nop
+  chaintrap cleanup_session_env EXIT
   # Launch Pages dev server with the interactive dev session disabled.
   task_pages__dev --invocation-mode=background --show-interactive-dev-session=false
   # Then, launch the Astro dev server.
