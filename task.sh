@@ -14,7 +14,7 @@ rc_delegate_task_not_found=10
 rc_test_skipped=11
 
 # --------------------------------------------------------------------------
-# Directories.
+# Temporary directory.
 # --------------------------------------------------------------------------
 
 TEMP_DIR="$(mktemp -d)"
@@ -61,10 +61,15 @@ finalize() {
   rm -fr "$TEMP_DIR"
 }
 
-# Obsolete.
-temp_dir_path() {
-  echo "$TEMP_DIR"
-}
+# --------------------------------------------------------------------------
+# Environent variables. If not set by the caller, set later in `main`
+# --------------------------------------------------------------------------
+
+# Path to the shell executable.
+: "${SH:=}"
+
+# Basename of the shell executable.
+: "${SHBASE:=}"
 
 # Directory in which the script has been invoked.
 : "${WORKING_DIR:=}"
@@ -75,9 +80,120 @@ temp_dir_path() {
 # The root directory of the project.
 : "${PROJECT_DIR:=}"
 
+# The path to the file which was called.
+: "${ARG0:=}"
+
+# Basename of the file which was called.
+: "${ARG0BASE:=}"
+
+# Verbosity flag.
+: "${VERBOSE:=false}"
+
+verbose() {
+  "$VERBOSE"
+}
+
+# Cache directory.
+: "${CACHE_DIR:="$HOME"/.cache}"
+
+cache_dir_path() {
+  local global_cache_dir_path="$HOME/.cache"
+  # if is_windows
+  # then
+  #   global_cache_dir_path="$LOCALAPPDATA"
+  # elif is_macos
+  # then
+  #   global_cache_dir_path="$HOME/Library/Caches"
+  # fi
+  mkdir -p "$global_cache_dir_path"/task_sh
+  echo "$global_cache_dir_path"/task_sh
+}
+
 # --------------------------------------------------------------------------
-# Misc
+# Platform detection.
 # --------------------------------------------------------------------------
+
+is_linux() {
+  test -d /proc -o -d /sys
+}
+
+is_macos() {
+  test -r /System/Library/CoreServices/SystemVersion.plist
+}
+
+is_windows() {
+  test -d "c:/" -a ! -d /proc
+}
+
+is_debian() {
+  test -f /etc/debian_version
+}
+
+is_bsd() {
+  # stat -f "%z" . >/dev/null 2>&1
+  is_macos || test -r /etc/rc.subr
+}
+
+is_alpine() {
+  test -f /etc/alpine-release
+}
+
+# --------------------------------------------------------------------------
+# Binary - text encoding/decoding.
+# --------------------------------------------------------------------------
+
+oct_dump() {
+  if test $# -eq 0
+  then
+    cat
+  else
+    printf "%s" "$*"
+  fi | od -A n -t o1 -v | xargs printf "%s "
+}
+
+oct_restore() {
+  if test $# -eq 0
+  then
+    cat
+  else
+    printf "%s" "$*"
+  fi | xargs printf '\\\\0%s\n' | xargs printf '%b'
+}
+
+oct_encode() {
+  if test $# -eq 0
+  then
+    cat
+  else
+    printf "%s" "$*"
+  fi | od -A n -t o1 -v | xargs printf "%s"
+}
+
+oct_decode() {
+  if test $# -eq 0
+  then
+    cat
+  else
+    printf "%s" "$*"
+  fi | sed 's/.../& /g' | xargs printf '\\\\0%s\n' | xargs printf '%b'
+}
+
+hex_dump() {
+  od -A n -t x1 -v | xargs printf "%s "
+}
+
+hex_restore() {
+  set -- awk
+  if command -v mawk >/dev/null 2>&1
+  then
+    set -- mawk
+  elif command -v gawk >/dev/null 2>&1
+  then
+    set -- gawk --non-decimal-data
+  fi
+  # shellcheck disable=SC2016
+  xargs printf "%s\n" | "$@" '{ printf("%c", int("0x" $1)) }'
+}
 
 # --------------------------------------------------------------------------
 # IFS manipulation.
@@ -127,14 +243,6 @@ set_ifs_blank() {
   printf ' \t'
 }
 
-oct_dump() {
-  od -A n -t o1 -v | xargs printf "%s "
-}
-
-oct_restore() {
-  xargs printf '\\\\0%s\n' | xargs printf '%b'
-}
-
 csv_ifss_6b672ac=
 
 # Push IFS to the stack.
@@ -168,7 +276,11 @@ pop_ifs() {
   fi
 }
 
-dirs_4c15d80=
+# --------------------------------------------------------------------------
+# Directory stack.
+# --------------------------------------------------------------------------
+
+psv_dirs_4c15d80=
 
 # `pushd` alternative.
 push_dir() {
@@ -178,29 +290,24 @@ push_dir() {
     echo "No such directory: $1" >&2
     return 1
   fi
-  dirs_4c15d80="$pwd|$dirs_4c15d80"
+  psv_dirs_4c15d80="$pwd|$psv_dirs_4c15d80"
 }
 
 # `popd` alternative.
 pop_dir() {
-  if test -z "$dirs_4c15d80"
+  if test -z "$psv_dirs_4c15d80"
   then
     echo "Directory stack is empty." >&2
     return 1
   fi
-  local dir="${dirs_4c15d80%%|*}"
-  dirs_4c15d80="${dirs_4c15d80#*|}"
+  local dir="${psv_dirs_4c15d80%%|*}"
+  psv_dirs_4c15d80="${psv_dirs_4c15d80#*|}"
   cd "$dir" || return 1
 }
 
 # --------------------------------------------------------------------------
-# Utility functions.
-# --------------------------------------------------------------------------s
-
-if ! command -v shuf >/dev/null 2>&1
-then
-  alias shuf='sort -R'
-fi
+# Shell flags. Not nested.
+# --------------------------------------------------------------------------
 
 shell_flags_c225b8f=
 
@@ -225,22 +332,15 @@ restore_shell_flags() {
   shell_flags_c225b8f=
 }
 
-is_linux() {
-  test -d /proc -o -d /sys
-}
+# --------------------------------------------------------------------------
+# Misc.
+# --------------------------------------------------------------------------s
 
-is_macos() {
-  test -r /System/Library/CoreServices/SystemVersion.plist
-}
-
-is_bsd() {
-  # stat -f "%z" . >/dev/null 2>&1
-  is_macos || test -r /etc/rc.subr
-}
-
-is_windows() {
-  test -d "c:/" -a ! -d /proc
-}
+# shuf(1) for MacOS environment.
+if ! command -v shuf >/dev/null 2>&1
+then
+  alias shuf='sort -R'
+fi
 
 # Executable file extension.
 exe_ext() {
@@ -250,18 +350,9 @@ exe_ext() {
   fi
 }
 
-is_debian() {
-  test -f /etc/debian_version
-}
-
-is_alpine() {
-  test -f /etc/alpine-release
-}
-
-# Memoize the command output.
+# Memoize the (mainly external) command output.
 memoize() {
-  local cache_file_path
-  cache_file_path="$TEMP_DIR/$1"
+  local cache_file_path="$TEMP_DIR"/cache-"$(oct_encode "$@")"
   shift
   if ! test -r "$cache_file_path"
   then
@@ -270,75 +361,118 @@ memoize() {
   cat "$cache_file_path"
 }
 
-shell_path_6eac6eb() {
-  if test "${BASH+set}" = set
+# Memoize the output of a series of commands. If you would like to nest, use subprocess function or `memoize` function instead.
+#
+# Usage:
+#   foo() {
+#     begin_memoize 8701441 "$@" || return 0
+#
+#     echo hello
+#     sleep 3 # Takes long time.
+#     echo world
+#
+#     end_memoize
+#   }
+
+cache_file_path_cb3727b=
+
+begin_memoize() {
+  cache_file_path_cb3727b="$TEMP_DIR"/cache-"$(oct_encode "$@")"
+  if test -r "$cache_file_path_cb3727b"
   then
-    echo "$BASH"
-    return
+    cat "$cache_file_path_cb3727b"
+    return 1
   fi
-  if is_windows && test "${SHELL+set}" = set && test "$SHELL" = "/bin/sh" && "$SHELL" --help 2>&1 | grep -q "BusyBox"
+  exec 9>&1
+  exec >"$cache_file_path_cb3727b"
+}
+
+end_memoize() {
+  exec 1>&9
+  exec 9>&-
+  if test $# -gt 0
   then
-    echo "$SHELL"
-    return
+    cache_file_path_cb3727b="$TEMP_DIR"/cache-"$(oct_encode "$@")"
   fi
-  local path=
-  if test -e /proc/$$/exe
+  if test -r "$cache_file_path_cb3727b"
   then
-    path="$(realpath /proc/$$/exe)" || return 1
-  else
-    path="$(realpath "$(ps -p $$ -o comm=)")" || return 1
+    cat "$cache_file_path_cb3727b"
   fi
-  echo "$path"
 }
 
 shell_path() {
-  memoize 5e862b5 shell_path_6eac6eb
+  begin_memoize d57754a "$@" || return 0
+
+  if test "${BASH+set}" = set
+  then
+    echo "$BASH"
+  elif is_windows && test "${SHELL+set}" = set && test "$SHELL" = "/bin/sh" && "$SHELL" --help 2>&1 | grep -q "BusyBox"
+  then
+    echo "$SHELL"
+  else
+    local path=
+    if test -e /proc/$$/exe
+    then
+      path="$(realpath /proc/$$/exe)" || return 1
+    else
+      path="$(realpath "$(ps -p $$ -o comm=)")" || return 1
+    fi
+    echo "$path"
+  fi
+
+  end_memoize
 }
 
-shell_base() {
-  local shell_path="$(shell_path)"
-  echo "${shell_path##*/}"
-}
+shell_name() {
+  begin_memoize 09e4c0d "$@" || return 0
 
-shell_name_f0ebcb7() {
   if test "${BASH+set}" = set
   then
     echo "bash"
-    return
-  # Busybox Ash shell on Windows sets $SHELL to provide the virtual executable path `/bin/sh`.
   elif is_windows && test "${SHELL+set}" = set && test "$SHELL" = "/bin/sh" && "$SHELL" --help 2>&1 | grep -q "BusyBox"
   then
     echo "ash"
-    return
-  fi
-  local sh=
-  if test -e /proc/$$/exe
-  then
-    sh="$(basename "$(readlink -f /proc/$$/exe)")" || return 1
   else
-    sh="$(basename "$(ps -p $$ -o comm=)")" || return 1
+    local path=
+    if test -e /proc/$$/exe
+    then
+      path="$(realpath /proc/$$/exe)" || return 1
+    else
+      path="$(realpath "$(ps -p $$ -o comm=)")" || return 1
+    fi
+    case "${path##*/}" in
+      (bash) echo "bash";;
+      (ash) echo "ash";;
+      (dash) echo "dash";;
+      (sh|busybox)
+        if "$path" --help 2>&1 | grep -q "BusyBox"
+        then
+          echo "ash"
+        else
+          echo "Cannot detect the shell: $path" >&2
+          return 1
+        fi
+        ;;
+      (*)
+        echo "Unknown shell: $path" >&2
+        return 1
+        ;;
+    esac
   fi
-  case "$sh" in
-    (sh|busybox)
-      if "$sh" --help 2>&1 | grep -q "BusyBox"
-      then
-        sh="ash"
-      fi
-      ;;
-  esac
-  echo "$sh"
+
+  end_memoize
 }
 
 is_dash() {
-  test "$(shell_base)" = "dash"
+  test "$(shell_name)" = "dash"
 }
 
 is_ash() {
-  test "$(shell_base)" = "ash"
+  test "$(shell_name)" = "ash"
 }
 
 is_bash() {
-  test "$(shell_base)" = "bash"
+  test "$(shell_name)" = "bash"
 }
 
 # Check if the file(s)/directory(s) is/are newer than the destination.
@@ -533,6 +667,7 @@ browse() {
   fi
 }
 
+# Ensure the command is installed.
 install_pkg_cmd() {
   local apk_id=
   local deb_id=
@@ -642,7 +777,8 @@ install_pkg_cmd() {
   fi
 }
 
-run_pkg_cmd() { # Run a command after ensuring it is installed.
+# Run a command after ensuring it is installed.
+run_pkg_cmd() {
   local cmd_path=
   cmd_path="$(install_pkg_cmd "$@")"
   while test $# -gt 0
@@ -666,25 +802,13 @@ subcmd_curl() { # Run curl(1). This will be deprecated. Use `fetch` instead.
 }
 
 subcmd_apt_download() {
+  ! is_debian && return 1
   local apt_conf_path="$TEMP_DIR"/apt.conf
   printf "%s\n" \
     'Acquire::https::Verify-Peer "false";' \
     'Acquire::https::Verify-Host "false";' \
     >"$apt_conf_path"
   /usr/lib/apt/apt-helper -c "$apt_conf_path" download-file "$1" "$2" 1>&2
-}
-
-cache_dir_path() {
-  local global_cache_dir_path="$HOME/.cache"
-  # if is_windows
-  # then
-  #   global_cache_dir_path="$LOCALAPPDATA"
-  # elif is_macos
-  # then
-  #   global_cache_dir_path="$HOME/Library/Caches"
-  # fi
-  mkdir -p "$global_cache_dir_path"/task_sh
-  echo "$global_cache_dir_path"/task_sh
 }
 
 subcmd_fetch() { # Fetch a URL.
@@ -956,9 +1080,9 @@ menu_item() {
     IFS="$is1" read -r pre char_to_emph post
     if test -n "$char_to_emph"
     then
-      printf "%s%s%s" "$pre" "$(emph "$char_to_emph")" "$post"
+      printf -- "%s%s%s" "$pre" "$(emph "$char_to_emph")" "$post"
     else
-      printf "%s" "$pre"
+      printf -- "%s" "$pre"
     fi
   ) | sed -E -e 's/@ampersand_ff37f3a@/\&/g'
   echo
@@ -966,55 +1090,27 @@ menu_item() {
 
 # Print a menu
 menu() {
-  echo
   local arg
   for arg in "$@"
   do
+    printf -- "- "
     menu_item "$arg"
   done
 }
 
-# Sort in random order.
-sort_random() {
-  if type shuf > /dev/null 2>&1
-  then
-    shuf
-  else
-    sort -R
-  fi
-}
-
 # Get the space-separated n-th (1-based) field.
-field() (
-  unset IFS
+field() {
   # shellcheck disable=SC2046
   printf "%s\n" $(cat) | head -n "$1" | tail -n 1
-)
+}
 
-# Mac does not have tac(1).
-if ! type tac > /dev/null 2>&1
+# tac(1) for MacOS environment.
+if ! command -v tac >/dev/null 2>&1
 then
   tac() {
     tail -r
   }
 fi
-
-hex_dump() {
-  od -A n -t x1 -v | xargs printf "%s "
-}
-
-hex_restore() {
-  set -- awk
-  if command -v mawk >/dev/null 2>&1
-  then
-    set -- mawk
-  elif command -v gawk >/dev/null 2>&1
-  then
-    set -- gawk --non-decimal-data
-  fi
-  # shellcheck disable=SC2016
-  xargs printf "%s\n" | "$@" '{ printf("%c", int("0x" $1)) }'
-}
 
 # Encode positional parameters into a string which can be passed to `eval` to restore the positional parameters.
 #
@@ -1057,22 +1153,14 @@ is_dir_empty() {
 # Main.
 # --------------------------------------------------------------------------
 
-# Verbosity flag.
-
-verbose_f26120b=false
-
-verbose() {
-  "$verbose_f26120b"
-}
-
-psv_task_file_paths=
+psv_task_file_paths_4a5f3ab=
 
 task_subcmds() ( # List subcommands.
   lines="$(
     (
       IFS="|"
       # shellcheck disable=SC2086
-      sed -E -n -e 's/^subcmd_([[:alnum:]_]+)\(\) *[{(] *(# *(.*))?/\1 \3/p' $psv_task_file_paths
+      sed -E -n -e 's/^subcmd_([[:alnum:]_]+)\(\) *[{(] *(# *(.*))?/\1 \3/p' $psv_task_file_paths_4a5f3ab
     ) | while read -r name desc
     do
       echo "$(echo "$name" | sed -E -e 's/__/:/g')" "$desc"
@@ -1102,7 +1190,7 @@ task_tasks() ( # List tasks.
     (
       IFS="|"
       # shellcheck disable=SC2086
-      sed -E -n -e 's/^task_([[:alnum:]_]+)\(\) *[{(] *(# *(.*))?/\1 \3/p' $psv_task_file_paths
+      sed -E -n -e 's/^task_([[:alnum:]_]+)\(\) *[{(] *(# *(.*))?/\1 \3/p' $psv_task_file_paths_4a5f3ab
     ) | while read -r name desc
     do
       echo "$(echo "$name" | sed -E -e 's/__/:/g')" "$desc"
@@ -1170,14 +1258,6 @@ run_post_task() {
   fi
 }
 
-# Base name of the shell executable.
-: "${SH:=}"
-export SH
-
-get_sh() {
-  echo "$SH"
-}
-
 main() {
   set -o nounset -o errexit
 
@@ -1187,27 +1267,26 @@ main() {
   if test -z "$SH"
   then
     SH="$(shell_path)"
-    local sh_base="${SH##*/}"
+    SHBASE="${SH##*/}"
     while true
     do
       if is_windows
       then
-        if test "$sh_base" = "sh"
+        if test "$SHBASE" = "sh"
         then
           break
         fi
       elif is_macos
       then
-        if test "$sh_base" = "dash"
+        if test "$SHBASE" = "dash"
         then
           break
-        else
-          finalize
-          exec /bin/dash "$0" "$@"
         fi
+        finalize
+        exec /bin/dash "$0" "$@"
       elif is_linux
       then
-        case "$sh_base" in
+        case "$SHBASE" in
           (ash|dash|bash)
             break
             ;;
@@ -1217,21 +1296,29 @@ main() {
       exit 1
     done
     export SH
+    export SHBASE
   fi
 
-  WORKING_DIR="$(realpath "$PWD")"
-  export WORKING_DIR
+  if test -z "$WORKING_DIR"
+  then
+    WORKING_DIR="$(realpath "$PWD")"
+    export WORKING_DIR
+  fi
 
-  TASKS_DIR="$(realpath "$(dirname "$0")")"
-  export TASKS_DIR
+  if test -z "$TASKS_DIR"
+  then
+    TASKS_DIR="$(realpath "$(dirname "$0")")"
+    export TASKS_DIR
+  fi
 
-  if test "${PROJECT_DIR}" = ""
+  if test -z "${PROJECT_DIR}"
   then
     if test "${ARG0+set}" = set
     then
       PROJECT_DIR="$(realpath "$(dirname "$ARG0")")"
     else
-      dir="$PWD"
+      local dir="$PWD"
+      local parent_dir
       while true
       do
         if test -d "$dir"/tasks || test -f "$dir/task.sh"
@@ -1239,18 +1326,17 @@ main() {
           PROJECT_DIR="$dir"
           break
         fi
-        if test "$dir" = "$(realpath "$dir"/..)"
+        parent_dir="$(realpath "$dir"/..)"
+        if test "$dir" = "$parent_dir"
         then
           echo "Project directory not found." >&2
           exit 1
         fi
-        dir="$(realpath "$dir"/..)"
+        dir="$parent_dir"
       done
     fi
     export PROJECT_DIR
   fi
-
-  # echo "0454f8e WORKING_DIR=$WORKING_DIR, TASKS_DIR=$TASKS_DIR, PROJECT_DIR=$PROJECT_DIR" >&2
 
   # Set the environment variables according to the script name.
   if test "${ARG0BASE+set}" = "set"
@@ -1280,20 +1366,11 @@ main() {
     ARG0BASE="$(basename "$0")"
   fi
 
-  # Load all the task files in the tasks directory and the project directory.
-  local eval_args="$(make_eval_args "$@")"
-  set -- "$PROJECT_DIR"
-  if test "$TASKS_DIR" != "$PROJECT_DIR"
-  then
-    set -- "$TASKS_DIR" "$@"
-  fi
-  psv_task_file_paths="$(realpath "$0")|"
-  local dir
-  for dir in "$@"
-  do
-    # All the task files are sourced in the directory.
+  # Load all the task files in the tasks directory and the project directory. All the task files are sourced in the TASKS directory context.
+  psv_task_file_paths_4a5f3ab="$(realpath "$0")|"
+  load_tasks_in_dir() {
     push_dir "$TASKS_DIR"
-    for task_file_path in "$dir"/task-*.sh
+    for task_file_path in "$1"/task-*.sh
     do
       if ! test -r "$task_file_path"
       then
@@ -1304,14 +1381,15 @@ main() {
           continue
           ;;
       esac
-      psv_task_file_paths="$psv_task_file_paths$task_file_path|"
+      psv_task_file_paths_4a5f3ab="$psv_task_file_paths_4a5f3ab$task_file_path|"
       # echo Loading "$task_file_path" >&2
       # shellcheck disable=SC1090
       . "$task_file_path"
     done
     pop_dir
-  done
-  eval "set -- $eval_args"
+  }
+  load_tasks_in_dir "$PROJECT_DIR"
+  test "$TASKS_DIR" != "$PROJECT_DIR" && load_tasks_in_dir "$TASKS_DIR"
 
   # Parse the command line arguments.
   shows_help=false
@@ -1333,7 +1411,7 @@ main() {
       (h|help) shows_help=true;;
       (s|skip-missing) skip_missing=true;;
       (i|ignore-missing) ignore_missing=true;;
-      (v|verbose) verbose_f26120b=true;;
+      (v|verbose) VERBOSE=true;;
       (\?) usage; exit 1;;
       (*) echo "Unexpected option: $OPT" >&2; exit 1;;
     esac
