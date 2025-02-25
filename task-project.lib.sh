@@ -25,3 +25,21 @@ task_dev() {
   # Then, launch the Astro dev server.
   task_astro__dev
 }
+
+set_test_environment() {
+  # export PERSISTENT_D1_DIR_PATH="$persistent_d1_dir_path"
+  # PERSISTENT_D1_BINDING="$(subcmd_d1__binding)"
+  # export PERSISTENT_D1_BINDING
+  # PERSISTENT_D1_ID="$(subcmd_d1__id)"
+  # export PERSISTENT_D1_ID
+  :
+}
+
+subcmd_vitest() { # Run tests with Vite.
+  run_node_modules_bin vitest vitest.mjs "$@"
+}
+
+subcmd_test() { # Run tests.
+  set_test_environment
+  subcmd_vitest "$@"
+}

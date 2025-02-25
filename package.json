@@ -13,13 +13,18 @@
     "@astrojs/check": "^0.9.4",
     "@astrojs/react": "^4.2.0",
     "@cloudflare/workers-types": "^4.20241004.0",
+    "@types/luxon": "^3.4.2",
     "astro": "^4.16.15",
+    "front-matter": "^4.0.2",
+    "glob": "^11.0.1",
     "hono": "^4.6.11",
+    "luxon": "^3.5.0",
     "marked": "^15.0.7",
     "sass-embedded": "^1.85.1",
     "styled-components": "^6.1.15",
     "typescript": "^5.7.2",
     "vite-tsconfig-paths": "^5.1.4",
+    "vitest": "^3.0.7",
     "wrangler": "^3.91.0"
   }
 }
