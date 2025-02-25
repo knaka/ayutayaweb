@@ -1,12 +1,28 @@
 ---
 import Layout from '@src_astro/layouts/Layout.astro';
----
-<Layout title="Welcome.">
-	<h1>Hello a38007a</h1>
-</Layout>
 
-<style>
-	h1 {
-		background: #ffa0ff;
-	}
-</style>
+const title = "Top page"
+---
+<Layout title={title}>
+<h1>{title}</h1>
+
+<p>This is the top page.</p>
+
+{(import.meta.env.DEV)? 
+	<div>
+		<p>Templates:</p>
+		<ul>
+			<li><a href='tmpl/issue'>Issue</a></li>
+		</ul>
+		<p>VARs:</p>
+		<ul>
+			<li><a href='/var/issues'>Issues</a></li>
+		</ul>
+		<p>APIs:</p>
+		<ul>
+			<li><a href='/api/health'>Health</a></li>
+		</ul>
+	</div>
+: "" }
+
+</Layout>

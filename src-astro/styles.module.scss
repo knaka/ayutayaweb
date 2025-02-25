@@ -1,0 +1,16 @@
+.bar {
+  h1 {
+    /* This does not work */
+    color: #ffa0ff;
+    /* color: var(--theColor1);  */
+    /* This works */
+    /* color: red; */ 
+    /* background: var(--h1-bg-color); */
+  }
+}
+
+.baz {
+  h1 {
+    color: #00a0ff;
+  }
+}

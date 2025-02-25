@@ -1,5 +1,7 @@
 ---
-import styled from 'styled-components';
+// import styled from 'styled-components';
+
+import styles from './styles.module.scss';
 
 interface Props {
 	title: string;
@@ -24,7 +26,7 @@ const theColor1 = 'blue';
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
 	</head>
-	<body>
+	<body class={styles.top}>
 	<!-- <DivWrapper client:only> -->
 		<slot />
 	<!-- </DivWrapper> -->
@@ -32,7 +34,7 @@ const theColor1 = 'blue';
 </html>
 
 <!-- <style define:vars={{ theColor1 }} is:global> -->
-<style is:global>
+<!-- <style is:global>
 	:root {
 		--accent: 136, 58, 234;
 		--accent-light: 224, 204, 250;
@@ -60,4 +62,4 @@ const theColor1 = 'blue';
 			monospace;
 	}
 
-</style>
+</style> -->

@@ -1,34 +1,15 @@
 ---
 import Layout from '@src_astro/layouts/Layout.astro';
 import IssuePage from '@src_astro/components/IssuePage'
+import styles from '../../styles.module.scss'
 
 const theColor3 = 'red';
 const theColor2 = 'green';
 ---
-
-<style define:vars={{ theColor3 }} is:global>
-  :root {
-    --h1-bg-color: #ffffff;
-  }
-
-  .issue-page {
-    h1 {
-      /* This does not work */
-      color: var(--theColor3);
-      /* color: var(--theColor1);  */
-      /* This works */
-      /* color: red; */ 
-      background: var(--h1-bg-color);
-    }
-  }
-  .user-page {
-    h1 {
-      background: var(--h1-bg-color);
-    }
-  }
-</style>
-
 <Layout title="Issue Template Page">
 <h1 class=hoge2>My header</h1>
-<span><IssuePage className="hoge2" client:load /></span>
+<span class={styles.bar}>
+  <h1>hoge</h1>
+  <IssuePage client:load />
+</span>
 </Layout>

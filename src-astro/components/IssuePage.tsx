@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import styled from "styled-components";
+import styles from '../styles.module.scss'
 
 type Issue = {
   id: number;
@@ -48,7 +49,7 @@ export default (props: IssuePageProps) => {
   }, []);
   return (
     <>
-      <div className="issue-page">
+      <div className={styles.baz}>
       {issue !== null ? (
         <h1>Issue Page for issue with ID: {issue.id}, Name (d0ba5e8): {issue.username}, Message: {message}</h1>
       ) : (
