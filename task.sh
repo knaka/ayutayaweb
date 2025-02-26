@@ -23,7 +23,7 @@ trap "rm -fr '$TEMP_DIR'" EXIT
 
 readonly stmts_file_base="$TEMP_DIR"/b6a5748
 
-# Chain traps not to overwrite the previous trap.
+# Chain traps to not overwrite the previous trap.
 # shellcheck disable=SC2064
 chaintrap() {
   local stmts="$1"
@@ -62,7 +62,7 @@ finalize() {
 }
 
 # --------------------------------------------------------------------------
-# Environent variables. If not set by the caller, set later in `main`
+# Environment variables. If not set by the caller, set later in `main`
 # --------------------------------------------------------------------------
 
 # Path to the shell executable.
@@ -350,6 +350,11 @@ exe_ext() {
   fi
 }
 
+if is_macos
+then
+  alias sha1sum='shasum -a 1'
+fi
+
 # Memoize the (mainly external) command output.
 memoize() {
   local cache_file_path="$TEMP_DIR"/cache-"$(echo "$@" | sha1sum | cut -d' ' -f1)"
@@ -567,7 +572,7 @@ kill_child_processes() {
 # Invoke command with proper executable extension, with the specified invocation mode.
 #
 #   --invocation-mode=exec: Replace the process with the command.
-#   --invocation-mode=exec-sub: Replace the process with the command, without calling clearups.
+#   --invocation-mode=exec-sub: Replace the process with the command, without calling cleanups.
 #   --invocation-mode=background: Run the command in the background.
 #   --invocation-mode=standard: Run the command in the current process.
 invoke() {
