@@ -34,7 +34,7 @@ describe("Markdown", () => {
     expect(md.public).toBe(true);
   });
 
-  test('Markdown without public nor private', async () => {
+  test('Markdown without public or private', async () => {
     const md = new Markdown('/Users/knaka/doc/2021/1000.md');
     expect(md.public).toBe(false);
   });

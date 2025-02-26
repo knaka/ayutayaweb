@@ -28,7 +28,7 @@ export async function* iteratePosts(...docDirPaths: string[]): AsyncGenerator<Ma
         continue;
       }
       const md = new Markdown(filePath);
-      if (! md.public) {
+      if (!md.public) {
         continue;
       }
       yield md;
@@ -76,7 +76,7 @@ export function extractDateFromPath(filePath: string): string | null {
   // The next part should be a date
   const monthDayPart = pathParts[docIndex + 2];
   const monthDayMatch = monthDayPart.match(/^(\d{2})(\d{2})/);
-  if (! monthDayMatch) {
+  if (!monthDayMatch) {
     return null;
   }
 
@@ -105,7 +105,7 @@ export class Markdown {
       this.public = false;
     } else if (attrs.public || attrs.Public || attrs.PUBLIC) {
       this.public = true;
-    } else if (! attrs.private || ! attrs.Private || ! attrs.PRIVATE) {
+    } else if (!attrs.private || !attrs.Private || !attrs.PRIVATE) {
       this.public = true;
     }
     if (this.idOriginal) {
