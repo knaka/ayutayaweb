@@ -43,7 +43,10 @@ describe("Markdown", () => {
 describe("Posts", () => {
   test('Can list posts', async () => {
     let count = 0;
-    for await (const _md of iteratePosts('/Users/knaka/doc/2021')) {
+    for await (const _md of iteratePosts(
+      '/Users/knaka/doc/2020',
+      '/Users/knaka/doc/2021',
+    )) {
       count++;
     }
     console.log(`count: ${count}`);
