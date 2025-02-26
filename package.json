@@ -26,5 +26,8 @@
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^3.0.7",
     "wrangler": "^3.91.0"
+  },
+  "volta": {
+    "node": "20.18.3"
   }
 }
