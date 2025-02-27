@@ -1,0 +1,11 @@
+---
+import styles from './PostListPageLayout.module.scss';
+---
+<div class={styles.container}>
+  <main class={styles.main}>
+    <slot name="main"></slot>
+  </main>
+  <aside class={styles.sidebar}>
+    <slot name="sidebar"></slot>
+  </aside>
+</div>

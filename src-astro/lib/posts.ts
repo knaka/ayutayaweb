@@ -56,6 +56,10 @@ type Attributes = {
   public: boolean;
   Public: boolean;
   PUBLIC: boolean;
+
+  tags: string;
+  Tags: string;
+  TAGS: string;
 };
 
 export function extractDateFromPath(filePath: string): string | null {
@@ -92,6 +96,7 @@ export class Markdown {
   public: boolean;
   createdAt: DateTime;
   body: string;
+  tags: string[];
   constructor(filePath?: string, zone?: string) {
     const content = readFileSync(filePath, 'utf-8');
     const fmResult = fm<Attributes>(content);
@@ -125,6 +130,8 @@ export class Markdown {
       }
     }
     this.body = fmResult.body;
+    const tags = attrs.tags || attrs.Tags || attrs.TAGS;
+    this.tags = tags ? tags.split(/\s*[,|]\s*/): []; 
   };
   bodyHtml() {
     return parse(this.body);
