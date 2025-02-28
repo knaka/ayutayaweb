@@ -1,5 +1,5 @@
 ---
-import Page from '@src_astro/layouts/PageLayout.astro';
+import Page from '@src_astro/layouts/Page.astro';
 import { iteratePosts, Markdown } from '@src_astro/lib/posts.js';
 import styles from './styles.module.scss';
 
@@ -25,7 +25,6 @@ for await (const post of iteratePosts('/Users/knaka/doc/2021')) {
   ))}
 </ul>
 <div slot="sidebar">
-  <!-- Add any sidebar content here -->
   <p>Sidebar content goes here.</p>
 </div>
 </Page>
