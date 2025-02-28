@@ -1,5 +1,5 @@
 ---
-import Layout from '@src_astro/layouts/Layout.astro';
+import Root from '@src_astro/layouts/Root.astro';
 import { readFileSync } from "fs";
 import { marked } from "marked";
 import { hello } from '@src_astro/lib/data'
@@ -45,9 +45,9 @@ const markdown = readFileSync(`/Users/knaka/doc/2025/${Astro.params.id}`, "utf-8
 const html = marked(markdown);
 
 ---
-<Layout title={title}>
+<Root title={title}>
 <h1>181be01 {title}</h1>
 <div>Message: {id}, {title}, {body}!</div>
 <p>and {hello}</p>
 <div set:html={html}></div>
-</Layout>
+</Root>

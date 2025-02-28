@@ -1,5 +1,5 @@
 ---
-import Layout from '@src_astro/layouts/Layout.astro';
+import Root from '@src_astro/layouts/Root.astro';
 import PostListPageLayout from '@src_astro/layouts/PostListPageLayout.astro';
 import { iteratePosts, Markdown } from '@src_astro/lib/posts.js';
 import styles from './styles.module.scss';
@@ -11,7 +11,7 @@ for await (const post of iteratePosts('/Users/knaka/doc/2021')) {
   posts.push({...post});
 }
 ---
-<Layout title="Posts">
+<Root title="Posts">
 <PostListPageLayout>
   <ul slot="main">
     {posts.map((post) => (
@@ -27,4 +27,4 @@ for await (const post of iteratePosts('/Users/knaka/doc/2021')) {
     <p>Sidebar content goes here.</p>
   </div>
 </PostListPageLayout>
-</Layout>
+</Root>

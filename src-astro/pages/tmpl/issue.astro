@@ -1,15 +1,15 @@
 ---
-import Layout from '@src_astro/layouts/Layout.astro';
+import Root from '@src_astro/layouts/Root.astro';
 import IssuePage from '@src_astro/components/IssuePage'
 import styles from '../../styles.module.scss'
 
 const theColor3 = 'red';
 const theColor2 = 'green';
 ---
-<Layout title="Issue Template Page">
+<Root title="Issue Template Page">
 <h1 class=hoge2>My header</h1>
 <span class={styles.bar}>
   <h1>hoge</h1>
   <IssuePage client:load />
 </span>
-</Layout>
+</Root>
