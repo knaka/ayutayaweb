@@ -11,14 +11,14 @@ type Issue = {
   createdAt: string;
 }
 
-export type IssuePageInfo = {
+export type IssueComponentInfo = {
   issue: Issue;
   message?: string;
 }
 
 declare global {
   interface Window {
-    __SERVER_DATA__?: IssuePageInfo;
+    __SERVER_DATA__?: IssueComponentInfo;
   }
 }
 
@@ -26,11 +26,11 @@ declare global {
 //   background-color: #ffa0a0;
 // `
 
-type IssuePageProps = {
+type IssueComponentProps = {
   className?: string;
 }
 
-export default (props: IssuePageProps) => {
+export default (props: IssueComponentProps) => {
   const [issue, setIssue] = useState<Issue | null>(null);
   const [message, setMessage] = useState<string>("");
   useEffect(() => {

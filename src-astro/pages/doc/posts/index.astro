@@ -1,6 +1,5 @@
 ---
-import Root from '@src_astro/layouts/RootLayout.astro';
-import PostListPageLayout from '@src_astro/layouts/PostListPageLayout.astro';
+import Page from '@src_astro/layouts/PageLayout.astro';
 import { iteratePosts, Markdown } from '@src_astro/lib/posts.js';
 import styles from './styles.module.scss';
 
@@ -11,20 +10,22 @@ for await (const post of iteratePosts('/Users/knaka/doc/2021')) {
   posts.push({...post});
 }
 ---
-<Root title="Posts">
-<PostListPageLayout>
-  <ul slot="main">
-    {posts.map((post) => (
-      <li class={styles.item_list}>
-        <time datetime={post.createdAt.toISO()}>{post.createdAt.toISODate()}</time>
-        <a href={`./posts/${post.id}`}>{post.title}</a>
-        <div class={styles.tags}>Tags: {post.tags.join(' | ')}</div>
-      </li>
-    ))}
-  </ul>
-  <div slot="sidebar">
-    <!-- Add any sidebar content here -->
-    <p>Sidebar content goes here.</p>
-  </div>
-</PostListPageLayout>
-</Root>
+<Page title="Posts">
+<!-- <div slot="left_sidebar">
+  <!-- Add any left sidebar content here -->
+  <p>Left sidebar content goes here.</p>
+</div> -->
+<ul slot="main">
+  {posts.map((post) => (
+    <li class={styles.item_list}>
+      <time datetime={post.createdAt.toISO()}>{post.createdAt.toISODate()}</time>
+      <a href={`./posts/${post.id}`}>{post.title}</a>
+      <div class={styles.tags}>Tags: {post.tags.join(' | ')}</div>
+    </li>
+  ))}
+</ul>
+<div slot="sidebar">
+  <!-- Add any sidebar content here -->
+  <p>Sidebar content goes here.</p>
+</div>
+</Page>

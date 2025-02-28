@@ -1,6 +1,6 @@
 ---
 import RootLayout from '@src_astro/layouts/RootLayout.astro';
-import IssuePage from '@src_astro/components/IssuePage'
+import IssueComponent from '@src_astro/components/IssueComponent'
 import styles from '../../styles.module.scss'
 
 const theColor3 = 'red';
@@ -10,6 +10,6 @@ const theColor2 = 'green';
 <h1 class=hoge2>My header</h1>
 <span class={styles.bar}>
   <h1>hoge</h1>
-  <IssuePage client:load />
+  <IssueComponent client:load />
 </span>
 </RootLayout>
