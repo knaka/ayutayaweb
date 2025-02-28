@@ -36,6 +36,23 @@ export async function* iteratePosts(...docDirPaths: string[]): AsyncGenerator<Ma
   }
 }
 
+export async function getPosts(...docDirPaths: string[]): Promise<Markdown[]> {
+  const posts: Markdown[] = [];
+  for (const docDirPath of docDirPaths) {
+    for await (const filePath of await listFilePathsRec(docDirPath)) {
+      if (path.extname(filePath) !== ".md") {
+        continue;
+      }
+      const md = new Markdown(filePath);
+      if (!md.public) {
+        continue;
+      }
+      posts.push(md);
+    }
+  }
+  return posts;
+}
+
 type Attributes = {
   title: string;
   Title: string;
@@ -90,14 +107,15 @@ export function extractDateFromPath(filePath: string): string | null {
 }
 
 export class Markdown {
+  filePath: string;
   title?: string;
   idOriginal?: string;
   id?: string;
   public: boolean;
   createdAt: DateTime;
-  body: string;
   tags: string[];
   constructor(filePath?: string, zone?: string) {
+    this.filePath = filePath;
     const content = readFileSync(filePath, 'utf-8');
     const fmResult = fm<Attributes>(content);
     const attrs = fmResult.attributes;
@@ -129,11 +147,16 @@ export class Markdown {
         }
       }
     }
-    this.body = fmResult.body;
     const tags = attrs.tags || attrs.Tags || attrs.TAGS;
     this.tags = tags ? tags.split(/\s*[,|]\s*/): []; 
+    // this.body = fmResult.body;
   };
+  body() {
+    const content = readFileSync(this.filePath, 'utf-8');
+    const fmResult = fm(content);
+    return fmResult.body;
+  }
   bodyHtml() {
-    return parse(this.body);
+    return parse(this.body());
   };
 }

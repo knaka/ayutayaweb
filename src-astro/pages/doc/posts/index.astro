@@ -1,14 +1,9 @@
 ---
 import Page from '@src_astro/layouts/Page.astro';
-import { iteratePosts, Markdown } from '@src_astro/lib/posts.js';
+import { getPosts, iteratePosts, Markdown } from '@src_astro/lib/posts.js';
 import styles from './styles.module.scss';
 
-type PostSubset = Pick<Markdown, "id" | "title" | "createdAt" | "tags">;
-
-const posts: PostSubset[] = [];
-for await (const post of iteratePosts('/Users/knaka/doc/2021')) {
-  posts.push({...post});
-}
+const posts = await getPosts('/Users/knaka/doc/2021');
 ---
 <Page title="Posts">
 <!-- <div slot="left_sidebar">
