@@ -1,6 +1,6 @@
 ---
 import Page from '#src_astro/layouts/Page.astro';
-import { getPosts } from '#src/posts';
+import { postsAsync } from '#src/posts';
 import styles from './styles.module.scss';
 
 // isaacs/node-glob: glob functionality for node.js https://github.com/isaacs/node-glob
@@ -13,7 +13,7 @@ const dirPaths = globSync([
   '/Users/knaka/doc/2019',
   '/Users/knaka/doc/202*',
 ]);
-const posts = (await getPosts(...dirPaths)).sort((a, b) => b.createdAt > a.createdAt ? 1 : -1);
+const posts = (await postsAsync(...dirPaths)).sort((a, b) => b.createdAt > a.createdAt ? 1 : -1);
 ---
 <Page title="Posts">
 <ul slot="main">

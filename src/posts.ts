@@ -1,4 +1,4 @@
-import { readFileSync, Dirent, promises as fs } from "node:fs";
+import { readFileSync, promises as fs, statSync } from "node:fs";
 import { globSync } from 'glob';
 import { parse } from 'marked';
 // import * as fs from 'node:fs';
@@ -9,6 +9,8 @@ import { DateTime } from 'luxon';
 import fmCjs from 'front-matter';
 const fm = fmCjs as unknown as typeof fmCjs.default;
 
+let latest: Date? = null;
+
 async function listFilePathsRec(dir: string): Promise<string[]> {
   const paths: string[] = [];
   for (const entry of await fs.readdir(dir, { withFileTypes: true })) {
@@ -17,41 +19,13 @@ async function listFilePathsRec(dir: string): Promise<string[]> {
       paths.push(...await listFilePathsRec(entryPath));
     } else {
       paths.push(entryPath);
+      const stat = await fs.stat(entryPath);
+      if (!latest || stat.mtime > latest) {
+        latest = stat.mtime;
+      }
     }
   }
   return paths;
-}
-
-export async function* iteratePosts(...docDirPaths: string[]): AsyncGenerator<Markdown> {
-  for (const docDirPath of docDirPaths) {
-    for await (const filePath of await listFilePathsRec(docDirPath)) {
-      if (path.extname(filePath) !== ".md") {
-        continue;
-      }
-      const md = new Markdown(filePath);
-      if (!md.public) {
-        continue;
-      }
-      yield md;
-    }
-  }
-}
-
-export async function getPosts(...docDirPaths: string[]): Promise<Markdown[]> {
-  const posts: Markdown[] = [];
-  for (const docDirPath of docDirPaths) {
-    for await (const filePath of await listFilePathsRec(docDirPath)) {
-      if (path.extname(filePath) !== ".md") {
-        continue;
-      }
-      const md = new Markdown(filePath);
-      if (!md.public) {
-        continue;
-      }
-      posts.push(md);
-    }
-  }
-  return posts;
 }
 
 type Attributes = {
@@ -114,9 +88,12 @@ export class Markdown {
   id?: string;
   public: boolean;
   createdAt: DateTime;
+  modifiedAt: DateTime;
   tags: string[];
   constructor(filePath?: string, zone?: string) {
     this.filePath = filePath;
+    // Set the modification time of the file.
+    this.modifiedAt = DateTime.fromJSDate(statSync(filePath).mtime);
     const content = readFileSync(filePath, 'utf-8');
     const fmResult = fm<Attributes>(content);
     const attrs = fmResult.attributes;
@@ -173,3 +150,48 @@ export async function createMarkdownFromGlobPattern(globPattern: string, zone?: 
   const filePath: string = filePaths[0] as string;
   return new Markdown(filePath, zone);
 }
+
+// order := asc | desc
+export type PostOrder = 'asc' | 'desc';
+
+export class PostStore {
+  #directoryPaths: string[];
+  constructor(...directoryGlobPatterns: string[]) {
+    for (const directoryGlobPattern of directoryGlobPatterns) {
+      this.#directoryPaths.push(...globSync(directoryGlobPattern));
+    }
+  }
+  #posts?: Markdown[] = null;
+  async postsAsync(order: PostOrder = 'desc'): Promise<Markdown[]> {
+    if (!this.#posts || ) {
+      this.#posts = [];
+      for (const docDirPath of this.#directoryPaths) {
+        for await (const filePath of await listFilePathsRec(docDirPath)) {
+          if (path.extname(filePath) !== ".md") {
+            continue;
+          }
+          const md = new Markdown(filePath);
+          if (!md.public) {
+            continue;
+          }
+          this.#posts.push(md);
+        }
+      }
+    }
+    return this.#posts.sort((a, b) => {
+      if (order === 'asc') {
+        return (a.createdAt > b.createdAt) ? 1 : -1;
+      } else {
+        return (a.createdAt < b.createdAt) ? 1 : -1;
+      }
+    });
+  }
+  async postsMapAsync(): Promise<Map<string, Markdown>> {
+    const posts = await this.postsAsync();
+    const map = new Map<string, Markdown>();
+    for (const post of posts) {
+      map.set(post.id, post);
+    }
+    return map;
+  }
+};

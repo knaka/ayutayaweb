@@ -1,5 +1,5 @@
 ---
-import { createMarkdownFromGlobPattern, getPosts } from '#src/posts';
+import { createMarkdownFromGlobPattern, postsAsync } from '#src/posts';
 import styles from './styles.module.scss';
 
 export async function getStaticPaths(): Promise<{ params: { id: string } }[]> {
@@ -10,7 +10,7 @@ export async function getStaticPaths(): Promise<{ params: { id: string } }[]> {
     '/Users/knaka/doc/2019',
     '/Users/knaka/doc/202*',
   ]);
-  const posts = await getPosts(...dirPaths);
+  const posts = await postsAsync(...dirPaths);
   console.log('d4d47d9', posts.length);
   return (posts).map((post) => ({
     params: {
