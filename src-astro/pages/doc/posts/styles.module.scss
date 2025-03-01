@@ -36,3 +36,27 @@ ul {
     font-size: 0.8em;
   }
 }
+
+.body {
+  p {
+    margin-bottom: 1.5em; // Add more space between paragraphs
+  }
+  pre {
+    background-color: black; // Set background to black
+    color: white; // Set text color to white
+    border-radius: 6px; // Round the corners
+    padding: 2px 4px; // Add some padding
+  }
+  code {
+    font-family:
+      Menlo,
+      Monaco,
+      Lucida Console,
+      Liberation Mono,
+      DejaVu Sans Mono,
+      Bitstream Vera Sans Mono,
+      Courier New,
+      monospace;
+    line-height: 1.6; // Increase line spacing within code blocks
+  }
+}

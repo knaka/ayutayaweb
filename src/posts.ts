@@ -1,4 +1,5 @@
 import { readFileSync, Dirent, promises as fs } from "node:fs";
+import { globSync } from 'glob';
 import { parse } from 'marked';
 // import * as fs from 'node:fs';
 import * as path from 'node:path';
@@ -122,13 +123,16 @@ export class Markdown {
     this.title = attrs.title || attrs.Title || attrs.TITLE;
     this.idOriginal = attrs.id || attrs.Id || attrs.ID;
     if (
-      attrs.private == undefined && attrs.Private == undefined && attrs.PRIVATE == undefined &&
-      attrs.public == undefined && attrs.Public == undefined && attrs.PUBLIC == undefined
+      attrs.public === true ||
+      attrs.Public === true ||
+      attrs.PUBLIC === true
     ) {
-      this.public = false;
-    } else if (attrs.public || attrs.Public || attrs.PUBLIC) {
       this.public = true;
-    } else if (!attrs.private || !attrs.Private || !attrs.PRIVATE) {
+    } else if (
+      attrs.private === false ||
+      attrs.Private === false ||
+      attrs.PRIVATE === false
+    ) {
       this.public = true;
     }
     if (this.idOriginal) {
@@ -159,4 +163,13 @@ export class Markdown {
   bodyHtml() {
     return parse(this.body());
   };
+}
+
+export async function createMarkdownFromGlobPattern(globPattern: string, zone?: string): Promise<Markdown> {
+  const filePaths = globSync(globPattern);
+  if (filePaths.length === 0) {
+    throw new Error(`No file found for ${globPattern}`);
+  }
+  const filePath: string = filePaths[0] as string;
+  return new Markdown(filePath, zone);
 }

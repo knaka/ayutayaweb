@@ -1,53 +1,56 @@
 ---
-import RootLayout from '@src_astro/layouts/RootLayout.astro';
-import { readFileSync } from "fs";
-import { marked } from "marked";
-import { hello } from '@src_astro/lib/data'
+import { createMarkdownFromGlobPattern, getPosts } from '#src/posts';
+import styles from './styles.module.scss';
 
-interface Post {
-  id: string;
-  title: string;
+export async function getStaticPaths(): Promise<{ params: { id: string } }[]> {
+  const dirPaths = globSync([
+    '/Users/knaka/doc/2016',
+    '/Users/knaka/doc/2017',
+    '/Users/knaka/doc/2018',
+    '/Users/knaka/doc/2019',
+    '/Users/knaka/doc/202*',
+  ]);
+  const posts = await getPosts(...dirPaths);
+  console.log('d4d47d9', posts.length);
+  return (posts).map((post) => ({
+    params: {
+      id: post.id,
+    },
+  }));
 }
 
-export function getStaticPaths() {
-  return [
-    // {
-    //   params: {
-    //     id: "706ce3e",
-    //   },
-    //   // props: {
-    //   //   title: "Hello",
-    //   //   body: "Hey, Hello!",
-    //   // },
-    // },
-    // {
-    //   params: {
-    //     id: "b5291ad",
-    //   },
-    //   // props: {
-    //   //   title: "World",
-    //   //   body: "It's a small world after all!",
-    //   // },
-    // },
-    {
-      params: {
-        id: "0100.md",
-      },
-    }
-  ];
-}
+// import { createMarkdownFromGlobPattern } from '#src/posts';
+import Page from '#src_astro/layouts/Page.astro';
+import {   } from "fs";
+import { globSync } from 'glob';
 
 const { id } = Astro.params;
-const title = `Title for ${id}`;
-const body = `Body for ${id}`;
+// const title = `Title for ${id}`;
+// const body = `Body for ${id}`;
 
-const markdown = readFileSync(`/Users/knaka/doc/2025/${Astro.params.id}`, "utf-8");
-const html = marked(markdown);
-
+const post = await createMarkdownFromGlobPattern(`/Users/knaka/doc/*/*${id}*.md`);
+const title = post.title;
+const body = await post.bodyHtml()
 ---
-<RootLayout title={title}>
-<h1>181be01 {title}</h1>
-<div>Message: {id}, {title}, {body}!</div>
-<p>and {hello}</p>
-<div set:html={html}></div>
-</RootLayout>
+<Page title={title}>
+  <article slot="main">
+    <h1>{title}</h1>
+    <section>
+      <h2>Tags</h2>
+      <ul>
+        {post.tags.map((tag) => (
+          <li>{tag}</li>
+        ))}
+      </ul>
+    </section>
+    <section>
+      <h2>Published on <time datetime={post.createdAt.toISODate()}>{post.createdAt.toISODate()}</time></h2>
+    </section>
+    <section>
+      <div class={styles.body} set:html={body} />
+    </section>
+  </article>
+  <div slot="sidebar">
+    <p>Sidebar content goes here.</p>
+  </div>
+</Page>

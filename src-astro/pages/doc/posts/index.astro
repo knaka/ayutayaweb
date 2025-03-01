@@ -1,15 +1,21 @@
 ---
-import Page from '@src_astro/layouts/Page.astro';
-import { getPosts } from '@src_astro/lib/posts.js';
+import Page from '#src_astro/layouts/Page.astro';
+import { getPosts } from '#src/posts';
 import styles from './styles.module.scss';
 
-const posts = await getPosts('/Users/knaka/doc/2021');
+// isaacs/node-glob: glob functionality for node.js https://github.com/isaacs/node-glob
+import { globSync } from 'glob';
+
+const dirPaths = globSync([
+  '/Users/knaka/doc/2016',
+  '/Users/knaka/doc/2017',
+  '/Users/knaka/doc/2018',
+  '/Users/knaka/doc/2019',
+  '/Users/knaka/doc/202*',
+]);
+const posts = (await getPosts(...dirPaths)).sort((a, b) => b.createdAt > a.createdAt ? 1 : -1);
 ---
 <Page title="Posts">
-<!-- <div slot="left_sidebar">
-  <!-- Add any left sidebar content here -->
-  <p>Left sidebar content goes here.</p>
-</div> -->
 <ul slot="main">
   {posts.map((post) => (
     <li class={styles.item_list}>

@@ -8,11 +8,13 @@
     "jsx": "react-jsx",
     "types": [
       // "bun-types"
+      "astro/types",
     ],
-    "baseUrl": "./src-astro",
+    "baseUrl": ".",
     "paths": {
-      "@src_astro/*": ["./*"],
-      "@src_pages/*": ["../src-pages/*"],
+      "#src/*": ["./src/*"],
+      "#src_astro/*": ["./src-astro/*"],
+      "#src_pages/*": ["./src-pages/*"],
     }
   },
 }
