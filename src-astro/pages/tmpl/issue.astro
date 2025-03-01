@@ -1,15 +1,11 @@
 ---
-import RootLayout from '@src_astro/layouts/RootLayout.astro';
+import Root from '@src_astro/layouts/Root.astro';
 import IssueComponent from '@src_astro/components/IssueComponent'
-import styles from '../../styles.module.scss'
-
-const theColor3 = 'red';
-const theColor2 = 'green';
 ---
-<RootLayout title="Issue Template Page">
+<Root title="Issue Template Page">
 <h1 class=hoge2>My header</h1>
-<span class={styles.bar}>
+<span>
   <h1>hoge</h1>
   <IssueComponent client:load />
 </span>
-</RootLayout>
+</Root>

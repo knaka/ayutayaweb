@@ -1,8 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import styled from "styled-components";
-import styles from '../styles.module.scss'
 
 type Issue = {
   id: number;
@@ -49,7 +47,7 @@ export default (props: IssueComponentProps) => {
   }, []);
   return (
     <>
-      <div className={styles.baz}>
+      <div>
       {issue !== null ? (
         <h1>Issue Page for issue with ID: {issue.id}, Name (d0ba5e8): {issue.username}, Message: {message}</h1>
       ) : (
