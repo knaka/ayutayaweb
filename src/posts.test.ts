@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest'
-import { iteratePosts, Markdown } from './posts.js'
+import { Markdown } from './posts.js'
 import { extractDateFromPath } from './posts.js';
 
 // isaacs/node-glob: glob functionality for node.js https://github.com/isaacs/node-glob
@@ -30,8 +30,7 @@ describe("Markdown", () => {
 
   test('Private markdown', async () => {
     const md = new Markdown('/Users/knaka/doc/2015/0311qiita-a4cd14b-Vagrantでupされた環境の情報はどこに保存される？.md');
-    // const md = new Markdown('/Users/knaka/doc/2021/0908qiita-2f94507-Goで、デバッガのattachまで実行を待機させる.md');
-    expect(md.public).toBe(true);
+    expect(md.public).toBe(false);
   });
 
   test('Markdown without public or private', async () => {

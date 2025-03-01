@@ -9,7 +9,7 @@ import { DateTime } from 'luxon';
 import fmCjs from 'front-matter';
 const fm = fmCjs as unknown as typeof fmCjs.default;
 
-let latest: Date? = null;
+let latest: Date = null;
 
 async function listFilePathsRec(dir: string): Promise<string[]> {
   const paths: string[] = [];
@@ -86,7 +86,7 @@ export class Markdown {
   title?: string;
   idOriginal?: string;
   id?: string;
-  public: boolean;
+  public: boolean = false;
   createdAt: DateTime;
   modifiedAt: DateTime;
   tags: string[];
@@ -163,7 +163,7 @@ export class PostStore {
   }
   #posts?: Markdown[] = null;
   async postsAsync(order: PostOrder = 'desc'): Promise<Markdown[]> {
-    if (!this.#posts || ) {
+    if (!this.#posts) {
       this.#posts = [];
       for (const docDirPath of this.#directoryPaths) {
         for await (const filePath of await listFilePathsRec(docDirPath)) {
