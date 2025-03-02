@@ -92,23 +92,13 @@ export class Markdown {
   tags: string[];
   constructor(filePath?: string, zone?: string) {
     this.filePath = filePath;
-    // Set the modification time of the file.
     this.modifiedAt = DateTime.fromJSDate(statSync(filePath).mtime);
     const content = readFileSync(filePath, 'utf-8');
-    // const fmResultX = fm<Attributes>(content);
-    // const tryParseFrontMatter = <T>(content: string): FrontMatterResult<T> | null => {
-    //   try {
-    //     return fm<T>(content);
-    //   } catch (e) {
-    //     console.error("FrontMatter の解析に失敗しました:", e);
-    //     return null;
-    //   }
-    // };
-    const fmResult = ((): fmCjs.FrontMatterResult<Attributes> => {
+    const fmResult = (() => {
       try {
         return fm<Attributes>(content);
       } catch (e) {
-        console.error(`Failed to parsese ${filePath}`, e);
+        console.error(`Failed to parse ${filePath}`, e);
       }
     })();
     const attrs = fmResult.attributes;
