@@ -95,7 +95,22 @@ export class Markdown {
     // Set the modification time of the file.
     this.modifiedAt = DateTime.fromJSDate(statSync(filePath).mtime);
     const content = readFileSync(filePath, 'utf-8');
-    const fmResult = fm<Attributes>(content);
+    // const fmResultX = fm<Attributes>(content);
+    // const tryParseFrontMatter = <T>(content: string): FrontMatterResult<T> | null => {
+    //   try {
+    //     return fm<T>(content);
+    //   } catch (e) {
+    //     console.error("FrontMatter の解析に失敗しました:", e);
+    //     return null;
+    //   }
+    // };
+    const fmResult = ((): fmCjs.FrontMatterResult<Attributes> => {
+      try {
+        return fm<Attributes>(content);
+      } catch (e) {
+        console.error(`Failed to parsese ${filePath}`, e);
+      }
+    })();
     const attrs = fmResult.attributes;
     this.title = attrs.title || attrs.Title || attrs.TITLE;
     this.idOriginal = attrs.id || attrs.Id || attrs.ID;
@@ -142,6 +157,9 @@ export class Markdown {
   };
 }
 
+/**
+ * @deprecated This function is deprecated and will be removed in future versions.
+ */
 export async function createMarkdownFromGlobPattern(globPattern: string, zone?: string): Promise<Markdown> {
   const filePaths = globSync(globPattern);
   if (filePaths.length === 0) {
@@ -154,8 +172,8 @@ export async function createMarkdownFromGlobPattern(globPattern: string, zone?: 
 // order := asc | desc
 export type PostOrder = 'asc' | 'desc';
 
-export class PostStore {
-  #directoryPaths: string[];
+export class Store {
+  #directoryPaths: string[] = [];
   constructor(...directoryGlobPatterns: string[]) {
     for (const directoryGlobPattern of directoryGlobPatterns) {
       this.#directoryPaths.push(...globSync(directoryGlobPattern));
@@ -186,12 +204,34 @@ export class PostStore {
       }
     });
   }
+  #postsMap?: Map<string, Markdown> = null;
   async postsMapAsync(): Promise<Map<string, Markdown>> {
-    const posts = await this.postsAsync();
-    const map = new Map<string, Markdown>();
-    for (const post of posts) {
-      map.set(post.id, post);
+    if (!this.#postsMap) {
+      this.#postsMap = new Map<string, Markdown>();
+      const posts = await this.postsAsync();
+      for (const post of posts) {
+        this.#postsMap.set(post.id, post);
+      }
     }
-    return map;
+    return this.#postsMap;
+  }
+  async postAsync(id: string): Promise<Markdown> {
+    const postsMap = await this.postsMapAsync();
+    return postsMap.get(id);
   }
 };
+
+let store: Store = null;
+
+export function obtainStore(directoryGlobPatterns: string[] = []): Store {
+  if (!store) {
+    if (directoryGlobPatterns.length === 0) {
+      const patterns = import.meta.env.VITE_DOC_DIR_GLOB_PATTERNS as string;
+      if (patterns) {
+        directoryGlobPatterns = patterns.split('|');
+      }
+    }
+    store = new Store(...directoryGlobPatterns);
+  }
+  return store;
+}

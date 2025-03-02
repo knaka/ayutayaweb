@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest'
-import { Markdown } from './posts.js'
+import { Markdown, obtainStore } from './posts.js'
 import { extractDateFromPath } from './posts.js';
 
 // isaacs/node-glob: glob functionality for node.js https://github.com/isaacs/node-glob
@@ -40,6 +40,22 @@ describe("Markdown", () => {
 });
 
 describe("Post store", () => {
-  test('Can list posts', async () => {
+  test('Can obtain', async () => {
+    const store = obtainStore()
+    const posts = await store.postsAsync();
+    expect(posts.length).greaterThanOrEqual(39);
+  });
+
+  test('Can obtain2', async () => {
+    const store = obtainStore()
+    // const posts = await store.postsAsync();
+    const postsMap = await store.postsMapAsync();
+    expect(postsMap.size).greaterThanOrEqual(39);
+    const post = postsMap.get('48e1799');
+    expect(post.id).toBe('48e1799');
+    expect(post.title).toBe('Mac OS X の NFD 問題での対策諸々');
+    expect(post.public).toBeTruthy();
+    const post2 = await store.postAsync('48e1799');
+    expect(post2.id).toBe('48e1799');
   });
 });
