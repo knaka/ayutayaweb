@@ -10,6 +10,7 @@ const common = {
     strict: true,
   },
   integrations: [react()],
+  // base: "/foo",
 };
 
 // https://astro.build/config

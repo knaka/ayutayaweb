@@ -94,7 +94,7 @@ const highlighter = await createHighlighter({
   // In this case, we include the "js" language specifier to ensure that
   // Shiki applies the appropriate syntax highlighting for Markdown code
   // blocks.
-  langs: ['md', 'js', 'go'],
+  langs: ['md', 'js', 'go', 'sh', 'bash'],
   themes: ['github-dark-dimmed']
 })
 
@@ -238,9 +238,9 @@ export class Store {
     }
     return this.#posts.sort((a, b) => {
       if (order === 'asc') {
-        return (a.createdAt > b.createdAt) ? 1 : -1;
+        return (a.createdAt > b.createdAt) ? 1 : (a.id > b.id) ? 1 : -1;
       } else {
-        return (a.createdAt < b.createdAt) ? 1 : -1;
+        return (a.createdAt < b.createdAt) ? 1 : (a.id < b.id) ? 1 : -1;
       }
     });
   }
