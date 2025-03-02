@@ -1,36 +1,38 @@
 ---
-import { createMarkdownFromGlobPattern, postsAsync } from '#src/posts';
-import styles from './styles.module.scss';
+import { obtainStore } from '#src/posts';
+import styles from './_styles.module.scss';
+import { InferGetStaticPropsType } from 'astro';
+import Page from '#src_astro/layouts/Page.astro';
 
-export async function getStaticPaths(): Promise<{ params: { id: string } }[]> {
-  const dirPaths = globSync([
-    '/Users/knaka/doc/2016',
-    '/Users/knaka/doc/2017',
-    '/Users/knaka/doc/2018',
-    '/Users/knaka/doc/2019',
-    '/Users/knaka/doc/202*',
-  ]);
-  const posts = await postsAsync(...dirPaths);
-  console.log('d4d47d9', posts.length);
+export async function getStaticPaths() {
+  const store = obtainStore()
+
+  const posts = await store.postsAsync();
   return (posts).map((post) => ({
     params: {
       id: post.id,
     },
+    props: {
+      post,
+    },
   }));
 }
 
-// import { createMarkdownFromGlobPattern } from '#src/posts';
-import Page from '#src_astro/layouts/Page.astro';
-import {   } from "fs";
-import { globSync } from 'glob';
-
-const { id } = Astro.params;
-// const title = `Title for ${id}`;
-// const body = `Body for ${id}`;
-
-const post = await createMarkdownFromGlobPattern(`/Users/knaka/doc/*/*${id}*.md`);
+const { post } = Astro.props as InferGetStaticPropsType<typeof getStaticPaths>;
 const title = post.title;
 const body = await post.bodyHtml()
+
+
+// <section>
+//       <button id="back">Back</button>
+//       <!-- <a href="" id="back">Back</a>  -->
+//       <script>
+//         document.getElementById('back').addEventListener('click', () => {
+//           window.history.length > 1 ? history.back() : location.href = '/doc/posts'
+//         })
+//       </script>
+//     </section>
+
 ---
 <Page title={title}>
   <article slot="main">

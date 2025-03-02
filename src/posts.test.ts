@@ -24,7 +24,7 @@ describe("Markdown", () => {
     expect(md.id).toBe('b18134d');
     expect(md.idOriginal).toBe('b18134d9d11b51da4e2e');
     expect(md.createdAt.toISO()).toBe('2015-10-19T00:00:00.000+09:00');
-    expect(md.bodyHtml()).toContain('<p>その過程で目にした');
+    expect(await md.bodyHtml()).toContain('<p>その過程で目にした');
     expect(md.public).toBe(true);
   });
 

@@ -20,6 +20,7 @@
     "hono": "^4.6.11",
     "luxon": "^3.5.0",
     "marked": "^15.0.7",
+    "marked-shiki": "^1.2.0",
     "sass-embedded": "^1.85.1",
     "styled-components": "^6.1.15",
     "typescript": "^5.7.2",

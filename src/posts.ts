@@ -1,9 +1,18 @@
 import { readFileSync, promises as fs, statSync } from "node:fs";
 import { globSync } from 'glob';
-import { parse } from 'marked';
+import { Marked, parse } from 'marked';
+import markedShiki from 'marked-shiki'
+import { createHighlighter } from 'shiki';
 // import * as fs from 'node:fs';
 import * as path from 'node:path';
 import { DateTime } from 'luxon';
+import { getSingletonHighlighter } from "shiki";
+
+// setOptions({
+//   highlight: (code, lang) => {
+//     return highlighter.codeToHtml(code, { lang });
+//   },
+// });
 
 // This is a workaround to use front-matter in ESM
 import fmCjs from 'front-matter';
@@ -81,6 +90,16 @@ export function extractDateFromPath(filePath: string): string | null {
   return `${year}-${month}-${day}`;
 }
 
+const highlighter = await createHighlighter({
+  // In this case, we include the "js" language specifier to ensure that
+  // Shiki applies the appropriate syntax highlighting for Markdown code
+  // blocks.
+  langs: ['md', 'js', 'go'],
+  themes: ['github-dark-dimmed']
+})
+
+const loadedLanguages = new Set(highlighter.getLoadedLanguages());
+
 export class Markdown {
   filePath: string;
   title?: string;
@@ -142,8 +161,39 @@ export class Markdown {
     const fmResult = fm(content);
     return fmResult.body;
   }
-  bodyHtml() {
-    return parse(this.body());
+  async bodyHtml(): Promise<string> {
+    // const highlighter = await getSingletonHighlighter({})
+    // return parse(this.body(), {
+    //   async: true,
+    //   // highlight: (code, lang, callback) {
+    //   //   return highlighter.codeToHtml(code, { lang })
+    //   // }
+    // });
+    return await new Marked()
+      .use(markedShiki({
+        highlight(code, lang, props) {
+          let filename = '';
+          if (!lang) {
+            lang = 'plaintext';
+          } else {
+            const divs = lang.split(':', 2);
+            if (divs.length == 2) {
+              lang = divs[0];
+              filename = divs[1];
+            }
+            if(!loadedLanguages.has(lang)) {
+              lang = 'plaintext';
+            }
+          }
+          return highlighter.codeToHtml(code, {
+            lang,
+            theme: 'github-dark-dimmed',
+            meta: { __raw: props.join(' ') }, // required by `transformerMeta*`
+            transformers: []
+          })
+        }
+      }))
+      .parse(this.body());
   };
 }
 
