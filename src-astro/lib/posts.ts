@@ -1,7 +1,7 @@
 import { GetStaticPathsResult } from 'astro';
 import { obtainStore, Markdown, Order } from '#src/posts.js';
 
-export async function getStaticPathsSub(orders: Order[]): Promise<GetStaticPathsResult> {
+export async function getPostStaticPaths(orders: Order[]): Promise<GetStaticPathsResult> {
   const store = obtainStore()
   const result: GetStaticPathsResult = [];
   for (const order of orders as Order[]) {

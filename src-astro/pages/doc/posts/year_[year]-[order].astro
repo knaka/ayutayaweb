@@ -1,10 +1,10 @@
 ---
 import Index from './index.astro';
 import { Markdown, Order } from '#src/posts';
-import { getStaticPathsSub } from './lib';
+import { getPostStaticPaths } from '#src_astro/lib/posts';
 
 export async function getStaticPaths() {
-  return await getStaticPathsSub(['asc', 'desc']);
+  return await getPostStaticPaths(['asc', 'desc']);
 }
 
 const { year, order } = Astro.params as { year: string, order: Order};
