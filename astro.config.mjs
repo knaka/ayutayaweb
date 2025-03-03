@@ -13,10 +13,24 @@ const common = {
   // base: "/foo",
 };
 
+const viteCommon = {
+  css: {
+    preprocessorOptions: {
+      scss: {
+        api: 'modern',
+      },
+      sass: {
+        api: 'modern',
+      },
+    }
+  }
+};
+
 // https://astro.build/config
 export default defineConfig((process.env.NODE_ENV === "development")? {
   ...common,
   vite: {
+    ...viteCommon,
     server: {
       proxy: {
         "/api": {
@@ -33,6 +47,9 @@ export default defineConfig((process.env.NODE_ENV === "development")? {
   }
 }: {
   ...common,
+  vite: {
+    ...viteCommon,
+  },
   outDir: "./dist",
   experimental:{
     contentCollectionCache: true,

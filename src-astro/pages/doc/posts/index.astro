@@ -25,7 +25,14 @@ const baseAbsPath = path.join(import.meta.env.BASE_URL, ...divs.slice(divs.lastI
       <li class={styles.item_list}>
         <time datetime={post.createdAt.toISO()}>{post.createdAt.toISODate()}</time>
         <a href={`${baseAbsPath}/${post.id}`}>{post.title}</a>
-        <div class={styles.tags}>Tags: {post.tags.join(' | ')}</div>
+        <div class={styles.tags}>
+          <span class={styles.tags_label}>Tags:</span>
+          <ul class={styles.tag_list}>
+            {post.tags.map((tag) => (
+              <li class={styles.tag_item}>{tag}</li>
+            ))}
+          </ul>
+        </div>
       </li>
     ))}
   </ul>

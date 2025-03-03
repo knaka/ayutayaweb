@@ -209,8 +209,7 @@ export async function createMarkdownFromGlobPattern(globPattern: string, zone?: 
   return new Markdown(filePath, zone);
 }
 
-// order := asc | desc
-export type PostOrder = 'asc' | 'desc';
+export type Order = 'asc' | 'desc';
 
 export class Store {
   #directoryPaths: string[] = [];
@@ -220,7 +219,13 @@ export class Store {
     }
   }
   #posts?: Markdown[] = null;
-  async postsAsync(order: PostOrder = 'desc'): Promise<Markdown[]> {
+  async postsAsync({
+    order = 'desc',
+    year,
+  }: {
+    order?: Order,
+    year?: number,
+  } = {}): Promise<Markdown[]> {
     if (!this.#posts) {
       this.#posts = [];
       for (const docDirPath of this.#directoryPaths) {
@@ -236,13 +241,17 @@ export class Store {
         }
       }
     }
-    return this.#posts.sort((a, b) => {
+    const posts =
+      (year)? this.#posts.filter(post => post.createdAt.year === year):
+      [...this.#posts];
+    posts.sort((a, b) => {
       if (order === 'asc') {
         return (a.createdAt > b.createdAt) ? 1 : (a.createdAt < b.createdAt) ? -1 : (a.id > b.id) ? 1 : -1;
       } else {
         return (a.createdAt < b.createdAt) ? 1 : (a.createdAt > b.createdAt) ? -1 : (a.id > b.id) ? 1 : -1;
       }
     });
+    return posts;
   }
   #postsMap?: Map<string, Markdown> = null;
   async postsMapAsync(): Promise<Map<string, Markdown>> {

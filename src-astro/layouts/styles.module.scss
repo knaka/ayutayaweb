@@ -1,4 +1,4 @@
-@import '../styles.module.scss';
+@use '../styles.module.scss' as *;
 
 .root {
   font-family: system-ui, sans-serif;

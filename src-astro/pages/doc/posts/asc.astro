@@ -2,6 +2,6 @@
 import Index from './index.astro';
 import { obtainStore } from '#src/posts';
 
-const posts = await obtainStore().postsAsync('asc');
+const posts = await obtainStore().postsAsync({ order: 'asc' });
 ---
 <Index title="Posts in asc" posts={posts} />

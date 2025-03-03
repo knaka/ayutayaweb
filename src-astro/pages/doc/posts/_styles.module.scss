@@ -36,6 +36,24 @@ ul {
 
   .tags {
     font-size: 0.8em;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .tags_label {
+    margin-right: 5px;
+  }
+
+  .tag_list {
+    padding: 0;
+  }
+
+  .tag_item {
+    display: inline-block;
+    &:not(:first-child)::before {
+      content: ', ';
+    }
   }
 }
 
