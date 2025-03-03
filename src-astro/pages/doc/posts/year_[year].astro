@@ -1,7 +1,7 @@
 ---
 import Index from './index.astro';
 import { Markdown } from '#src/posts';
-import { getStaticPathsSub } from './_lib';
+import { getStaticPathsSub } from './lib';
 
 export async function getStaticPaths() {
   return await getStaticPathsSub(['desc']);
