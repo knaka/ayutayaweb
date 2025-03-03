@@ -238,9 +238,9 @@ export class Store {
     }
     return this.#posts.sort((a, b) => {
       if (order === 'asc') {
-        return (a.createdAt > b.createdAt) ? 1 : (a.id > b.id) ? 1 : -1;
+        return (a.createdAt > b.createdAt) ? 1 : (a.createdAt < b.createdAt) ? -1 : (a.id > b.id) ? 1 : -1;
       } else {
-        return (a.createdAt < b.createdAt) ? 1 : (a.id < b.id) ? 1 : -1;
+        return (a.createdAt < b.createdAt) ? 1 : (a.createdAt > b.createdAt) ? -1 : (a.id > b.id) ? 1 : -1;
       }
     });
   }

@@ -3,14 +3,13 @@ import Page from '#src_astro/layouts/Page.astro';
 import { obtainStore, Markdown } from '#src/posts';
 import styles from './_styles.module.scss';
 
-let { title, posts } = Astro.props as {
+let {
+  title = 'Posts',
+  posts,
+} = Astro.props as {
   title?: string,
   posts?: Markdown[],
 };
-
-if (!title) {
-  title = 'Posts';
-}
 
 if (!posts) {
   posts = await obtainStore().postsAsync();
