@@ -23,7 +23,7 @@
     "marked-shiki": "^1.2.0",
     "sass-embedded": "^1.85.1",
     "styled-components": "^6.1.15",
-    "typescript": "^5.7.2",
+    "typescript": "^5.8.2",
     "vite-tsconfig-paths": "^5.1.4",
     "vitest": "^3.0.7",
     "wrangler": "^3.91.0"
