@@ -1,0 +1,38 @@
+---
+import Page from '#src_astro/layouts/Page.astro';
+import { Markdown } from '#src/posts';
+import styles from '#src_astro/styles/posts.module.scss';
+
+const {
+  title,
+  posts,
+} = Astro.props as {
+  title: string,
+  posts: Markdown[],
+};
+
+import * as path from 'node:path';
+const divs = import.meta.dirname.split(/[\/\\]/);
+const baseAbsPath = path.join(import.meta.env.BASE_URL, ...divs.slice(divs.lastIndexOf('pages') + 1));
+---
+<Page title={title}>
+  <ul slot="main">
+    {posts.map((post) => (
+      <li class={styles.item_list}>
+        <time datetime={post.createdAt.toISO()}>{post.createdAt.toISODate()}</time>
+        <a href={`${baseAbsPath}/${post.id}`}>{post.title}</a>
+        <div class={styles.tags}>
+          <span class={styles.tags_label}>Tags:</span>
+          <ul class={styles.tag_list}>
+            {post.tags.map((tag) => (
+              <li class={styles.tag_item}>{tag}</li>
+            ))}
+          </ul>
+        </div>
+      </li>
+    ))}
+  </ul>
+  <div slot="sidebar">
+    <p>Sidebar content goes here.</p>
+  </div>
+</Page>
