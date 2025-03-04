@@ -12,14 +12,15 @@ const baseAbsPath = path.join(import.meta.env.BASE_URL, ...divs.slice(divs.lastI
 <div class={styles.page_navigator}>
   <ul class={styles.page_links}>
     {[...Array(page.lastPage)].map((_, i) => i + 1).flatMap(p => {
+      const fn = () => [((page.currentPage === p)? <li>{p}</li>: <li><a href={(p === 1)? page.url.first :`${baseAbsPath}/${p}`}>{p}</a></li>)]
       if (p === 1 || p === page.lastPage) {
-        return [((page.currentPage === p)? <li>{p}</li>: <li><a href={`${baseAbsPath}/p${p}`}>{p}</a></li>)]
+        return fn() 
       }
       if (Math.abs(p - page.currentPage) === PAGE_LINKS_RANGE) {
         return [<li>...</li>]
       }
       if (Math.abs(p - page.currentPage) < PAGE_LINKS_RANGE) {
-        return [((page.currentPage === p)? <li>{p}</li>: <li><a href={`${baseAbsPath}/p${p}`}>{p}</a></li>)]
+        return fn()
       }
       return []
     })}

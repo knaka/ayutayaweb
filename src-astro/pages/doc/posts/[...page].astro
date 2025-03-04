@@ -3,6 +3,7 @@ import Page from '#src_astro/layouts/Page.astro';
 import PostList from './_PostList.astro';
 import { obtainStore } from '#src/posts';
 import { PaginateFunction } from 'astro';
+import { getPostStaticPathsPaginate } from '#src_astro/lib/posts';
 
 export async function getStaticPaths({ paginate }: { paginate: PaginateFunction }) {
   const posts = await obtainStore().postsAsync({ order: 'desc' });
