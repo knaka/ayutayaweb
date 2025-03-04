@@ -11,7 +11,7 @@ const {
   page: Page | null,
 };
 
-const PAGE_LINKS_RANGE = 4;
+const PAGE_LINKS_RANGE = 3;
 
 import * as path from 'node:path';
 const divs = import.meta.dirname.split(/[\/\\]/);
@@ -19,11 +19,12 @@ const baseAbsPath = path.join(import.meta.env.BASE_URL, ...divs.slice(divs.lastI
 ---
 <div>
   {page && (
-    <p>Page {page.currentPage} of {page.lastPage} ({page.total} items)</p>
-    <p>item {page.start} ～ {page.end}</p>
     <div class={styles.page_navigator}>
       <ul class={styles.page_links}>
         {[...Array(page.lastPage)].map((_, i) => i + 1).flatMap(p => {
+          if (p === 1 || p === page.lastPage) {
+            return [((page.currentPage === p)? <li>{p}</li>: <li><a href={`${baseAbsPath}/p${p}`}>{p}</a></li>)]
+          }
           if (Math.abs(p - page.currentPage) === PAGE_LINKS_RANGE) {
             return [<li>...</li>]
           }

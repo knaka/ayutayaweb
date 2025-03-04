@@ -1,5 +1,6 @@
 ---
-import PostIndex from '../_PostIndex.astro';
+import Page from '#src_astro/layouts/Page.astro';
+import PostList from '../_PostList.astro';
 import { Markdown, Order } from '#src/posts';
 import { getPostStaticPaths } from '#src_astro/lib/posts';
 
@@ -10,4 +11,9 @@ export async function getStaticPaths() {
 const { year } = Astro.params as { year: string, order: Order};
 const posts = Astro.props.posts as Markdown[];
 --- 
-<PostIndex title=`Posts in ${year}, in descending order` posts={posts} />
+<Page title=`Posts in ${year}, in descending order`>
+  <PostList slot="main" posts={posts} />
+  <div slot="sidebar">
+    <p>Sidebar content goes here.</p>
+  </div>
+</Page>
