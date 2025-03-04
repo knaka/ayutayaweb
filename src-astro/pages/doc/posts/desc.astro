@@ -1,8 +1,0 @@
----
-import PostIndex from '#src_astro/pages/doc/posts/_Index.astro';
-import { obtainStore } from '#src/posts';
-
-const title = 'Posts';
-const posts = await obtainStore().postsAsync();
----
-<PostIndex title={title} posts={posts} />

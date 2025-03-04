@@ -1,1 +1,13 @@
-desc.astro
+---
+import PostIndex from '../_PostIndex.astro';
+import { Markdown, Order } from '#src/posts';
+import { getPostStaticPaths } from '#src_astro/lib/posts';
+
+export async function getStaticPaths() {
+  return await getPostStaticPaths(['desc']);
+}
+
+const { year } = Astro.params as { year: string, order: Order};
+const posts = Astro.props.posts as Markdown[];
+--- 
+<PostIndex title=`Posts in ${year}, in descending order` posts={posts} />
