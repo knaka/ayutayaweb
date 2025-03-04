@@ -1,9 +1,9 @@
 ---
 import styles from './_styles.module.scss';
 import { Page } from 'astro';
-import { dirname, join } from 'node:path';
+import * as path from 'node:path';
 
-const baseAbsPath = join(import.meta.env.BASE_URL || "", dirname((await Astro.glob('./*.astro'))[0].file).replace(/.*\/pages\//, ''));
+const baseAbsPath = path.join(import.meta.env.BASE_URL || "/", ...path.dirname((await Astro.glob('./*.astro'))[0].file).split('/').reduceRight((acc, curr) => (acc.length && acc[0] === 'pages')? acc: [curr, ...acc], []).slice(1));
 const PAGE_LINKS_RANGE = 2;
 const { page } = Astro.props as { page: Page };
 ---
