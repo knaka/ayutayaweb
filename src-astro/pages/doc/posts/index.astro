@@ -1,8 +1,13 @@
 ---
-import PostIndex from '#src_astro/pages/doc/posts/_PostIndex.astro';
+import Page from '#src_astro/layouts/Page.astro';
+import PostList from '#src_astro/pages/doc/posts/_PostList.astro';
 import { obtainStore } from '#src/posts';
 
-const title = 'Posts';
 const posts = await obtainStore().postsAsync();
 ---
-<PostIndex title={title} posts={posts} />
+<Page title='Posts'>
+  <PostList slot='main' posts={posts} />
+  <div slot="sidebar">
+    <p>Sidebar content goes here.</p>
+  </div>
+</Page>

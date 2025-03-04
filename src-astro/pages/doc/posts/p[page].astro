@@ -1,0 +1,21 @@
+---
+import { obtainStore } from '#src/posts';
+import Page from '#src_astro/layouts/Page.astro';
+import PostList from './_PostList.astro';
+import { PaginateFunction } from 'astro';
+
+export async function getStaticPaths({ paginate }: { paginate: PaginateFunction }) {
+  const posts = await obtainStore().postsAsync({ order: 'desc' });
+  return paginate(posts, { pageSize: 5 });
+}
+
+const { page } = Astro.props;
+---
+<Page title={`Posts (Page ${page.currentPage} of ${page.lastPage})`}>
+  <div slot="main">
+    <PostList posts={page.data} page={page} />
+  </div>
+  <div slot="sidebar">
+    <p>Sidebar content goes here.</p>
+  </div>
+</Page>

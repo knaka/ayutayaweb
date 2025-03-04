@@ -1,0 +1,60 @@
+---
+import { Markdown } from '#src/posts';
+import styles from '#src_astro/styles/posts.module.scss';
+import { Page } from 'astro';
+
+const {
+  posts,
+  page = null,
+} = Astro.props as {
+  posts: Markdown[],
+  page: Page | null,
+};
+
+const PAGE_LINKS_RANGE = 4;
+
+import * as path from 'node:path';
+const divs = import.meta.dirname.split(/[\/\\]/);
+const baseAbsPath = path.join(import.meta.env.BASE_URL, ...divs.slice(divs.lastIndexOf('pages') + 1));
+---
+<div>
+  {page && (
+    <p>Page {page.currentPage} of {page.lastPage} ({page.total} items)</p>
+    <p>item {page.start} ～ {page.end}</p>
+    <div class={styles.page_navigator}>
+      <ul class={styles.page_links}>
+        {[...Array(page.lastPage)].map((_, i) => i + 1).flatMap(p => {
+          if (Math.abs(p - page.currentPage) === PAGE_LINKS_RANGE) {
+            return [<li>...</li>]
+          }
+          if (Math.abs(p - page.currentPage) < PAGE_LINKS_RANGE) {
+            return [((page.currentPage === p)? <li>{p}</li>: <li><a href={`${baseAbsPath}/p${p}`}>{p}</a></li>)]
+          }
+          return []
+        })}
+      </ul>
+      <ul class={styles.page_tools}>
+        <li>{page.url.first ? <a href={page.url.first} title="First">⏮</a> : '⏮'}</li>
+        <li>{page.url.prev ? <a href={page.url.prev} title="Previous">◀</a> : '◀'}</li>
+        <li>{page.url.next ? <a href={page.url.next} title="Next">▶</a> : '▶'}</li>
+        <li>{page.url.last ? <a href={page.url.last} title="Last">⏭</a> : '⏭'}</li>
+      </ul>
+    </div>
+  )}
+  <ul class={styles.post_list}>
+    {posts.map((post) => (
+      <li class={styles.post_item}>
+        <time datetime={post.createdAt.toISO()}>{post.createdAt.toISODate()}</time>
+        <a href={`${baseAbsPath}/i${post.id}`}>{post.title}</a>
+        <div class={styles.tags}>
+          <span class={styles.tags_label}>Tags:</span>
+          <ul class={styles.tag_list}>
+            {post.tags.map((tag) => (
+              <li class={styles.tag_item}>{tag}</li>
+            ))}
+          </ul>
+        </div>
+      </li>
+    ))}
+  </ul>
+</div>
