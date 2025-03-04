@@ -13,36 +13,21 @@ const {
 
 const PAGE_LINKS_RANGE = 3;
 
+import PageNavigator from './_PageNavigator.astro';
+
 import * as path from 'node:path';
 const divs = import.meta.dirname.split(/[\/\\]/);
 const baseAbsPath = path.join(import.meta.env.BASE_URL, ...divs.slice(divs.lastIndexOf('pages') + 1));
 ---
 <div>
-  {page && (
-    <div class={styles.page_navigator}>
-      <ul class={styles.page_links}>
-        {[...Array(page.lastPage)].map((_, i) => i + 1).flatMap(p => {
-          if (p === 1 || p === page.lastPage) {
-            return [((page.currentPage === p)? <li>{p}</li>: <li><a href={`${baseAbsPath}/p${p}`}>{p}</a></li>)]
-          }
-          if (Math.abs(p - page.currentPage) === PAGE_LINKS_RANGE) {
-            return [<li>...</li>]
-          }
-          if (Math.abs(p - page.currentPage) < PAGE_LINKS_RANGE) {
-            return [((page.currentPage === p)? <li>{p}</li>: <li><a href={`${baseAbsPath}/p${p}`}>{p}</a></li>)]
-          }
-          return []
-        })}
-      </ul>
-      <ul class={styles.page_tools}>
-        <li>{page.url.first ? <a href={page.url.first} title="First">⏮</a> : '⏮'}</li>
-        <li>{page.url.prev ? <a href={page.url.prev} title="Previous">◀</a> : '◀'}</li>
-        <li>{page.url.next ? <a href={page.url.next} title="Next">▶</a> : '▶'}</li>
-        <li>{page.url.last ? <a href={page.url.last} title="Last">⏭</a> : '⏭'}</li>
-      </ul>
-    </div>
-  )}
+  <PageNavigator page={page} />
   <ul class={styles.post_list}>
+    {(page.url.prev)?
+      <li class={styles.post_item_dots}>
+        <a href={page.url.prev} title="Previous">⋮</a>
+      </li>:
+      null
+    }
     {posts.map((post) => (
       <li class={styles.post_item}>
         <time datetime={post.createdAt.toISO()}>{post.createdAt.toISODate()}</time>
@@ -57,5 +42,12 @@ const baseAbsPath = path.join(import.meta.env.BASE_URL, ...divs.slice(divs.lastI
         </div>
       </li>
     ))}
+    {(page.url.next)?
+      <li class={styles.post_item_dots}>
+        <a href={page.url.next} title="Next">⋮</a>
+      </li>:
+      null
+    }
   </ul>
+  <PageNavigator page={page} />
 </div>
