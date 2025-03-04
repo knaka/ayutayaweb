@@ -10,7 +10,7 @@ const common = {
     strict: true,
   },
   integrations: [react()],
-  // base: "/foo",
+  // base: "/",
 };
 
 const viteCommon = {
