@@ -1,19 +1,20 @@
 ---
 import Page from '#src_astro/layouts/Page.astro';
-import PostList from './_PostList.astro';
+import PostList from '../_PostList.astro';
 import { getStaticPathsSub } from '#src_astro/lib/posts';
 
 export async function getStaticPaths({ paginate }) {
-  return await getStaticPathsSub({ paginate });
+  return await getStaticPathsSub({ paginate, param: 'year' });
 }
 
+const { year } = Astro.params as { year: string };
 const { page } = Astro.props;
 
-let title = `Posts`;
+let title = `Posts published in ${year}`;
 if (page.lastPage > 1) {
   title += ` (Page ${page.currentPage} of ${page.lastPage})`;
 }
----
+--- 
 <Page title={title}>
   <PostList slot="main" posts={page.data} page={page} />
   <div slot="sidebar">

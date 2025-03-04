@@ -1,21 +1,22 @@
 ---
 import Page from '#src_astro/layouts/Page.astro';
-import PostList from './_PostList.astro';
+import PostList from '../_PostList.astro';
 import { getStaticPathsSub } from '#src_astro/lib/posts';
 
 export async function getStaticPaths({ paginate }) {
-  return await getStaticPathsSub({ paginate });
+  return await getStaticPathsSub({ paginate, param: 'tag' });
 }
 
+const { tag } = Astro.params as { tag: string };
 const { page } = Astro.props;
 
-let title = `Posts`;
+let title = `Posts tagged with “${tag}”`;
 if (page.lastPage > 1) {
   title += ` (Page ${page.currentPage} of ${page.lastPage})`;
 }
----
+--- 
 <Page title={title}>
-  <PostList slot="main" posts={page.data} page={page} />
+  <PostList slot="main" posts={page.data} page={page} currentTag={tag} />
   <div slot="sidebar">
     <p>Sidebar content goes here.</p>
   </div>

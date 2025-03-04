@@ -6,12 +6,12 @@ import { Page } from 'astro';
 const {
   posts,
   page = null,
+  currentTag = null, 
 } = Astro.props as {
   posts: Markdown[],
   page: Page | null,
+  currentTag: string | null,
 };
-
-const PAGE_LINKS_RANGE = 3;
 
 import PageNavigator from './_PageNavigator.astro';
 
@@ -31,13 +31,18 @@ const baseAbsPath = path.join(import.meta.env.BASE_URL, ...divs.slice(divs.lastI
     {posts.map((post) => (
       <li class={styles.post_item}>
         <time datetime={post.createdAt.toISO()}>{post.createdAt.toISODate()}</time>
-        <a href={`${baseAbsPath}/${post.id}`}>{post.title}</a>
+        <a class={styles.post_title} href={`${baseAbsPath}/${post.id}`}>{post.title}</a>
         <div class={styles.tags}>
-          <span class={styles.tags_label}>Tags:</span>
+          {/* <span class={styles.tags_label}>Tags:</span> */}
           <ul class={styles.tag_list}>
-            {post.tags.map((tag) => (
-              <li class={styles.tag_item}>{tag}</li>
-            ))}
+            {post.tags.map((tag) => {
+              const tagLower = tag.toLocaleLowerCase();
+              return <li class={styles.tag_item}>{
+                (tagLower === currentTag)?
+                  tag:
+                  <a href={`${baseAbsPath}/tag-${tagLower}`}>{tag}</a>
+              }</li>
+            })}
           </ul>
         </div>
       </li>
