@@ -21,6 +21,27 @@
   }
 }
 
+.plain {
+  font-family: system-ui, sans-serif;
+  background: var(--color-grey10);
+  // max-width: 1000px;
+  margin: 0 auto;
+  padding: 20px;
+  overflow-y: hidden;
+
+  code {
+    font-family:
+      Menlo,
+      Monaco,
+      Lucida Console,
+      Liberation Mono,
+      DejaVu Sans Mono,
+      Bitstream Vera Sans Mono,
+      Courier New,
+      monospace;
+  }
+}
+
 .container {
   display: flex;
   justify-content: center;
@@ -45,4 +66,8 @@
   padding: 20px;
   background-color: var(--color-grey10);
   max-width: 200px;
+  height: 800px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
 }

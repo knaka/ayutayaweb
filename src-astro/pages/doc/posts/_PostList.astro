@@ -2,8 +2,7 @@
 import { Markdown } from '#src/posts';
 import styles from './_styles.module.scss';
 import { Page } from 'astro';
-import * as path from 'node:path';
-import PageNavigator from './_PageNavigator.astro';
+import PageNavigator from '#src_astro/components/PageNavigator.astro';
 import { toOnUrl } from '#src_astro/lib/posts';
 
 const {
@@ -16,10 +15,11 @@ const {
   currentTag: string | null,
 };
 
-const baseAbsPath = path.join(import.meta.env.BASE_URL || "/", ...path.dirname((await Astro.glob('./*.astro'))[0].file).split('/').reduceRight((acc, curr) => (acc.length && acc[0] === 'pages')? acc: [curr, ...acc], []).slice(1));
+import * as path from 'node:path';
+const pathbase = path.join(import.meta.env.BASE_URL || "/", ...path.dirname((await Astro.glob('./*.astro'))[0].file).split('/').reduceRight((acc, curr) => (acc.length && acc[0] === 'pages')? acc: [curr, ...acc], []).slice(1));
 ---
 <div>
-  <PageNavigator page={page} />
+  <PageNavigator page={page} pathbase={pathbase} />
   <ul class={styles.post_list}>
     {(page.url.prev)?
       <li class={styles.post_item_dots}>
@@ -30,7 +30,7 @@ const baseAbsPath = path.join(import.meta.env.BASE_URL || "/", ...path.dirname((
     {posts.map((post) => (
       <li class={styles.post_item}>
         <time datetime={post.createdAt.toISO()}>{post.createdAt.toISODate()}</time>
-        <a class={styles.post_title} href={`${baseAbsPath}/${post.id}`}>{post.title}</a>
+        <a class={styles.post_title} href={`${pathbase}/${post.id}`}>{post.title}</a>
         <div class={styles.tags}>
           {/* <span class={styles.tags_label}>Tags:</span> */}
           <ul class={styles.tag_list}>
@@ -39,7 +39,7 @@ const baseAbsPath = path.join(import.meta.env.BASE_URL || "/", ...path.dirname((
               return <li class={styles.tag_item}>{
                 (tagOnPath === currentTag)?
                   tag:
-                  <a href={`${baseAbsPath}/tag-${tagOnPath}`}>{tag}</a>
+                  <a href={`${pathbase}/tag-${tagOnPath}`}>{tag}</a>
               }</li>
             })}
           </ul>
@@ -53,5 +53,5 @@ const baseAbsPath = path.join(import.meta.env.BASE_URL || "/", ...path.dirname((
       null
     }
   </ul>
-  <PageNavigator page={page} />
+  <PageNavigator page={page} pathbase={pathbase} />
 </div>

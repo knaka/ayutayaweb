@@ -21,38 +21,31 @@ export async function getStaticPaths() {
 const { post } = Astro.props as InferGetStaticPropsType<typeof getStaticPaths>;
 const title = post.title;
 const body = await post.bodyHtml()
+import { toOnUrl } from '#src_astro/lib/posts.js';
 
+import * as path from 'node:path';
+const pathbase = path.join(import.meta.env.BASE_URL || "/", ...path.dirname((await Astro.glob('./*.astro'))[0].file).split('/').reduceRight((acc, curr) => (acc.length && acc[0] === 'pages')? acc: [curr, ...acc], []).slice(1));
 
-// <section>
-//       <button id="back">Back</button>
-//       <!-- <a href="" id="back">Back</a>  -->
-//       <script>
-//         document.getElementById('back').addEventListener('click', () => {
-//           window.history.length > 1 ? history.back() : location.href = '/doc/posts'
-//         })
-//       </script>
-//     </section>
 
 ---
 <Page title={title}>
   <article slot="main">
-    <h1>{title}</h1>
+    <section class={styles.post_date}>
+      <time datetime={post.createdAt.toISODate()}>{post.createdAt.toISODate()}</time>
+    </section>
+    <h1 class={styles.item_title}>{title}</h1>
     <section>
-      <h2>Tags</h2>
-      <ul>
-        {post.tags.map((tag) => (
-          <li>{tag}</li>
+      <ul class={styles.post_tag_ul}>
+        {post.tags.map(tag => (
+          <li class={styles.post_tag}><a href={`./tag-${toOnUrl(tag)}`}>{tag}</a></li>
         ))}
       </ul>
-    </section>
-    <section>
-      <h2>Published on <time datetime={post.createdAt.toISODate()}>{post.createdAt.toISODate()}</time></h2>
     </section>
     <section>
       <div class={styles.body} set:html={body} />
     </section>
   </article>
   <div slot="sidebar">
-    <p>Sidebar content goes here.</p>
+    <iframe class={styles.recent} src={`${pathbase}/recent`} />
   </div>
 </Page>

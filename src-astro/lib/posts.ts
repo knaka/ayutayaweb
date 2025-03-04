@@ -84,7 +84,7 @@ export async function getStaticPathsSub({
 }) {
   const store = obtainStore()
   const posts = await store.postsAsync({ order: 'desc' });
-  const pageSize = 30;
+  const pageSize = 20;
   switch (param) {
     case 'year': {
       const yearPosts: Map<number, Markdown[]> = new Map();

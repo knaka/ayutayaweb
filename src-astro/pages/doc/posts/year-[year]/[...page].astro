@@ -2,6 +2,7 @@
 import Page from '#src_astro/layouts/Page.astro';
 import PostList from '../_PostList.astro';
 import { getStaticPathsSub } from '#src_astro/lib/posts';
+import styles from '../_styles.module.scss';
 
 export async function getStaticPaths({ paginate }) {
   return await getStaticPathsSub({ paginate, param: 'year' });
@@ -14,10 +15,14 @@ let title = `Posts published in ${year}`;
 if (page.lastPage > 1) {
   title += ` (Page ${page.currentPage} of ${page.lastPage})`;
 }
+
+import * as path from 'node:path';
+const pathbase = path.join(import.meta.env.BASE_URL || "/", ...path.dirname((await Astro.glob('../*.astro'))[0].file).split('/').reduceRight((acc, curr) => (acc.length && acc[0] === 'pages')? acc: [curr, ...acc], []).slice(1));
+
 --- 
 <Page title={title}>
   <PostList slot="main" posts={page.data} page={page} />
   <div slot="sidebar">
-    <p>Sidebar content goes here.</p>
+    <iframe class={styles.recent} src={`${pathbase}/recent`} />
   </div>
 </Page>
