@@ -1,14 +1,13 @@
 ---
 import PageLayout from '#src_astro/components/PageLayout.astro';
-
 import PostList from './PostList.astro';
 import PostRecentFrame from './PostRecentFrame.astro'
 
-import { Page as AstroPage } from 'astro';
+import { Page } from 'astro';
 
 const { title, page } = Astro.props as {
   title: string,
-  page: AstroPage,
+  page: Page,
 };
 ---
 <PageLayout title={title}>

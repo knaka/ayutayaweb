@@ -3,7 +3,7 @@ import { Markdown } from '#src/posts';
 import styles from './PostList.module.scss';
 import { Page } from 'astro';
 import PageNavigator from '#src_astro/components/PageNavigator.astro';
-import { toOnUrl } from '#src_astro/lib/posts';
+import { toSafeString } from '#src_astro/lib/posts';
 
 const {
   posts,
@@ -35,7 +35,7 @@ const postsPath = await pathAsync();
           {/* <span class={styles.tags_label}>Tags:</span> */}
           <ul class={styles.tag_list}>
             {post.tags.map((tag) => {
-              const tagOnPath = toOnUrl(tag);
+              const tagOnPath = toSafeString(tag);
               return <li class={styles.tag_item}>{
                 (tagOnPath === currentTag)?
                   tag:

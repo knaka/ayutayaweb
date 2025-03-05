@@ -5,24 +5,24 @@ import styles from './styles.module.scss';
 const { title } = Astro.props;
 ---
 <RootLayout title={title}>
-<div class={styles.container}>
-  {Astro.slots.has('left_sidebar') && (
-    <aside class={styles.left_sidebar}>
-      <slot name="left_sidebar"></slot>
-    </aside>
-  )}
-  <main class={styles.main}>
-    <slot name="main"></slot>
-  </main>
-  {Astro.slots.has('sidebar') && (
-    <aside class={styles.right_sidebar}>
-      <slot name="sidebar"></slot>
-    </aside>
-  )}
-  {Astro.slots.has('right_sidebar') && (
-    <aside class={styles.right_sidebar}>
-      <slot name="right_sidebar"></slot>
-    </aside>
-  )}
-</div>
+  <div class={styles.container}>
+    {Astro.slots.has('left_sidebar') && (
+      <aside class={styles.left_sidebar}>
+        <slot name="left_sidebar"></slot>
+      </aside>
+    )}
+    <main class={styles.main}>
+      <slot name="main"></slot>
+    </main>
+    {Astro.slots.has('sidebar') && (
+      <aside class={styles.right_sidebar}>
+        <slot name="sidebar"></slot>
+      </aside>
+    )}
+    {Astro.slots.has('right_sidebar') && (
+      <aside class={styles.right_sidebar}>
+        <slot name="right_sidebar"></slot>
+      </aside>
+    )}
+  </div>
 </RootLayout>
