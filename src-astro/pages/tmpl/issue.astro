@@ -1,11 +1,7 @@
 ---
 import Root from '#src_astro/layouts/Root.astro';
-import IssueComponent from '#src_astro/components/IssueComponent'
+import ReactIssue from '#src_astro/components/ReactIssue'
 ---
 <Root title="Issue Template Page">
-<h1 class=hoge2>My header</h1>
-<span>
-  <h1>hoge</h1>
-  <IssueComponent client:load />
-</span>
+  <ReactIssue client:load />
 </Root>
