@@ -43,3 +43,7 @@ subcmd_test() { # Run tests.
   set_test_environment
   subcmd_vitest "$@"
 }
+
+task_build() {
+  task_astro__build
+}
