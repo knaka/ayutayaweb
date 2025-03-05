@@ -5,16 +5,17 @@ import { Page } from 'astro';
 const PAGE_LINKS_RANGE = 3;
 const {
   page,
-  pathbase,
 } = Astro.props as {
   page: Page,
-  pathbase: string,
 };
+
+import { pathAsync } from '#src_astro/pages/doc/posts/[id].astro';
+const postsPath = await pathAsync();
 ---
 <div class={styles.page_navigator}>
   <ul class={styles.page_links}>
     {[...Array(page.lastPage)].map((_, i) => i + 1).flatMap(p => {
-      const fn = () => [((page.currentPage === p)? <li>{p}</li>: <li><a href={(p === 1)? page.url.first :`${pathbase}/${p}`}>{p}</a></li>)]
+      const fn = () => [((page.currentPage === p)? <li>{p}</li>: <li><a href={(p === 1)? page.url.first :`${postsPath}/${p}`}>{p}</a></li>)]
       if (p === 1 || p === page.lastPage) {
         return fn() 
       }

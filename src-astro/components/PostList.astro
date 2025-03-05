@@ -1,6 +1,6 @@
 ---
 import { Markdown } from '#src/posts';
-import styles from './_styles.module.scss';
+import styles from './PostList.module.scss';
 import { Page } from 'astro';
 import PageNavigator from '#src_astro/components/PageNavigator.astro';
 import { toOnUrl } from '#src_astro/lib/posts';
@@ -15,10 +15,11 @@ const {
   currentTag: string | null,
 };
 
-const pathbase = await (await import('./[id].astro')).pathAsync();;
+import { pathAsync } from '#src_astro/pages/doc/posts/[id].astro';
+const postsPath = await pathAsync();
 ---
 <div>
-  <PageNavigator page={page} pathbase={pathbase} />
+  <PageNavigator page={page} />
   <ul class={styles.post_list}>
     {(page.url.prev)?
       <li class={styles.post_item_dots}>
@@ -29,7 +30,7 @@ const pathbase = await (await import('./[id].astro')).pathAsync();;
     {posts.map((post) => (
       <li class={styles.post_item}>
         <time datetime={post.createdAt.toISO()}>{post.createdAt.toISODate()}</time>
-        <a class={styles.post_title} href={`${pathbase}/${post.id}`}>{post.title}</a>
+        <a class={styles.post_title} href={`${postsPath}/${post.id}`}>{post.title}</a>
         <div class={styles.tags}>
           {/* <span class={styles.tags_label}>Tags:</span> */}
           <ul class={styles.tag_list}>
@@ -38,7 +39,7 @@ const pathbase = await (await import('./[id].astro')).pathAsync();;
               return <li class={styles.tag_item}>{
                 (tagOnPath === currentTag)?
                   tag:
-                  <a href={`${pathbase}/tag-${tagOnPath}`}>{tag}</a>
+                  <a href={`${postsPath}/tag-${tagOnPath}`}>{tag}</a>
               }</li>
             })}
           </ul>
@@ -52,5 +53,5 @@ const pathbase = await (await import('./[id].astro')).pathAsync();;
       null
     }
   </ul>
-  <PageNavigator page={page} pathbase={pathbase} />
+  <PageNavigator page={page} />
 </div>
