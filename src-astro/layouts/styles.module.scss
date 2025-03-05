@@ -1,12 +1,11 @@
 @use '../styles.module.scss' as *;
 
-.root {
+@mixin common-root($overflow) {
   font-family: system-ui, sans-serif;
   background: var(--color-grey10);
-  // max-width: 1000px;
   margin: 0 auto;
   padding: 20px;
-  overflow-y: scroll;
+  overflow-y: $overflow;
 
   code {
     font-family:
@@ -18,28 +17,24 @@
       Bitstream Vera Sans Mono,
       Courier New,
       monospace;
+  }
+
+  a {
+    text-decoration: none;
+    color: var(--color-blue70);
+  }
+  
+  a:hover {
+    text-decoration: underline;
   }
 }
 
-.plain {
-  font-family: system-ui, sans-serif;
-  background: var(--color-grey10);
-  // max-width: 1000px;
-  margin: 0 auto;
-  padding: 20px;
-  overflow-y: hidden;
+.root {
+  @include common-root(scroll);
+}
 
-  code {
-    font-family:
-      Menlo,
-      Monaco,
-      Lucida Console,
-      Liberation Mono,
-      DejaVu Sans Mono,
-      Bitstream Vera Sans Mono,
-      Courier New,
-      monospace;
-  }
+.plain_root {
+  @include common-root(hidden);
 }
 
 .container {
