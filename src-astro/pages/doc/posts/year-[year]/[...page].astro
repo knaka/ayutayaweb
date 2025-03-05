@@ -16,11 +16,11 @@ if (page.lastPage > 1) {
   title += ` (Page ${page.currentPage} of ${page.lastPage})`;
 }
 
-const pathbase = await (await import('../[id].astro')).pathbaseAsync();;
+const pathPosts = await (await import('../[id].astro')).pathAsync();;
 --- 
 <Page title={title}>
   <PostList slot="main" posts={page.data} page={page} />
   <div slot="sidebar">
-    <iframe class={styles.recent} src={`${pathbase}/recent`} />
+    <iframe class={styles.recent} src={`${pathPosts}/recent`} />
   </div>
 </Page>

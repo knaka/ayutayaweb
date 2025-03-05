@@ -15,7 +15,7 @@ const {
   currentTag: string | null,
 };
 
-const pathbase = await (await import('./[id].astro')).pathbaseAsync();;
+const pathbase = await (await import('./[id].astro')).pathAsync();;
 ---
 <div>
   <PageNavigator page={page} pathbase={pathbase} />
