@@ -1,0 +1,7 @@
+---
+import styles from './PostRecentFrame.module.scss';
+
+import { pathAsync } from '#src_astro/pages/doc/posts/[id].astro';
+const postsPath = await pathAsync();
+---
+<iframe class={styles.frame} src={`${postsPath}/recent`} />
