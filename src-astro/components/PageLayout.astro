@@ -1,10 +1,10 @@
 ---
-import Root from './Root.astro';
+import RootLayout from './Rootlayout.astro';
 import styles from './styles.module.scss';
 
 const { title } = Astro.props;
 ---
-<Root title={title}>
+<RootLayout title={title}>
 <div class={styles.container}>
   {Astro.slots.has('left_sidebar') && (
     <aside class={styles.left_sidebar}>
@@ -25,4 +25,4 @@ const { title } = Astro.props;
     </aside>
   )}
 </div>
-</Root>
+</RootLayout>

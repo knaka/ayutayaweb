@@ -1,6 +1,6 @@
 ---
 import styles from './PostItemPage.module.scss';
-import Page from '#src_astro/layouts/Page.astro';
+import PageLayout from '#src_astro/components/PageLayout.astro';
 import PostRecentFrame from './PostRecentFrame.astro'
 
 const { post } = Astro.props as { post: Markdown };
@@ -9,7 +9,7 @@ import { toOnUrl } from '#src_astro/lib/posts.js';
 
 import { Markdown } from '#src/posts';
 ---
-<Page title={post.title}>
+<PageLayout title={post.title}>
   <article slot="main">
     <section class={styles.date}>
       <time datetime={post.createdAt.toISODate()}>{post.createdAt.toISODate()}</time>
@@ -29,4 +29,4 @@ import { Markdown } from '#src/posts';
   <div slot="sidebar">
     <PostRecentFrame />    
   </div>
-</Page>
+</PageLayout>

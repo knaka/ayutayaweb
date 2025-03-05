@@ -1,5 +1,5 @@
 ---
-import Page from '#src_astro/layouts/Page.astro';
+import PageLayout from '#src_astro/components/PageLayout.astro';
 
 import PostList from './PostList.astro';
 import PostRecentFrame from './PostRecentFrame.astro'
@@ -11,7 +11,7 @@ const { title, page } = Astro.props as {
   page: AstroPage,
 };
 ---
-<Page title={title}>
+<PageLayout title={title}>
   <PostList slot="main" posts={page.data} page={page} />
   <PostRecentFrame slot="sidebar" />
-</Page>
+</PageLayout>

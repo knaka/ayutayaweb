@@ -1,5 +1,5 @@
 ---
-import PlainRoot from "#src_astro/layouts/PlainRoot.astro";
+import PlainLayout from "#src_astro/components/PlainLayout.astro";
 import { obtainStore, Markdown, Order } from '#src/posts.js';
 import styles from './PostRecentPage.module.scss';
 
@@ -15,7 +15,7 @@ posts.forEach((post) => {
 });
 const years = Array.from(yearPosts.keys()).sort((a, b) => b - a);
 ---
-<PlainRoot title="'No title">
+<PlainLayout title="'No title">
   <div class={styles.recent_content}>
     {years.map((year) => (
       <header>
@@ -30,4 +30,4 @@ const years = Array.from(yearPosts.keys()).sort((a, b) => b - a);
       </ul>
     ))}
   </div>
-</PlainRoot>
+</PlainLayout>
