@@ -1,0 +1,17 @@
+---
+import Page from '#src_astro/layouts/Page.astro';
+
+import PostList from './PostList.astro';
+import PostRecentFrame from './PostRecentFrame.astro'
+
+import { Page as AstroPage } from 'astro';
+
+const { title, page } = Astro.props as {
+  title: string,
+  page: AstroPage,
+};
+---
+<Page title={title}>
+  <PostList slot="main" posts={page.data} page={page} />
+  <PostRecentFrame slot="sidebar" />
+</Page>

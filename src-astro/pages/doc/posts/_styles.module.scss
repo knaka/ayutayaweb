@@ -1,7 +1,3 @@
-recent_body {
-  font-size: 0.8em;
-}
-
 a {
   text-decoration: none;
   color: var(--color-blue70);
@@ -40,44 +36,6 @@ a {
   }
 }
 
-
-
-.recent_content {
-  font-size: 0.8em;;
-}
-
-.recent_year {
-  font-weight: bold;
-  // font-size: 0.8em;
-}
-
-.recent_list {
-  padding-left: 0;
-  margin-left: 0;
-  padding-inline-start: 20px;
-}
-
-.recent_item {
-  padding-left: 0;
-  margin-left: 0;
-  padding-inline-start: 0px;
-}
-
-.recent_title {
-  font-weight: bold;
-}
-
-.recent {
-  // display:block;
-  width: 100%;
-  height: 1000%;
-  border: none;
-  position: absolute;
-  display: block;
-  top: 0;
-  left: 0;
-}
-
 .body {
   p {
     margin-bottom: 1.5em; // Add more space between paragraphs
@@ -105,4 +63,15 @@ a {
     // set tab-size to 2
     tab-size: 2;
   }
+}
+
+.recent {
+  // display:block;
+  width: 100%;
+  height: 1000%;
+  border: none;
+  position: absolute;
+  display: block;
+  top: 0;
+  left: 0;
 }

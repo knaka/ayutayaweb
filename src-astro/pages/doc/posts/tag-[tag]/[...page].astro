@@ -1,6 +1,5 @@
 ---
-import Page from '#src_astro/layouts/Page.astro';
-import PostList from '#src_astro/components/PostList.astro';
+import PostListPage from '#src_astro/components/PostListPage.astro';
 import { getStaticPathsSub } from '#src_astro/lib/posts';
 
 export async function getStaticPaths({ paginate }) {
@@ -15,9 +14,4 @@ if (page.lastPage > 1) {
   title += ` (Page ${page.currentPage} of ${page.lastPage})`;
 }
 --- 
-<Page title={title}>
-  <PostList slot="main" posts={page.data} page={page} currentTag={tag} />
-  <div slot="sidebar">
-    <p>Sidebar content goes here.</p>
-  </div>
-</Page>
+<PostListPage title={title} page={page} />
