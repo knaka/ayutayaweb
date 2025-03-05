@@ -14,8 +14,8 @@ const {
 import { pathAsync } from '#src_astro/pages/doc/posts/[id].astro';
 const postsPath = await pathAsync();
 ---
-<div class={styles.page_navigator}>
-  <ul class={styles.page_links}>
+<div class={styles.navigator}>
+  <ul class={styles.pages}>
     {[...Array(page.lastPage)].map((_, i) => i + 1).flatMap(p => {
       const fn = () => [((page.currentPage === p)? <li>{p}</li>: <li><a href={(p === 1)? page.url.first :`${postsPath}/${p}`}>{p}</a></li>)]
       if (p === 1 || p === page.lastPage) {
@@ -30,7 +30,7 @@ const postsPath = await pathAsync();
       return []
     })}
   </ul>
-  <ul class={styles.page_tools}>
+  <ul class={styles.tools}>
     <li>{page.url.first ? <a href={page.url.first} title="First">⏮</a> : '⏮'}</li>
     <li>{page.url.prev ? <a href={page.url.prev} title="Previous">◀</a> : '◀'}</li>
     <li>{page.url.next ? <a href={page.url.next} title="Next">▶</a> : '▶'}</li>
