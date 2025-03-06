@@ -8,6 +8,8 @@
 . ./task-astro-dev.lib.sh
 . ./task-ip-utils.lib.sh
 . ./task-dev-session.lib.sh
+. ./task-sqlc.lib.sh
+. ./task-sqlc-ts.lib.sh
 
 task_dev() {
   cleanup_session_env
@@ -46,4 +48,16 @@ subcmd_test() { # Run tests.
 
 task_build() {
   task_astro__build
+}
+
+task_db__gen() { # Generate the database access layer (./db/sqlcgen/*).
+  push_dir "$PROJECT_DIR"/db
+  subcmd_sqlc generate
+  # Then, rewrite the generated file.
+  rewrite_sqlcgen_ts ./sqlcgen/*.ts
+  pop_dir
+}
+
+task_gen() { # Generate files.
+  task_db__gen
 }

@@ -1,2 +1,7 @@
 name = "ayutayaweb"
 pages_build_output_dir = "./dist"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "ayutayaweb"
+database_id = "aca89336-ab7c-4a8d-a6f4-22d258fd86dd"
