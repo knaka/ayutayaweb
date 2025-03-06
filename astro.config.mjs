@@ -29,6 +29,7 @@ const viteCommon = {
 // https://astro.build/config
 export default defineConfig((process.env.NODE_ENV === "development")? {
   ...common,
+  trailingSlash: "never",
   vite: {
     ...viteCommon,
     server: {
@@ -49,6 +50,9 @@ export default defineConfig((process.env.NODE_ENV === "development")? {
   ...common,
   vite: {
     ...viteCommon,
+  },
+  build: {
+    format: 'file',
   },
   outDir: "./dist",
   experimental:{

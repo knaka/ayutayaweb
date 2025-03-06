@@ -2,6 +2,7 @@
 import PlainLayout from "#src_astro/components/PlainLayout.astro";
 import { obtainStore, Markdown, Order } from '#src/posts.js';
 import styles from './PostRecentPage.module.scss';
+import { pathAsync } from "#src_astro/pages/doc/posts/[id].astro";
 
 const store = obtainStore()
 const posts = await store.postsAsync();
@@ -14,17 +15,18 @@ posts.forEach((post) => {
   yearPosts.get(year).push(post);
 });
 const years = Array.from(yearPosts.keys()).sort((a, b) => b - a);
+const postsPath = await pathAsync();
 ---
 <PlainLayout title="'No title">
   <div class={styles.recent_content}>
     {years.map((year) => (
       <header>
-        <a class={styles.recent_year} target="_top" href={`year-${year}`}>{year}</a>
+        <a class={styles.recent_year} target="_top" href={`${postsPath}/year-${year}`}>{year}</a>
       </header>
       <ul class={styles.recent_list} >
         {yearPosts.get(year).map((post) => (
           <li class={styles.recent_item}>
-            <a class={styles.recent_title} target="_top" href={post.id}>{post.title}</a> ({post.createdAt.toISODate()})
+            <a class={styles.recent_title} target="_top" href={`${postsPath}/${post.id}`}>{post.title}</a> ({post.createdAt.toISODate()})
           </li>
         ))}
       </ul>
