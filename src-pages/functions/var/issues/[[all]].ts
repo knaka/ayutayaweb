@@ -2,11 +2,7 @@ import { Hono, Context } from 'hono'
 import { handle as pagesHandle } from 'hono/cloudflare-pages'
 import { D1Database } from "@cloudflare/workers-types";
 import { IssueAbstract } from '#src_astro/components/ReactIssueList.js';
-// import { IssuePageInfo } from '@src_astro/components/IssuePage.js';
-// import { constants as httpConst } from 'http2'
-// import { getUser } from "@/sqlcgen/querier";
-// import { StatusCode } from 'hono/utils/http-status';
-// import { UserPageInfo } from "@/app/tmpl/user/page";
+import { Issue } from '#src_astro/components/ReactIssue.js';
 
 type Bindings = {
   ASSETS: {
@@ -34,44 +30,26 @@ const getAssetBody = async (c: Context<{Bindings: Bindings}>, path: string) => {
 }
 
 app.get('/var/issues', async (c) => {
-  const serverData: {
-    issueAbstracts: IssueAbstract[],
-  } = {
-    issueAbstracts: [
-      { id: '001', title: 'Issue 1' },
-      { id: '002', title: 'Issue 2' },
-      { id: '003', title: 'Issue 3' },
-    ],
-  };
+  const serverData: IssueAbstract[] = [
+    { id: '001', title: 'Issue 1' },
+    { id: '002', title: 'Issue 2' },
+    { id: '003', title: 'Issue 3' },
+  ];
   const assetBody = await getAssetBody(c, "/tmpl/issues");
-  const serverDataScript = `<script>window.__SERVER_DATA__ = ${JSON.stringify(serverData)}</script>`;
+  const serverDataScript = `<script>window.issueAbstracts=${JSON.stringify(serverData)}</script>`;
   return c.html(assetBody.replace('</head>', `${serverDataScript}</head>`));
 });
 
 app.get('/var/issues/:id', async (c) => {
   const id = parseInt(c.req.param("id") || "0");
-  return c.html(`<html><body><h1>Issue ${id}</h1></body></html>`);
+  const assetBody = await getAssetBody(c, "/tmpl/issue");
+  const serverData: Issue = {
+    id: id.toString(),
+    title: "Foo Title",
+    description: "Foo Description",
+  };
+  const serverDataScript = `<script>window.issue=${JSON.stringify(serverData)}</script>`;
+  return c.html(assetBody.replace('</head>', `${serverDataScript}</head>`));
 });
-
-// app.get('/var/issues/:id', async (c) => {
-//   const id = parseInt(c.req.param("id") || "-1");
-//   // const respIssue = await getIssue(c.env.DB, { nullableId: id });
-//   // if (! respUser) {
-//   //   return c.html("No User Found", 404);
-//   // }
-//   const assetBody = await getAssetBody(c, "/tmpl/issue");
-//   const serverData: IssuePageInfo = {
-//     // issue: respIssue,
-//     issue: {
-//       id,
-//       username: "No SSG Name",
-//       updatedAt: "",
-//       createdAt: "",
-//     },
-//     message: "0861a84",
-//   };
-//   const serverDataScript = `<script>window.__SERVER_DATA__ = ${JSON.stringify(serverData)}</script>`;
-//   return c.html(assetBody.replace('</head>', `${serverDataScript}</head>`));
-// });
 
 export const onRequest = pagesHandle(app);

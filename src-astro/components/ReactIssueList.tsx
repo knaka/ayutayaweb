@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 
-
 type IssueComponentProps = {}
 
 export type IssueAbstract = {
@@ -8,23 +7,17 @@ export type IssueAbstract = {
   title: string;
 };
 
-import { IssueComponentInfo } from "./ReactIssue.js";
-
 declare global {
   interface Window {
-    // __SERVER_DATA__?: IssueComponentInfo | IssueAbstract[];
-    __SERVER_DATA__?: {
-      issueAbstracts: IssueAbstract[];
-      issue: IssueComponentInfo;
-    }
+    issueAbstracts?: IssueAbstract[];
   }
 }
 
 export default (props: IssueComponentProps) => {
   const [issues, setIssues] = useState<IssueAbstract[]>([]);
   useEffect(() => {
-    if (window.__SERVER_DATA__ && window.__SERVER_DATA__.issueAbstracts) {
-      setIssues(window.__SERVER_DATA__.issueAbstracts);
+    if (window.issueAbstracts) {
+      setIssues(window.issueAbstracts);
     }
   }, []);
   return (
