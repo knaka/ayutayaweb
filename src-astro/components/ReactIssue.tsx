@@ -4,17 +4,7 @@ import { useState, useEffect } from "react";
 
 import styles from './ReactIssue.module.scss'
 
-export type Issue = {
-  id: string;
-  title: string;
-  description: string;
-}
-
-declare global {
-  interface Window {
-    issue?: Issue;
-  }
-}
+import type { Issue } from './types.js'
 
 type IssueComponentProps = {
   className?: string;
@@ -23,8 +13,8 @@ type IssueComponentProps = {
 export default (props: IssueComponentProps) => {
   const [issue, setIssue] = useState<Issue | null>(null);
   useEffect(() => {
-    if (window.issue) {
-      setIssue(window.issue);
+    if (window.__SERVER_DATA__?.type === "issue") {
+      setIssue(window.__SERVER_DATA__);
     }
   }, []);
   return (

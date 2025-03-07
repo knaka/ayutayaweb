@@ -1,3 +1,11 @@
+
+CREATE TABLE schema_features (
+  -- Sort in dictionary order
+  initial int,
+  --
+  created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE issues (
   id integer PRIMARY KEY AUTOINCREMENT,
   title text NOT NULL,

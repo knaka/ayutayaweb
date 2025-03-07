@@ -2,22 +2,13 @@ import { useState, useEffect } from "react";
 
 type IssueComponentProps = {}
 
-export type IssueAbstract = {
-  id: string;
-  title: string;
-};
-
-declare global {
-  interface Window {
-    issueAbstracts?: IssueAbstract[];
-  }
-}
+import type { IssueAbstract } from "./types.js";
 
 export default (props: IssueComponentProps) => {
   const [issues, setIssues] = useState<IssueAbstract[]>([]);
   useEffect(() => {
-    if (window.issueAbstracts) {
-      setIssues(window.issueAbstracts);
+    if (window.__SERVER_DATA__.type === "issues") {
+      setIssues(window.__SERVER_DATA__.items);
     }
   }, []);
   return (

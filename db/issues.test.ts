@@ -16,7 +16,7 @@ describe('issue', () => {
     expect(result.success).toBe(true);
     const id = result.meta.last_row_id;
 
-    const issue = await issueAsync(ctx.d1, { optId: id });
+    const issue = await issueAsync(ctx.d1, { id });
     expect(issue.id).toBe(id);
     expect(issue.description).toBe('Description 1');
   });

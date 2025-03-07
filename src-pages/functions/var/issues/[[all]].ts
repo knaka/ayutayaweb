@@ -1,8 +1,7 @@
 import { Hono, Context } from 'hono'
 import { handle as pagesHandle } from 'hono/cloudflare-pages'
 import { D1Database } from "@cloudflare/workers-types";
-import { IssueAbstract } from '#src_astro/components/ReactIssueList.js';
-import { Issue } from '#src_astro/components/ReactIssue.js';
+import { IssueList, Issue } from '#src_astro/components/types.js';
 import { issueAsync, issuesAsync } from 'db/sqlcgen/querier.js';
 import { toExternalId, toInternalId } from '#src/extid.js';
 
@@ -36,14 +35,15 @@ app.get('/var/issues', async (c) => {
   if (!issues.success) {
     return c.text(issues.error);
   }
-  const issueAbstractsData: IssueAbstract[] = issues.results.map(issue =>
-    ({
+  const issueList: IssueList = {
+    type: "issues",
+    items: issues.results.map(issue => ({
       id: toExternalId(issue.id),
       title: issue.title,
-    })
-  );
+    })),
+  };
   const body = await assetAsync(c, "/tmpl/issues");
-  const serverDataScript = `<script>window.issueAbstracts=${JSON.stringify(issueAbstractsData)}</script>`;
+  const serverDataScript = `<script>window.__SERVER_DATA__=${JSON.stringify(issueList)}</script>`;
   return c.html(body.replace('</head>', `${serverDataScript}</head>`));
 });
 
@@ -55,11 +55,12 @@ app.get('/var/issues/:id', async (c) => {
     return c.text("Issue not found");
   }
   const issueData: Issue = {
+    type: "issue",
     id: extId,
     title: issue.title,
     description: issue.description,
   }
-  const serverDataScript = `<script>window.issue=${JSON.stringify(issueData)}</script>`;
+  const serverDataScript = `<script>window.__SERVER_DATA__=${JSON.stringify(issueData)}</script>`;
   return c.html(body.replace('</head>', `${serverDataScript}</head>`));
 });
 
