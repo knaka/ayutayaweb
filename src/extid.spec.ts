@@ -1,17 +1,8 @@
 import { describe, expect, test } from "vitest";
 import { toExternalId, toInternalId } from './extid.js'
 
-// cc6362c4
-// 98c12511
-// 652733ea
-// 2d4ec940
-// 800179b3
-// ad4ec940
-// a95a6edc
-// 00000001
-
-describe("extid", () => {
-  test("convert", async (ctx) => {
+describe("External ID encode/decode", () => {
+  test("Exchange between internal and external IDs", () => {
     const mapIntIdExtId = new Map([
       [1, 'cc6362c4'],
       [2, '98c12511'],
