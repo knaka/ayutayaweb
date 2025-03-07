@@ -22,11 +22,12 @@ export default (props: IssueComponentProps) => {
   }, []);
   return (
     <>
+      <button>Create new issue</button>
       <ul>
         {issues.map((issue) => (
           <li key={issue.id}><a href={`./issues/${issue.id}`}>{issue.title}</a></li>
         ))}
-      </ul>        
+      </ul>
     </>
   )
 };

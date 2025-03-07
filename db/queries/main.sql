@@ -16,6 +16,12 @@ WHERE
   ? = issues.id
 ;
 
+-- name: IssuesAsync :many
+SELECT *
+FROM Issues
+ORDER BY id
+;
+
 -- name: UpdateIssueAsync :exec
 UPDATE issues
 SET

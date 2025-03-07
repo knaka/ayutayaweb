@@ -3,6 +3,8 @@ import { handle as pagesHandle } from 'hono/cloudflare-pages'
 import { D1Database } from "@cloudflare/workers-types";
 import { IssueAbstract } from '#src_astro/components/ReactIssueList.js';
 import { Issue } from '#src_astro/components/ReactIssue.js';
+import { issueAsync, issuesAsync } from 'db/sqlcgen/querier.js';
+import { toExternalId, toInternalId } from '#src/extid.js';
 
 type Bindings = {
   ASSETS: {
@@ -14,7 +16,7 @@ type Bindings = {
 
 const app = new Hono<{ Bindings: Bindings }>();
 
-const getAssetBody = async (c: Context<{Bindings: Bindings}>, path: string) => {
+const assetAsync = async (c: Context<{Bindings: Bindings}>, path: string) => {
   if (c.env.PAGES_CONTENT_PORT) {
     const assetUrl = new URL(`http://127.0.0.1:${c.env.PAGES_CONTENT_PORT}${path}`);
     const resp = await fetch(assetUrl);
@@ -30,26 +32,35 @@ const getAssetBody = async (c: Context<{Bindings: Bindings}>, path: string) => {
 }
 
 app.get('/var/issues', async (c) => {
-  const serverData: IssueAbstract[] = [
-    { id: '001', title: 'Issue 1' },
-    { id: '002', title: 'Issue 2' },
-    { id: '003', title: 'Issue 3' },
-  ];
-  const assetBody = await getAssetBody(c, "/tmpl/issues");
+  const issues = await issuesAsync(c.env.DB);
+  if (!issues.success) {
+    return c.text(issues.error);
+  }
+  const serverData: IssueAbstract[] = issues.results.map(issue =>
+    ({
+      id: toExternalId(issue.id),
+      title: issue.title,
+    })
+  );
+  const body = await assetAsync(c, "/tmpl/issues");
   const serverDataScript = `<script>window.issueAbstracts=${JSON.stringify(serverData)}</script>`;
-  return c.html(assetBody.replace('</head>', `${serverDataScript}</head>`));
+  return c.html(body.replace('</head>', `${serverDataScript}</head>`));
 });
 
 app.get('/var/issues/:id', async (c) => {
-  const id = parseInt(c.req.param("id") || "0");
-  const assetBody = await getAssetBody(c, "/tmpl/issue");
+  const extId = c.req.param("id") || "";
+  const body = await assetAsync(c, "/tmpl/issue");
+  const issue = await issueAsync(c.env.DB, { id: toInternalId(extId) });
+  if (!issue) {
+    return c.text("Issue not found");
+  }
   const serverData: Issue = {
-    id: id.toString(),
-    title: "Foo Title",
-    description: "Foo Description",
-  };
+    id: extId,
+    title: issue.title,
+    description: issue.description,
+  }
   const serverDataScript = `<script>window.issue=${JSON.stringify(serverData)}</script>`;
-  return c.html(assetBody.replace('</head>', `${serverDataScript}</head>`));
+  return c.html(body.replace('</head>', `${serverDataScript}</head>`));
 });
 
 export const onRequest = pagesHandle(app);
