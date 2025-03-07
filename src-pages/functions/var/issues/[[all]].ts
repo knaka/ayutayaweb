@@ -10,7 +10,7 @@ type Bindings = {
     fetch: typeof fetch;
   },
   DB: D1Database,
-  PAGES_CONTENT_PORT?: string,
+  PAGES_CONTENT_PORT?: string, // for local development
 };
 
 /**
