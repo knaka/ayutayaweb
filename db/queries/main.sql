@@ -25,12 +25,17 @@ ORDER BY id
 -- name: UpdateIssueAsync :exec
 UPDATE issues
 SET
-  title = ?,
-  description = ?,
+  title = CASE WHEN CAST(sqlc.narg(opt_title) AS text) IS NOT NULL THEN sqlc.narg(opt_title) ELSE title END,
+  description = CASE WHEN CAST(sqlc.narg(opt_description) AS text) IS NOT NULL THEN sqlc.narg(opt_description) ELSE description END,
   updated_at = datetime('now')
 WHERE
-  CAST(sqlc.narg(opt_id) AS integer) = issues.id OR
-  CAST(sqlc.narg(opt_title) AS text) = issues.title
+  ? = issues.id
+;
+
+-- name: DeleteIssueAsync :exec
+DELETE FROM issues
+WHERE
+  ? = issues.id
 ;
 
 -- name: NewAuthorAsync :exec
