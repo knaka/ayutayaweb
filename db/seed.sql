@@ -4,18 +4,18 @@ INSERT INTO issues (
   updated_at
 ) VALUES
   (
-    'Issue 1',
-    'Description for issue 1',
+    'Issue foo',
+    'Description for issue Foo',
     datetime('now')
   )
   , (
-    'Issue 2',
-    'Description for issue 2',
+    'Issue bar',
+    'Description for issue Bar',
     datetime('now')
   )
   , (
-    'Issue 3',
-    'Description for issue 3',
+    'Issue baz',
+    'Description for issue Baz',
     datetime('now')
   )
 ;
