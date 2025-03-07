@@ -13,9 +13,10 @@ type Bindings = {
   PAGES_CONTENT_PORT?: string,
 };
 
-const app = new Hono<{ Bindings: Bindings }>();
-
-const assetAsync = async (c: Context<{Bindings: Bindings}>, path: string) => {
+/**
+ * Fetch an asset from the content server or Cloudflare Pages
+ */
+async function assetAsync(c: Context<{Bindings: Bindings}>, path: string) {
   if (c.env.PAGES_CONTENT_PORT) {
     const assetUrl = new URL(`http://127.0.0.1:${c.env.PAGES_CONTENT_PORT}${path}`);
     const resp = await fetch(assetUrl);
@@ -29,6 +30,8 @@ const assetAsync = async (c: Context<{Bindings: Bindings}>, path: string) => {
   const resp = await c.env.ASSETS.fetch(assetUrl)
   return await resp.text()
 }
+
+const app = new Hono<{ Bindings: Bindings }>();
 
 app.get('/var/issues', async (c) => {
   const issues = await issuesAsync(c.env.DB);
