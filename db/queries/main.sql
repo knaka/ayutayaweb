@@ -31,3 +31,24 @@ SET
 WHERE
   CAST(sqlc.narg(opt_id) AS integer) = issues.id OR
   CAST(sqlc.narg(opt_title) AS text) = issues.title
+;
+
+-- name: NewAuthorAsync :exec
+INSERT INTO authors (
+  name,
+  updated_at
+) VALUES (
+  ?,
+  datetime('now')
+);
+
+-- name: NewBookAsync :exec
+INSERT INTO books (
+  title,
+  author_id,
+  updated_at
+) VALUES (
+  ?,
+  ?,
+  datetime('now')
+);
