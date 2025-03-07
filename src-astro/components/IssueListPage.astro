@@ -1,0 +1,7 @@
+---
+import PageLayout from './PageLayout.astro';
+import ReactIssueList from './ReactIssueList';
+---
+<PageLayout title='Issues'>
+  <ReactIssueList slot="main" client:only />
+</PageLayout>

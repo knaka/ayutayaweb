@@ -10,6 +10,9 @@
 . ./task-dev-session.lib.sh
 . ./task-sqlc.lib.sh
 . ./task-sqlc-ts.lib.sh
+. ./task-d1.lib.sh
+  set_db_schema_path "$PROJECT_DIR"/db/schema.sql
+  set_db_seed_path "$PROJECT_DIR"/db/seed.sql
 
 task_dev() {
   cleanup_session_env

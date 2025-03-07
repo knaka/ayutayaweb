@@ -16,11 +16,11 @@ export type IssueComponentInfo = {
   message?: string;
 }
 
-declare global {
-  interface Window {
-    __SERVER_DATA__?: IssueComponentInfo;
-  }
-}
+// declare global {
+//   interface Window {
+//     __SERVER_DATA__?: IssueComponentInfo;
+//   }
+// }
 
 type IssueComponentProps = {
   className?: string;
