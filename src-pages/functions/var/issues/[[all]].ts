@@ -22,7 +22,8 @@ async function assetAsync(c: Context<{Bindings: Bindings}>, path: string) {
     const resp = await fetch(assetUrl);
     return await resp.text();
   }
-  const assetUrl = URL.parse(c.req.url)
+  // URL.parse is not available in Cloudflare Edge Runtime
+  const assetUrl = new URL(c.req.url)
   if (! assetUrl) {
     throw new Error("Failed to parse URL")
   }
@@ -45,14 +46,14 @@ app.get('/var/issues', async (c) => {
       title: issue.title,
     })),
   };
-  const body = await assetAsync(c, "/tmpl/issues");
+  const body = await assetAsync(c, "/tmpl/issues.html");
   const serverDataScript = `<script>window.__SERVER_DATA__=${JSON.stringify(issueList)}</script>`;
   return c.html(body.replace('</head>', `${serverDataScript}</head>`));
 });
 
 app.get('/var/issues/:id', async (c) => {
   const extId = c.req.param("id") || "";
-  const body = await assetAsync(c, "/tmpl/issue");
+  const body = await assetAsync(c, "/tmpl/issue.html");
   const issue = await issueAsync(c.env.DB, { id: toInternalId(extId) });
   if (!issue) {
     return c.text("Issue not found");
