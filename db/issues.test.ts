@@ -1,5 +1,5 @@
 import { describe, expect, test, beforeEach, afterEach } from 'vitest'
-import { newIssueAsync, issueAsync } from './sqlcgen/querier.js'
+import { newIssueAsync, issueAsync, updateIssueAsync, deleteIssueAsync } from './sqlcgen/querier.js'
 import { setup, tearDown } from './test_utils.js';
 
 beforeEach(async (ctx) => {
@@ -19,5 +19,27 @@ describe('issue', () => {
     const issue = await issueAsync(ctx.d1, { id });
     expect(issue.id).toBe(id);
     expect(issue.description).toBe('Description 1');
+
+    const result2 = await updateIssueAsync(ctx.d1, { id, optDescription: 'Description modified' });
+    expect(result2.success).toBe(true);
+
+    const issue2 = await issueAsync(ctx.d1, { id });
+    expect(issue2.id).toBe(id);
+    expect(issue2.title).toBe('Issue 1');
+    expect(issue2.description).toBe('Description modified');
+    
+    const result3 = await updateIssueAsync(ctx.d1, { id, optTitle: 'Title modified' });
+    expect(result3.success).toBe(true);
+
+    const issue3 = await issueAsync(ctx.d1, { id });
+    expect(issue3.id).toBe(id);
+    expect(issue3.title).toBe('Title modified');
+    expect(issue3.description).toBe('Description modified');
+
+    const result4 = await deleteIssueAsync(ctx.d1, { id });
+    expect(result4.success).toBe(true);
+
+    const issue4 = await issueAsync(ctx.d1, { id });
+    expect(issue4).toBe(null);
   });
 });

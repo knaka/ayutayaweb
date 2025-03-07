@@ -29,7 +29,7 @@ SET
   description = CASE WHEN CAST(sqlc.narg(opt_description) AS text) IS NOT NULL THEN sqlc.narg(opt_description) ELSE description END,
   updated_at = datetime('now')
 WHERE
-  ? = issues.id
+  sqlc.narg(id) = issues.id
 ;
 
 -- name: DeleteIssueAsync :exec
