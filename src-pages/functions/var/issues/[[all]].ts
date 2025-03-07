@@ -36,14 +36,14 @@ app.get('/var/issues', async (c) => {
   if (!issues.success) {
     return c.text(issues.error);
   }
-  const serverData: IssueAbstract[] = issues.results.map(issue =>
+  const issueAbstractsData: IssueAbstract[] = issues.results.map(issue =>
     ({
       id: toExternalId(issue.id),
       title: issue.title,
     })
   );
   const body = await assetAsync(c, "/tmpl/issues");
-  const serverDataScript = `<script>window.issueAbstracts=${JSON.stringify(serverData)}</script>`;
+  const serverDataScript = `<script>window.issueAbstracts=${JSON.stringify(issueAbstractsData)}</script>`;
   return c.html(body.replace('</head>', `${serverDataScript}</head>`));
 });
 
@@ -54,12 +54,12 @@ app.get('/var/issues/:id', async (c) => {
   if (!issue) {
     return c.text("Issue not found");
   }
-  const serverData: Issue = {
+  const issueData: Issue = {
     id: extId,
     title: issue.title,
     description: issue.description,
   }
-  const serverDataScript = `<script>window.issue=${JSON.stringify(serverData)}</script>`;
+  const serverDataScript = `<script>window.issue=${JSON.stringify(issueData)}</script>`;
   return c.html(body.replace('</head>', `${serverDataScript}</head>`));
 });
 
