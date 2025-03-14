@@ -1,0 +1,22 @@
+---
+import PostItemPage from '#src_astro/components/PostItemPage.astro';
+
+import { obtainStore } from '#src/posts';
+
+export async function getStaticPaths() {
+  const store = obtainStore()
+
+  const posts = await store.postsAsync();
+  return (posts).map((post) => ({
+    params: {
+      id: post.id,
+    },
+    props: {
+      post,
+    },
+  }));
+}
+
+const { post } = Astro.props;
+---
+<PostItemPage post={post} />

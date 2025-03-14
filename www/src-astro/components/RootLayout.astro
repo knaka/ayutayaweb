@@ -1,0 +1,27 @@
+---
+import { postsPath } from '#src_astro/endpoints';
+import styles from './styles.module.scss';
+
+const { title } = Astro.props;
+---
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<title>{title}</title>
+	</head>
+	<body class={styles.root}>
+		<aside class={styles.topbar}>
+			<nav>
+					<ul class={styles.navList}>
+						<li class={styles.leftItem}><a href="/">Top Page</a></li>
+						<li class={styles.rightItem}><a href="/about">About</a></li>
+						<li class={styles.rightItem}><a href={postsPath}>Blog Posts</a></li>
+					</ul>
+			</nav>
+		</aside>
+		<main class={styles.mainContent}>
+			<slot />
+		</main>
+	</body>
+</html>

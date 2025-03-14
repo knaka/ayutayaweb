@@ -1,0 +1,19 @@
+---
+import PageLayout from '#src_astro/components/PageLayout.astro';
+import { postsPath } from '#src_astro/endpoints';
+import PostList from './PostList.astro';
+import PostRecentFrame from './PostRecentFrame.astro'
+import styles from './PostRecentFrame.module.scss';
+
+import { Page } from 'astro';
+
+const { title, page } = Astro.props as {
+  title: string,
+  page: Page,
+};
+---
+<PageLayout title={title}>
+  <PostList slot="main" posts={page.data} page={page} />
+  <PostRecentFrame slot="sidebar" />
+  <!-- <iframe slot="sidebar" class={styles.frame} src={`${postsPath}/recent`} /> -->
+</PageLayout>

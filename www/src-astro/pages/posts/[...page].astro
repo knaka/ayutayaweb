@@ -1,0 +1,21 @@
+---
+import PostListPage from '#src_astro/components/PostListPage.astro';
+import { getStaticPathsSub } from '#src_astro/lib/posts';
+
+import { postsPath as path } from '#src_astro/endpoints.js'
+import { ensureEndpointPathCorrect } from '#src_astro/misc.js';
+ensureEndpointPathCorrect(path, import.meta.url);
+
+export async function getStaticPaths({ paginate }) {
+  return await getStaticPathsSub({ paginate });
+}
+
+const {} = Astro.params as { year: string };
+const { page } = Astro.props;
+
+let title = `Posts`;
+if (page.lastPage > 1) {
+  title += ` (Page ${page.currentPage} of ${page.lastPage})`;
+}
+---
+<PostListPage title={title} page={page} />
