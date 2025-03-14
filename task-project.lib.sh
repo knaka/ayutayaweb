@@ -8,12 +8,20 @@ subcmd_remix() { # Run remix.
   run_node_modules_bin @remix-run/dev dist/cli.js "$@"
 }
 
-task_dev() { # Start development server
-  subcmd_remix vite:dev
+: "${remix_project_dir_b4b3371:=$PROJECT_DIR}"
+
+set_remix_project_dir() {
+  remix_project_dir_b4b3371="$1"
 }
 
+set_remix_project_dir "$PROJECT_DIR"/svc
+
 task_remix__build() { # Build
-  subcmd_remix vite:build $PROJECT_DIR/remix/
+  subcmd_remix vite:build "$remix_project_dir_b4b3371"
+}
+
+task_remix__dev() { # Start development server
+  subcmd_remix vite:dev "$remix_project_dir_b4b3371"
 }
 
 task_build() { # Build
