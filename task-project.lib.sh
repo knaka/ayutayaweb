@@ -7,47 +7,12 @@
   set_astro_project_dir "$PROJECT_DIR"/www
 . ./task-pages.lib.sh
   set_pages_wrangler_toml_path "$PROJECT_DIR"/www/wrangler.toml
-
-subcmd_remix() { # Run remix.
-  run_node_modules_bin @remix-run/dev dist/cli.js "$@"
-}
-
-: "${remix_project_dir_b4b3371:=$PROJECT_DIR}"
-
-set_remix_project_dir() {
-  remix_project_dir_b4b3371="$1"
-}
-
-set_remix_project_dir "$PROJECT_DIR"/svc
-
-task_remix__build() { # Build
-  subcmd_remix vite:build "$remix_project_dir_b4b3371"
-}
-
-task_remix__dev() { # Start development server
-  subcmd_remix vite:dev "$remix_project_dir_b4b3371"
-}
+. ./task-remix.lib.sh
+  set_remix_project_dir "$PROJECT_DIR"/svc
+. ./task-workers.lib.sh
+  set_workers_wrangler_toml_path "$PROJECT_DIR/workers-wrangler.toml"
 
 task_build() { # Build
+  task_astro__build
   task_remix__build
-}
-
-subcmd_workers_wrangler() { # Run the Cloudflare Wrangler command.
-  run_node_modules_bin wrangler bin/wrangler.js --config "$workers_wrangler_toml_path" "$@"
-}
-
-: "${workers_wrangler_toml_path:=$PROJECT_DIR/wrangler.toml}"
-
-set_workers_wrangler_toml_path() {
-  workers_wrangler_toml_path="$1"
-}
-
-set_workers_wrangler_toml_path "$PROJECT_DIR/workers-wrangler.toml"
-
-task_workers__prod__deploy() { # Deploy the project to the production environment.
-  subcmd_workers_wrangler deploy "$@"
-}
-
-task_workers__prev__deploy() { # Deploy the project to the preview environment.
-  task_workers__prod__deploy --env preview
 }
