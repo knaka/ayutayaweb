@@ -29,11 +29,22 @@ const viteCommon = {
 // https://astro.build/config
 export default defineConfig((process.env.NODE_ENV === "development")? {
   ...common,
+  // Not working?
+  cacheDir: "../node_modules/.vite",
   trailingSlash: "never",
   vite: {
     ...viteCommon,
     server: {
+      fs: {
+        allow: [
+          ".",
+          "../node_modules",
+        ]
+      },
       proxy: {
+        "/app": `http://127.0.0.1:${process.env.ASTRO_DYNAMIC_PORT || 18080}`,
+        "^/@id/.*remix.*": `http://127.0.0.1:${process.env.ASTRO_DYNAMIC_PORT || 18080}`,
+        // "^/node_modules/.*remix.*": `http://127.0.0.1:${process.env.ASTRO_DYNAMIC_PORT || 18080}`,
         "/api": {
           target: `http://127.0.0.1:${process.env.ASTRO_DYNAMIC_PORT || 18080}`,
           changeOrigin: true,
