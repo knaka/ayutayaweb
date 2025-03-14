@@ -1,0 +1,39 @@
+#!/usr/bin/env sh
+# vim: set filetype=sh tabstop=2 shiftwidth=2 expandtab :
+# shellcheck shell=sh
+set -o nounset -o errexit
+
+export ARG0="$0"
+export ARG0BASE="${0##*/}"
+arg0_dir_path="${0%/*}"
+script_path=
+if test -r "$arg0_dir_path"/"$ARG0BASE".sh
+then
+  script_path="$arg0_dir_path"/"$ARG0BASE".sh
+elif test -r "$arg0_dir_path"/tasks/"$ARG0BASE".sh
+then
+  script_path="$arg0_dir_path"/tasks/"$ARG0BASE".sh
+else
+  echo "No script found for $ARG0BASE." >&2
+  exit 1
+fi
+for SH in /bin/dash /bin/ash /bin/bash
+do
+  # Avoid using Dash on Debian because which is built with --disable-lineno option.
+  if test "$SH" = /bin/dash && test -e /etc/debian_version
+  then
+    continue
+  fi
+  # Avoid using Bash on macOS because which is locked to version 3.* and buggy.
+  if test "$SH" = "/bin/bash" && test -e /System/Library/CoreServices/SystemVersion.plist
+  then
+    continue
+  fi
+  if test -x "$SH"
+  then
+    export SH
+    exec "$SH" "$script_path" "$@"
+  fi
+done
+echo "No appropriate shell found." >&2
+exit 1
