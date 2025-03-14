@@ -12,20 +12,30 @@ task_dev() { # Start development server
   subcmd_remix vite:dev
 }
 
+task_remix__build() { # Build
+  subcmd_remix vite:build $PROJECT_DIR/remix/
+}
+
 task_build() { # Build
-  subcmd_remix vite:build
+  task_remix__build
 }
 
 subcmd_wrangler() { # Run the Cloudflare Wrangler command.
   run_node_modules_bin wrangler bin/wrangler.js "$@"
 }
 
-: "${wrangler_toml_path:=$PROJECT_DIR/wrangler.toml}"
+: "${workers_wrangler_toml_path:=$PROJECT_DIR/wrangler.toml}"
+
+set_workers_wrangler_toml_path() {
+  workers_wrangler_toml_path="$1"
+}
+
+set_workers_wrangler_toml_path "$PROJECT_DIR/workers-wrangler.toml"
 
 task_workers__prod__deploy() { # Deploy the project to the production environment.
-  subcmd_wrangler deploy
+  subcmd_wrangler --config "$workers_wrangler_toml_path" deploy "$@"
 }
 
 task_workers__prev__deploy() { # Deploy the project to the preview environment.
-  subcmd_wrangler deploy --env preview
+  task_workers__prod__deploy --env preview
 }
