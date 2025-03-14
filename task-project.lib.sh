@@ -12,6 +12,10 @@ task_dev() { # Start development server
   subcmd_remix vite:dev
 }
 
+task_build() { # Build
+  subcmd_remix vite:build
+}
+
 subcmd_wrangler() { # Run the Cloudflare Wrangler command.
   run_node_modules_bin wrangler bin/wrangler.js "$@"
 }
