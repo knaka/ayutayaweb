@@ -5,6 +5,8 @@
 . ./task-node.lib.sh
 . ./task-astro.lib.sh
   set_astro_project_dir "$PROJECT_DIR"/www
+. ./task-pages.lib.sh
+  set_pages_wrangler_toml_path "$PROJECT_DIR"/www/wrangler.toml
 
 subcmd_remix() { # Run remix.
   run_node_modules_bin @remix-run/dev dist/cli.js "$@"
@@ -30,8 +32,8 @@ task_build() { # Build
   task_remix__build
 }
 
-subcmd_wrangler() { # Run the Cloudflare Wrangler command.
-  run_node_modules_bin wrangler bin/wrangler.js "$@"
+subcmd_workers_wrangler() { # Run the Cloudflare Wrangler command.
+  run_node_modules_bin wrangler bin/wrangler.js --config "$workers_wrangler_toml_path" "$@"
 }
 
 : "${workers_wrangler_toml_path:=$PROJECT_DIR/wrangler.toml}"
@@ -43,7 +45,7 @@ set_workers_wrangler_toml_path() {
 set_workers_wrangler_toml_path "$PROJECT_DIR/workers-wrangler.toml"
 
 task_workers__prod__deploy() { # Deploy the project to the production environment.
-  subcmd_wrangler --config "$workers_wrangler_toml_path" deploy "$@"
+  subcmd_workers_wrangler deploy "$@"
 }
 
 task_workers__prev__deploy() { # Deploy the project to the preview environment.
