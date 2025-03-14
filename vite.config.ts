@@ -13,6 +13,7 @@ declare module "@remix-run/cloudflare" {
 }
 
 export default defineConfig({
+  // publicDir: "hoge",
   plugins: [
     cloudflareDevProxyVitePlugin({
       getLoadContext,
@@ -54,5 +55,6 @@ export default defineConfig({
   },
   build: {
     minify: true,
+    assetsDir: "_remix",
   },
 });

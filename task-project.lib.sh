@@ -22,6 +22,10 @@ subcmd_wrangler() { # Run the Cloudflare Wrangler command.
 
 : "${wrangler_toml_path:=$PROJECT_DIR/wrangler.toml}"
 
-task_deploy() { # Deploy
+task_workers__prod__deploy() { # Deploy the project to the production environment.
   subcmd_wrangler deploy
+}
+
+task_workers__prev__deploy() { # Deploy the project to the preview environment.
+  subcmd_wrangler deploy --env preview
 }
