@@ -3,6 +3,8 @@
 "${sourced_2635e26-false}" && return 0; sourced_2635e26=true
 
 . ./task-node.lib.sh
+. ./task-astro.lib.sh
+  set_astro_project_dir "$PROJECT_DIR"/www
 
 subcmd_remix() { # Run remix.
   run_node_modules_bin @remix-run/dev dist/cli.js "$@"
