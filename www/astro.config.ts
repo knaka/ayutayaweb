@@ -1,8 +1,8 @@
 // @ts-check
 import { defineConfig } from 'astro/config';
-import tsconfigPaths from 'vite-tsconfig-paths'
+import tsconfigPaths from 'vite-tsconfig-paths';
 import react from '@astrojs/react';
- 
+
 const common = {
   srcDir: "./src-astro",
   publicDir: "./public",
@@ -10,7 +10,6 @@ const common = {
     strict: true,
   },
   integrations: [react()],
-  // base: "/foo",
 };
 
 const viteCommon = {
@@ -23,7 +22,10 @@ const viteCommon = {
         api: 'modern',
       },
     }
-  }
+  },
+  plugins: [
+    tsconfigPaths(),
+  ],
 };
 
 // https://astro.build/config
@@ -34,6 +36,7 @@ export default defineConfig((process.env.NODE_ENV === "development")? {
   trailingSlash: "never",
   vite: {
     ...viteCommon,
+    plugins: [],
     server: {
       fs: {
         allow: [
@@ -42,9 +45,10 @@ export default defineConfig((process.env.NODE_ENV === "development")? {
         ]
       },
       proxy: {
+        // Server Options | Vite https://vite.dev/config/server-options.html
+        // "if the key starts with `^`, it will be interpreted as a `RegExp`."
         "/app": `http://127.0.0.1:${process.env.ASTRO_DYNAMIC_PORT || 18080}`,
         "^/@id/.*remix.*": `http://127.0.0.1:${process.env.ASTRO_DYNAMIC_PORT || 18080}`,
-        // "^/node_modules/.*remix.*": `http://127.0.0.1:${process.env.ASTRO_DYNAMIC_PORT || 18080}`,
         "/api": {
           target: `http://127.0.0.1:${process.env.ASTRO_DYNAMIC_PORT || 18080}`,
           changeOrigin: true,
@@ -55,7 +59,6 @@ export default defineConfig((process.env.NODE_ENV === "development")? {
         }
       }
     },
-    plugins: [tsconfigPaths()],
   }
 }: {
   ...common,
