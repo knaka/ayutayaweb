@@ -1,5 +1,5 @@
-import { param, type Param } from '#src_astro/pages/tmpl/_issues.js';
-import { issuesPath } from '#src_astro/endpoints.js';
+import { param, type Param } from '#/pages/tmpl/_issues.js';
+import { issuesPath } from '#/endpoints.js';
 
 export default () => {
   const issues = (typeof window !== "undefined" && window[param])?

@@ -1,11 +1,11 @@
 ---
 import styles from './PostItemPage.module.scss';
-import PageLayout from '#src_astro/components/PageLayout.astro';
+import PageLayout from '#/components/PageLayout.astro';
 import PostRecentFrame from './PostRecentFrame.astro'
 
 const { post } = Astro.props as { post: Markdown };
 const bodyHtml = await post.bodyHtml()
-import { toSafeString } from '#src_astro/lib/posts.js';
+import { toSafeString } from '#/lib/posts.js';
 
 import { Markdown } from 'lib/posts';
 ---

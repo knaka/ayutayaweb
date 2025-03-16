@@ -1,4 +1,4 @@
-export { tmplIssuePath as path } from '#src_astro/endpoints.js';
+export { tmplIssuePath as path } from '#/endpoints.js';
 
 export type Param = {
   id: string;

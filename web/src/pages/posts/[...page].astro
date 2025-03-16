@@ -1,9 +1,9 @@
 ---
-import PostListPage from '#src_astro/components/PostListPage.astro';
-import { getStaticPathsSub } from '#src_astro/lib/posts';
+import PostListPage from '#/components/PostListPage.astro';
+import { getStaticPathsSub } from '#/lib/posts';
 
-import { postsPath as path } from '#src_astro/endpoints.js'
-import { ensureEndpointPathCorrect } from '#src_astro/misc.js';
+import { postsPath as path } from '#/endpoints.js'
+import { ensureEndpointPathCorrect } from '#/misc.js';
 ensureEndpointPathCorrect(path, import.meta.url);
 
 export async function getStaticPaths({ paginate }) {

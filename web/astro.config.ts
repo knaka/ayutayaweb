@@ -4,7 +4,7 @@ import tsconfigPaths from 'vite-tsconfig-paths';
 import react from '@astrojs/react';
 
 const common = {
-  srcDir: "./src-astro",
+  srcDir: "./src",
   publicDir: "./public",
   typescript: {
     strict: true,

@@ -1,4 +1,4 @@
-import { postsPath } from '#src_astro/endpoints.js';
+import { postsPath } from '#/endpoints.js';
 import styles from './styles.module.scss';
 
 export const Topbar = () => {

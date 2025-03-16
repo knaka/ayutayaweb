@@ -11,7 +11,7 @@ import { Topbar } from '../../components/ReactTopbar';
 
 import styles from "./styles.module.scss";
 // import commonStyles from '../../components/styles.module.scss';
-import commonStyles from '#src_astro/components/styles.module.scss';
+import commonStyles from '#/components/styles.module.scss';
 
 export const links: LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },

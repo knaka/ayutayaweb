@@ -2,8 +2,8 @@
 import { Markdown } from 'lib/posts';
 import styles from './PostList.module.scss';
 import { Page } from 'astro';
-import PageNavigator from '#src_astro/components/PageNavigator.astro';
-import { toSafeString } from '#src_astro/lib/posts';
+import PageNavigator from '#/components/PageNavigator.astro';
+import { toSafeString } from '#/lib/posts';
 
 const {
   posts,
@@ -15,7 +15,7 @@ const {
   currentTag: string | null,
 };
 
-import { postsPath } from '#src_astro/endpoints.js';
+import { postsPath } from '#/endpoints.js';
 ---
 <div>
   <PageNavigator page={page} />

@@ -1,8 +1,8 @@
 ---
-import PlainLayout from "#src_astro/components/PlainLayout.astro";
+import PlainLayout from "#/components/PlainLayout.astro";
 import { obtainStore, Markdown, Order } from 'lib/posts.js';
 import styles from './PostRecentPage.module.scss';
-import { postsPath } from '#src_astro/endpoints.js';
+import { postsPath } from '#/endpoints.js';
 
 const store = obtainStore()
 const posts = await store.postsAsync();

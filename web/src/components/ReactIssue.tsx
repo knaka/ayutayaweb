@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 
 import styles from './ReactIssue.module.scss'
 
-import { param, type Param } from '#src_astro/pages/tmpl/_issue.js';
+import { param, type Param } from '#/pages/tmpl/_issue.js';
 
 export default () => {
   const issue = (typeof window !== "undefined" && window[param])?

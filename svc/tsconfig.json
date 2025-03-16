@@ -28,7 +28,7 @@
     "forceConsistentCasingInFileNames": true,
     "baseUrl": ".",
     "paths": {
-      "#src_astro/*": ["../www/src-astro/*"],
+      "#/*": ["../www/src-astro/*"],
       "~/*": ["./app/*"]
     },
 
