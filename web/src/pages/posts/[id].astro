@@ -1,7 +1,7 @@
 ---
 import PostItemPage from '#src_astro/components/PostItemPage.astro';
 
-import { obtainStore } from '#src/posts';
+import { obtainStore } from 'lib/posts';
 
 export async function getStaticPaths() {
   const store = obtainStore()

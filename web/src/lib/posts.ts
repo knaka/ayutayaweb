@@ -1,5 +1,5 @@
-import { obtainStore, Markdown } from '#src/posts.js';
-import { toBase64 } from '#src/base64.js';
+import { obtainStore, Markdown } from 'lib/posts.js';
+import { toBase64 } from 'lib/base64.js';
 
 export function toSafeString(tag: string): string {
   if (/^[a-zA-z0-9_]+$/.test(tag)) {
