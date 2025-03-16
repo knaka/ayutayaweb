@@ -35,12 +35,13 @@ export default defineConfig((process.env.NODE_ENV === "development")? {
   vite: {
     ...viteCommon,
     plugins: [],
-    cacheDir: "../node_modules/.vite",
+    cacheDir: "../node_modules/.vite-astro",
     server: {
       fs: {
         allow: [
           ".",
           "../node_modules",
+          "../shared",
         ]
       },
       proxy: {
@@ -48,6 +49,7 @@ export default defineConfig((process.env.NODE_ENV === "development")? {
         // "if the key starts with `^`, it will be interpreted as a `RegExp`."
         "/app": `http://127.0.0.1:${process.env.ASTRO_DYNAMIC_PORT || 18080}`,
         "^/@id/.*remix.*": `http://127.0.0.1:${process.env.ASTRO_DYNAMIC_PORT || 18080}`,
+        "^.*vite-remix.*": `http://127.0.0.1:${process.env.ASTRO_DYNAMIC_PORT || 18080}`,
         "/api": `http://127.0.0.1:${process.env.ASTRO_DYNAMIC_PORT || 18080}`,
         "/var": `http://127.0.0.1:${process.env.ASTRO_DYNAMIC_PORT || 18080}`,
       },
