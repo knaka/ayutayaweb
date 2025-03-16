@@ -1,0 +1,226 @@
+:root {
+  --color-gray0: #ffffff;
+  --color-gray10: #f5f6f6;
+  --color-gray20: #edeeee;
+  --color-gray30: #dfe0e0;
+  --color-gray40: #bcbdbd;
+  --color-gray50: #9c9e9e;
+  --color-gray60: #7a7d7d;
+  --color-gray70: #5e6060;
+  --color-gray80: #494b4b;
+  --color-gray90: #3a3c3c;
+  --color-gray100: #2f3232;
+  --color-gray110: #1d2020;
+  --color-green10: #f0fae9;
+  --color-green20: #dff4cf;
+  --color-green30: #c7ecab;
+  --color-green40: #aae280;
+  --color-green50: #8ad74f;
+  --color-green60: #67cb1b;
+  --color-green70: #4cb100;
+  --color-green80: #357a00;
+  --color-green90: #2b6300;
+  --color-green100: #1c4100;
+  --color-green110: #102500;
+  --color-blue10: #eff6fc;
+  --color-blue20: #dbebf8;
+  --color-blue30: #c0ddf3;
+  --color-blue40: #a0cbed;
+  --color-blue50: #7bb7e6;
+  --color-blue60: #54a2df;
+  --color-blue70: #3987c4;
+  --color-blue80: #2c6897;
+  --color-blue90: #204c6e;
+  --color-blue100: #153248;
+  --color-blue110: #0c1d2a;
+  --color-yellow10: #fbf5e0;
+  --color-yellow20: #fff0b3;
+  --color-yellow30: #ffe380;
+  --color-yellow40: #ffdb57;
+  --color-yellow50: #ffce1f;
+  --color-yellow60: #e0af00;
+  --color-yellow70: #ae8803;
+  --color-yellow80: #866903;
+  --color-yellow90: #685103;
+  --color-yellow100: #3f3203;
+  --color-yellow110: #261e03;
+  --color-red10: #fff0f0;
+  --color-red20: #ffdbdb;
+  --color-red30: #ffb8b8;
+  --color-red40: #ff7575;
+  --color-red50: #ff4d4d;
+  --color-red60: #ec1313;
+  --color-red70: #bd0505;
+  --color-red80: #970404;
+  --color-red90: #6d0303;
+  --color-red100: #460202;
+  --color-red110: #2a0101;
+  --color-qiitaGreen: #55c500;
+  --color-teamBlue: #4097db;
+  --color-twitter: #000000;
+  --color-github: #1a1414;
+  --color-hatena-blog: #333333;
+  --color-findy: #155aa8;
+  --color-findyDim: #003d83;
+  --color-background: var(--color-gray10);
+  --color-surface: var(--color-gray0);
+  --color-surfaceVariant: var(--color-gray20);
+  --color-surfaceVariantDim: var(--color-gray30);
+  --color-greenContainer: var(--color-green80);
+  --color-greenContainerDim: var(--color-green90);
+  --color-greenContainerVariant: var(--color-green20);
+  --color-greenContainerVariantDim: var(--color-green30);
+  --color-blueContainer: var(--color-blue80);
+  --color-blueContainerDim: var(--color-blue90);
+  --color-blueContainerVariant: var(--color-blue20);
+  --color-blueContainerVariantDim: var(--color-blue30);
+  --color-yellowContainer: var(--color-yellow80);
+  --color-yellowContainerDim: var(--color-yellow90);
+  --color-yellowContainerVariant: var(--color-yellow20);
+  --color-yellowContainerVariantDim: var(--color-yellow30);
+  --color-redContainer: var(--color-red70);
+  --color-redContainerDim: var(--color-red80);
+  --color-redContainerVariant: var(--color-red20);
+  --color-redContainerVariantDim: var(--color-red30);
+  --color-grayContainer: var(--color-gray80);
+  --color-grayContainerDim: var(--color-gray90);
+  --color-grayContainerVariant: var(--color-gray30);
+  --color-grayContainerVariantDim: var(--color-gray40);
+  --color-bronzeContainer: #ffdcb3;
+  --color-divider: rgb(0 0 0 / 12%);
+  --color-greenBorder: var(--color-green80);
+  --color-blueBorder: var(--color-blue80);
+  --color-yellowBorder: var(--color-yellow80);
+  --color-redBorder: var(--color-red70);
+  --color-grayBorder: var(--color-gray80);
+  --color-highEmphasis: rgb(0 0 0 / 87%);
+  --color-mediumEmphasis: rgb(0 0 0 / 60%);
+  --color-disabled: rgb(0 0 0 / 38%);
+  --color-onContainerText: rgb(255 255 255 / 92%);
+  --color-greenText: var(--color-green80);
+  --color-greenTextVariant: var(--color-green70);
+  --color-blueText: var(--color-blue80);
+  --color-yellowText: var(--color-yellow80);
+  --color-yellowTextVariant: var(--color-yellow70);
+  --color-redText: var(--color-red70);
+  --color-grayText: var(--color-gray80);
+  --color-grayVisitedText: var(--color-gray70);
+  --color-bronzeText: #663700;
+  --color-scrim: rgb(0 0 0 / 32%);
+}
+
+@mixin common-root($overflow) {
+  font-family: system-ui, sans-serif;
+  background: var(--color-grey10);
+  margin: 0;
+  // margin: 0 auto;
+  // padding: 20px;
+  padding: 0;
+  overflow-y: $overflow;
+
+  code {
+    font-family:
+      Menlo,
+      Monaco,
+      Lucida Console,
+      Liberation Mono,
+      DejaVu Sans Mono,
+      Bitstream Vera Sans Mono,
+      Courier New,
+      monospace;
+  }
+
+  a {
+    text-decoration: none;
+    color: var(--color-blue70);
+  }
+  
+  a:hover {
+    text-decoration: underline;
+  }
+}
+
+.root {
+  @include common-root(scroll);
+}
+
+.plain {
+  // @include common-root(hidden);
+  @include common-root(scroll);
+}
+
+.container {
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+}
+
+.main {
+  flex: 3;
+  padding: 20px;
+  max-width: 700px;
+}
+
+.left_sidebar {
+  flex: 1;
+  padding: 20px;
+  background-color: var(--color-grey10);
+  max-width: 200px;
+}
+
+.right_sidebar {
+  // flex: 1;
+  // padding: 20px;
+  // background-color: var(--color-grey10);
+  // max-width: 200px;
+  // // height: 100vh;
+  // height: 100%;
+  // // overflow-y: auto;
+  // display: flex;
+  // flex-direction: column;
+
+  // position: static;
+  // position: fixed;
+  // This makes the sidebar over the top bar. ???
+  // position: relative;
+  // z-index: 0;
+  // position: sticky;
+  // top: 3vh;
+}
+
+.frame {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.topbar {
+  // position: fixed;
+  position: sticky;
+  top: 0;
+  width: 100%;
+  background-color: #f8f9fa;
+  // padding: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.mainContent {
+  padding: 1rem;
+  // margin-top: 30px; // Adjust this value based on the height of your top bar
+}
+
+.navList {
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  padding: 1rem;
+  margin: 0;
+}
+
+.leftItem {
+  margin-right: auto;
+}
+
+.rightItem {
+  margin-left: 1rem;
+}

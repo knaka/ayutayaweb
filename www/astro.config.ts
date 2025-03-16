@@ -42,6 +42,7 @@ export default defineConfig((process.env.NODE_ENV === "development")? {
         allow: [
           ".",
           "../node_modules",
+          "../components",
         ]
       },
       proxy: {

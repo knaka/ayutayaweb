@@ -1,6 +1,7 @@
 ---
-import { postsPath } from '#src_astro/endpoints';
+// import { postsPath } from '#src_astro/endpoints';
 import styles from './styles.module.scss';
+import { Topbar } from './ReactTopbar.jsx';
 
 const { title } = Astro.props;
 ---
@@ -11,15 +12,7 @@ const { title } = Astro.props;
 		<title>{title}</title>
 	</head>
 	<body class={styles.root}>
-		<aside class={styles.topbar}>
-			<nav>
-					<ul class={styles.navList}>
-						<li class={styles.leftItem}><a href="/">Top Page</a></li>
-						<li class={styles.rightItem}><a href="/about">About</a></li>
-						<li class={styles.rightItem}><a href={postsPath}>Blog Posts</a></li>
-					</ul>
-			</nav>
-		</aside>
+		<Topbar />
 		<main class={styles.mainContent}>
 			<slot />
 		</main>

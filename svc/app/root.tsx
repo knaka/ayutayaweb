@@ -7,7 +7,11 @@ import {
 } from "@remix-run/react";
 import type { LinksFunction } from "@remix-run/cloudflare";
 
+import { Topbar } from '../../components/ReactTopbar';
+
 import styles from "./styles.module.scss";
+// import commonStyles from '../../components/styles.module.scss';
+import commonStyles from '#src_astro/components/styles.module.scss';
 
 export const links: LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -31,7 +35,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
       </head>
-      <body className={styles.green}>
+      <body className={commonStyles.root}>
+        <Topbar />
         {children}
         <ScrollRestoration />
         <Scripts />

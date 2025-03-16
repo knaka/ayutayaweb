@@ -15,6 +15,16 @@ declare module "@remix-run/cloudflare" {
 export default defineConfig({
   // publicDir: "hoge",
   cacheDir: "../node_modules/.vite",
+  css: {
+    preprocessorOptions: {
+      scss: {
+        api: 'modern',
+      },
+      sass: {
+        api: 'modern',
+      },
+    }
+  },
   plugins: [
     cloudflareDevProxyVitePlugin({
       getLoadContext,
