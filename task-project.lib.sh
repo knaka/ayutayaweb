@@ -5,8 +5,6 @@
 . ./task-node.lib.sh
 . ./task-astro.lib.sh
   set_astro_project_dir "$PROJECT_DIR"/web
-. ./task-pages.lib.sh
-  set_pages_wrangler_toml_path "$PROJECT_DIR"/web/wrangler.toml
 . ./task-remix.lib.sh
   set_remix_project_dir "$PROJECT_DIR"/svc
 . ./task-workers.lib.sh

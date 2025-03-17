@@ -28,6 +28,8 @@ const viteCommon = {
   ],
 };
 
+const dynamicUrl = `http://127.0.0.1:${process.env.ASTRO_DYNAMIC_PORT || 18080}`;
+
 // https://astro.build/config
 export default defineConfig((process.env.NODE_ENV === "development")? {
   ...common,
@@ -41,17 +43,18 @@ export default defineConfig((process.env.NODE_ENV === "development")? {
         allow: [
           ".",
           "../node_modules",
-          "../shared",
+          "../lib",
         ]
       },
       proxy: {
         // Server Options | Vite https://vite.dev/config/server-options.html
         // "if the key starts with `^`, it will be interpreted as a `RegExp`."
-        "/app": `http://127.0.0.1:${process.env.ASTRO_DYNAMIC_PORT || 18080}`,
-        "^/@id/.*remix.*": `http://127.0.0.1:${process.env.ASTRO_DYNAMIC_PORT || 18080}`,
-        "^.*vite-remix.*": `http://127.0.0.1:${process.env.ASTRO_DYNAMIC_PORT || 18080}`,
-        "/api": `http://127.0.0.1:${process.env.ASTRO_DYNAMIC_PORT || 18080}`,
-        "/var": `http://127.0.0.1:${process.env.ASTRO_DYNAMIC_PORT || 18080}`,
+        "/api/": dynamicUrl,
+        "/var/": dynamicUrl,
+        // Remix development server
+        "/app/": dynamicUrl,
+        "^/@id/.*remix.*": dynamicUrl,
+        "^/.*vite-remix.*": dynamicUrl,
       },
     },
   },
