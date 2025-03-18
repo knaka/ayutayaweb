@@ -51,3 +51,7 @@ task_build() { # Build all
   task_astro__build
   task_merge
 }
+
+subcmd_vitest() { # Run tests with Vite.
+  run_node_modules_bin vitest vitest.mjs "$@"
+}
