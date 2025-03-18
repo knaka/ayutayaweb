@@ -38,6 +38,7 @@ export default defineConfig((process.env.NODE_ENV === "development")? {
   vite: {
     ...viteCommon,
     plugins: [],
+    // This seems not to work on production build
     cacheDir: "../node_modules/.vite-astro",
     server: {
       fs: {
