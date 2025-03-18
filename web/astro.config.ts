@@ -13,6 +13,7 @@ const common = {
 };
 
 const viteCommon = {
+  envDir: "..",
   css: {
     preprocessorOptions: {
       scss: {
