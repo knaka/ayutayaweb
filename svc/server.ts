@@ -9,6 +9,7 @@ const handleRemixRequest = createRequestHandler(build as any as ServerBuild);
 
 export default {
   async fetch(request, env, ctx) {
+    console.log("Request received a8b5670", request.url);
     try {
       const loadContext = getLoadContext({
         request,

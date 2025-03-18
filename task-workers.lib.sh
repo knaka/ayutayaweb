@@ -19,7 +19,11 @@ task_workers__prod__deploy() { # Deploy the project to the production environmen
 }
 
 task_workers__prev__deploy() { # Deploy the project to the preview environment.
-  task_workers__prod__deploy --env preview
+  subcmd_workers_wrangler deploy --env preview "$@"
+}
+
+task_workers__prod__tail() { # Tail the logs of the production environment.
+  subcmd_workers_wrangler tail "$@"
 }
 
 task_workers__prev__tail() { # Tail the logs of the preview environment.
