@@ -275,7 +275,7 @@ let store: Store = null;
 export function obtainStore(directoryGlobPatterns: string[] = []): Store {
   if (!store) {
     if (directoryGlobPatterns.length === 0) {
-      const patterns = import.meta.env.PSV_DOC_DIR_GLOB_PATTERNS as string;
+      const patterns = import.meta.env.VITE_PSV_DOC_DIR_GLOB_PATTERNS as string;
       if (patterns) {
         directoryGlobPatterns = patterns.split('|');
       }

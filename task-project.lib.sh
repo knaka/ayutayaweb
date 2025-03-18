@@ -31,7 +31,7 @@ subcmd_reclink() {
   local src="$1"
   local dst="$2"
   mkdir -p "$dst"
-  (cd "$src" && find . -type d ! -path . -print0) | xargs -0 -I {} mkdir -p "$dst"/{}
+  (cd "$src" && find . -type d -print0) | xargs -0 -I {} mkdir -p "$dst"/{}
   (cd "$src" && find . -type f -print0) | xargs -0 -I {} ln -f "$src"/{} "$dst"/{}
 }
 
@@ -53,4 +53,8 @@ task_build() { # Build all
 
 subcmd_vitest() { # Run tests with Vite.
   run_node_modules_bin vitest vitest.mjs "$@"
+}
+
+subcmd_test() { # Run tests.
+  subcmd_vitest "$@"
 }
