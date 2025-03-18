@@ -2,10 +2,12 @@
 # shellcheck shell=sh
 "${sourced_8bf8f23-false}" && return 0; sourced_8bf8f23=true
 
-: "${workers_wrangler_toml_path:=$PROJECT_DIR/wrangler.toml}"
+: "${workers_dir_path:=$PROJECT_DIR}"
+: "${workers_wrangler_toml_path:=$workers_dir_path/wrangler.toml}"
 
-set_workers_wrangler_toml_path() {
-  workers_wrangler_toml_path="$1"
+set_workers_dir_path() {
+  workers_dir_path="$1"
+  workers_wrangler_toml_path="$workers_dir_path/wrangler.toml"
 }
 
 subcmd_workers_wrangler() { # Run the Cloudflare Wrangler command.
@@ -18,4 +20,8 @@ task_workers__prod__deploy() { # Deploy the project to the production environmen
 
 task_workers__prev__deploy() { # Deploy the project to the preview environment.
   task_workers__prod__deploy --env preview
+}
+
+task_workers__prev__tail() { # Tail the logs of the preview environment.
+  subcmd_workers_wrangler tail --env preview
 }

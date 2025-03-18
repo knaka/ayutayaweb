@@ -1,8 +1,8 @@
 #:schema node_modules/wrangler/config-schema.json
 name = "ayutayasvc"
 compatibility_date = "2025-03-11"
-main = "./server.ts"
-assets = { directory = "./build/client" }
+main = "./svc/server.ts"
+assets = { directory = "./dist" }
 
 # Workers Logs
 # Docs: https://developers.cloudflare.com/workers/observability/logs/workers-logs/

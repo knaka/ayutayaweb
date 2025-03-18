@@ -8,7 +8,6 @@
 . ./task-remix.lib.sh
   set_remix_project_dir "$PROJECT_DIR"/svc
 . ./task-workers.lib.sh
-  set_workers_wrangler_toml_path "$PROJECT_DIR/workers-wrangler.toml"
 . ./task-dev-session.lib.sh
 . ./task-astro-dev.lib.sh
 . ./task-ip-utils.lib.sh
@@ -29,7 +28,26 @@ task_dev() { # Start the development environment
   task_astro__dev
 }
 
+subcmd_reclink() {
+  local src="$1"
+  local dst="$2"
+  mkdir -p "$dst"
+  (cd "$src" && find . -type d ! -path . -print0) | xargs -0 -I {} mkdir -p "$dst"/{}
+  (cd "$src" && find . -type f -print0) | xargs -0 -I {} ln -f "$src"/{} "$dst"/{}
+}
+
+task_merge() { # Merge the output of the Astro and Remix builds
+  push_dir "$PROJECT_DIR"
+  local dist_dir_path="$PWD"/dist
+  rm -fr "$dist_dir_path"
+  mkdir -p "$dist_dir_path"
+  subcmd_reclink svc/build/client "$dist_dir_path"
+  subcmd_reclink web/dist "$dist_dir_path"
+  pop_dir
+}
+
 task_build() { # Build all
   task_remix__build
   task_astro__build
+  task_merge
 }
