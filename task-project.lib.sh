@@ -6,7 +6,6 @@
 . ./task-astro.lib.sh
   set_astro_project_dir "$PROJECT_DIR"/web
 . ./task-remix.lib.sh
-  set_remix_project_dir "$PROJECT_DIR"/svc
 . ./task-workers.lib.sh
 . ./task-dev-session.lib.sh
 . ./task-astro-dev.lib.sh
@@ -41,7 +40,7 @@ task_merge() { # Merge the output of the Astro and Remix builds
   local dist_dir_path="$PWD"/dist
   rm -fr "$dist_dir_path"
   mkdir -p "$dist_dir_path"
-  subcmd_reclink svc/build/client "$dist_dir_path"
+  subcmd_reclink build/client "$dist_dir_path"
   subcmd_reclink web/dist "$dist_dir_path"
   pop_dir
 }

@@ -29,7 +29,7 @@
     "baseUrl": ".",
     "paths": {
       "#/*": ["./app/*"],
-      "#web/*": ["../web/src/*"],
+      "#web/*": ["./web/src/*"],
     },
 
     // Remix takes care of building everything in `remix build`.

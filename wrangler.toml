@@ -1,7 +1,7 @@
 #:schema node_modules/wrangler/config-schema.json
 name = "ayutayaweb"
 compatibility_date = "2025-03-11"
-main = "./svc/server.ts"
+main = "./server.ts"
 assets = { directory = "./dist" }
 
 # Workers Logs

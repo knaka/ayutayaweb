@@ -13,7 +13,7 @@ declare module "@remix-run/cloudflare" {
 }
 
 export default defineConfig({
-  cacheDir: "../node_modules/.vite-remix",
+  cacheDir: "./node_modules/.vite-remix",
   css: {
     preprocessorOptions: {
       scss: {
