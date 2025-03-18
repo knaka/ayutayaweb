@@ -7,11 +7,11 @@ import {
 } from "@remix-run/react";
 import type { LinksFunction } from "@remix-run/cloudflare";
 
-import { Topbar } from '#web/components/ReactTopbar';
+import { Topbar } from '#ssg/components/ReactTopbar';
 
 import styles from "./styles.module.scss";
 // import commonStyles from '../../components/styles.module.scss';
-import commonStyles from '#web/components/styles.module.scss';
+import commonStyles from '#ssg/components/styles.module.scss';
 
 export const links: LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
