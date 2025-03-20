@@ -10,6 +10,9 @@
 . ./task-dev-session.lib.sh
 . ./task-astro-dev.lib.sh
 . ./task-ip-utils.lib.sh
+. ./task-d1.lib.sh
+  set_db_schema_path "$PROJECT_DIR"/db/schema.sql
+  set_db_seed_path "$PROJECT_DIR"/db/seed.sql
 
 task_dev() { # Start the development environment
   cleanup_session_env

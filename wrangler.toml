@@ -18,5 +18,5 @@ database_id = "aca89336-ab7c-4a8d-a6f4-22d258fd86dd"
 
 [[env.preview.d1_databases]]
 binding = "DB"
-database_name = "ayutayaweb2"
-database_id = "e52ae02f-f026-4bdb-a6d3-54bbda426a19"
+database_name = "ayutayaweb-preview"
+database_id = "e2793deb-aa87-44be-8881-66bdb8762353"
