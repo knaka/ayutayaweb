@@ -2,8 +2,15 @@
 # shellcheck shell=sh
 "${sourced_8bf8f23-false}" && return 0; sourced_8bf8f23=true
 
+. ./task-cf.lib.sh
+. ./task-yq.lib.sh
+
 : "${workers_dir_path:=$PROJECT_DIR}"
 : "${workers_wrangler_toml_path:=$workers_dir_path/wrangler.toml}"
+
+subcmd_workers__assets_dir() { # Show the assets directory of the project.
+  subcmd_yq --exit-status eval ".assets.directory" "$workers_wrangler_toml_path"
+}
 
 set_workers_dir_path() {
   workers_dir_path="$1"
@@ -11,7 +18,7 @@ set_workers_dir_path() {
 }
 
 subcmd_workers_wrangler() { # Run the Cloudflare Wrangler command.
-  run_node_modules_bin wrangler bin/wrangler.js --config "$workers_wrangler_toml_path" "$@"
+  subcmd_wrangler --config "$workers_wrangler_toml_path" "$@"
 }
 
 task_workers__prod__deploy() { # Deploy the project to the production environment.

@@ -51,10 +51,22 @@ task_build() { # Build all
   task_merge
 }
 
-subcmd_vitest() { # Run tests with Vite.
+subcmd_test() { # Run tests.
   run_node_modules_bin vitest vitest.mjs "$@"
 }
 
-subcmd_test() { # Run tests.
-  subcmd_vitest "$@"
+task_prod__deploy() { # Deploy the production build
+  task_workers__prod__deploy "$@"
+}
+
+task_prev__deploy() { # Deploy the previous build
+  task_workers__prev__deploy "$@"
+}
+
+task_prod__tail() { # Tail the production logs
+  task_workers__prod__tail "$@"
+}
+
+task_prev__tail() { # Tail the previous logs
+  task_workers__prev__tail "$@"
 }

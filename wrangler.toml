@@ -2,6 +2,7 @@
 name = "ayutayaweb"
 compatibility_date = "2025-03-11"
 main = "./server.ts"
+# Configuration and Bindings · Cloudflare Workers docs https://developers.cloudflare.com/workers/static-assets/binding/
 assets = { directory = "./dist" }
 
 # Workers Logs
