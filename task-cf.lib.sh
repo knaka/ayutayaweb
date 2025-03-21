@@ -11,3 +11,7 @@ subcmd_wrangler() { # Run the Cloudflare Wrangler command.
 subcmd_cf__name() { # Show the name of the Cloudflare project.
   subcmd_yq --exit-status eval ".name" "$wrangler_toml_path"
 }
+
+subcmd_cf__typegen() { # Generate TypeScript types for the Cloudflare project.
+  subcmd_wrangler types
+}
