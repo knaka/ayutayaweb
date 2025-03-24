@@ -24,13 +24,13 @@ const route = app
       });
     }
   )
-  .get('/api/echo', async (ctx) => {
-    const headers = ctx.req.header();
-    return ctx.json({
-      headers,
-      body: await ctx.req.text(),
-    });
-  })
+  .get('/api/echo', async (ctx) => ctx.json({
+    header: ctx.req.header(),
+  }))
+  .post('/api/echo', async (ctx) => ctx.json({
+    header: ctx.req.header(),
+    body: await ctx.req.text(),
+  }))
 ;
 
 export type AppType = typeof route;
