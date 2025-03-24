@@ -1,0 +1,8 @@
+---
+import PageLayout from '#/components/PageLayout.astro';
+import HelloCpnt from '#/components/Hello';
+
+---
+<PageLayout title='Hello'>
+  <HelloCpnt slot='main' client:only />
+</PageLayout>
