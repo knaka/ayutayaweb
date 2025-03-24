@@ -20,3 +20,6 @@ database_id = "aca89336-ab7c-4a8d-a6f4-22d258fd86dd"
 binding = "DB"
 database_name = "ayutayaweb-preview"
 database_id = "e2793deb-aa87-44be-8881-66bdb8762353"
+
+[triggers]
+crons = ["*/3 * * * *"]

@@ -13,6 +13,8 @@
 . ./task-d1.lib.sh
   set_db_schema_path "$PROJECT_DIR"/db/schema.sql
   set_db_seed_path "$PROJECT_DIR"/db/seed.sql
+. ./task-sqlc.lib.sh
+. ./task-sqlc-ts.lib.sh
 
 task_dev() { # Start the development environment
   cleanup_session_env
@@ -72,4 +74,12 @@ task_prod__tail() { # Tail the production logs
 
 task_prev__tail() { # Tail the previous logs
   task_workers__prev__tail "$@"
+}
+
+task_db__gen() { # Generate the database access layer (./db/sqlcgen/*).
+  push_dir "$PROJECT_DIR"/db
+  subcmd_sqlc generate
+  # Then, rewrite the generated file.
+  rewrite_sqlcgen_ts ./sqlcgen/*.ts
+  pop_dir
 }

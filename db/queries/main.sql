@@ -57,3 +57,12 @@ INSERT INTO books (
   ?,
   datetime('now')
 );
+
+-- name: AddLogAsync :exec
+INSERT INTO logs (
+  message,
+  created_at
+) VALUES (
+  ?,
+  datetime('now')
+);

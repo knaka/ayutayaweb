@@ -27,3 +27,9 @@ CREATE TABLE books (
   updated_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+CREATE TABLE logs (
+  id integer PRIMARY KEY AUTOINCREMENT,
+  message text NOT NULL,
+  created_at datetime NOT NULL DEFAULT CURRENT_TIMESTAMP
+);

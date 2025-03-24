@@ -35,4 +35,7 @@ export default {
       return new Response("An unexpected error occurred", { status: 500 });
     }
   },
+  async scheduled(event, _env, _ctx) {
+    console.log("Scheduled event received", event);
+  },
 } satisfies ExportedHandler<Env>;
