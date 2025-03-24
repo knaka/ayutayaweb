@@ -18,7 +18,7 @@ export const Hello: React.FC<{}> = () => {
     if (!debouncedName || debouncedName === '') {
       return;
     }
-    const resp = await client.api.hello.$post({json: { name: debouncedName }});
+    const resp = await client.api.hello.$post({ json: { name: debouncedName } });
     if (!resp.ok) {
       setMessage(`Error: ${resp.status} ${resp.statusText}`);
       return;
