@@ -17,28 +17,18 @@ const route = app
         }
       },
     ),
-    async (c) => {
-      console.log('cb0ceb3', c.req);
-      const body: { name: string } = await c.req.json();
-      return c.json({
+    async (ctx) => {
+      const body: { name: string } = await ctx.req.json();
+      return ctx.json({
         message: `Hello, ${body.name}!`,
       });
     }
   )
-  .get('/api/echo', async (c) => {
-    console.log('9ceab1d');
-    const headers = c.req.header();
-    return c.json({
+  .get('/api/echo', async (ctx) => {
+    const headers = ctx.req.header();
+    return ctx.json({
       headers,
-      body: await c.req.text(),
-    });
-  })
-  .post('*', async (c) => {
-    console.log('cc933c9');
-    const headers = c.req.header();
-    return c.json({
-      headers,
-      body: await c.req.text(),
+      body: await ctx.req.text(),
     });
   })
 ;
