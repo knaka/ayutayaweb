@@ -4,7 +4,7 @@ import type { AppType } from '#ssr/api.js';
 
 const client = hc<AppType>("/");
 
-export function Hello() {
+export const Hello: React.FC<{}> = () => {
   const [name, setName] = useState<string>('Nobody');
   const [debouncedName, setDebouncedName] = useState(name);
   const [message, setMessage] = useState<string>('No message');
