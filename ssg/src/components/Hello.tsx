@@ -1,22 +1,31 @@
 import { useState, useEffect } from "react";
-
 import { hc } from 'hono/client';
 import type { AppType } from '#ssr/api.js';
 
 const client = hc<AppType>("/");
 
-export default () => {
+export function Hello() {
   const [name, setName] = useState<string>('Nobody');
+  const [debouncedName, setDebouncedName] = useState(name);
   const [message, setMessage] = useState<string>('No message');
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      setDebouncedName(name);
+    }, 500);
+    return () => clearTimeout(timeout);
+  }, [name]);
   useEffect(() => {(async () => {
-    const resp = await client.api.hello.$post({json: { name }});
+    if (!debouncedName || debouncedName === '') {
+      return;
+    }
+    const resp = await client.api.hello.$post({json: { name: debouncedName }});
     if (!resp.ok) {
       setMessage(`Error: ${resp.status} ${resp.statusText}`);
       return;
     }
     const body = await resp.json();
     setMessage(body.message);
-  })()}, [name]);
+  })()}, [debouncedName]);
   return (
     <>
       <input type="text" value={name} onChange={(e) => setName(e.target.value)} />
