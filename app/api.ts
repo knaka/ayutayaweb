@@ -2,7 +2,13 @@ import { Hono } from 'hono'
 import { z } from 'zod'
 import { zValidator } from '@hono/zod-validator';
 
-export const app = new Hono();
+// type Bindings = {
+//   // ASSETS: {
+//   //   fetch: typeof fetch;
+//   // },
+// } & Env;
+
+export const app = new Hono<{ Bindings: Env }>();
 
 const route = app
   .post('/api/hello',
@@ -24,9 +30,13 @@ const route = app
       });
     }
   )
-  .get('/api/echo', async (ctx) => ctx.json({
-    header: ctx.req.header(),
-  }))
+  .get('/api/echo', async (ctx) => {
+    console.log(ctx.env.DB)
+    return ctx.json({
+      header: ctx.req.header(),
+      foo: "51e46ae",
+    })
+  })
   .post('/api/echo', async (ctx) => ctx.json({
     header: ctx.req.header(),
     body: await ctx.req.text(),

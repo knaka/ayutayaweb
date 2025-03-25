@@ -66,5 +66,6 @@ export default defineConfig({
   build: {
     minify: true,
     assetsDir: "_remix",
+    watch: null,
   },
 });
