@@ -2,6 +2,8 @@ import { Hono } from 'hono'
 import { z } from 'zod'
 import { zValidator } from '@hono/zod-validator';
 
+import { addLogAsync } from 'db/sqlcgen/querier';
+
 // type Bindings = {
 //   // ASSETS: {
 //   //   fetch: typeof fetch;
@@ -31,10 +33,11 @@ const route = app
     }
   )
   .get('/api/echo', async (ctx) => {
-    console.log(ctx.env.DB)
+    // console.log(ctx.env.DB)
+    await addLogAsync(ctx.env.DB, { message: 'hello' });
     return ctx.json({
       header: ctx.req.header(),
-      foo: "51e46ae",
+      foo: "e6e8769",
     })
   })
   .post('/api/echo', async (ctx) => ctx.json({
