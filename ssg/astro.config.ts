@@ -53,6 +53,7 @@ export default defineConfig((process.env.NODE_ENV === "development")? {
         // "if the key starts with `^`, it will be interpreted as a `RegExp`."
         "/api/": dynamicUrl,
         "/var/": dynamicUrl,
+        "/ssg/": dynamicUrl,
         // Remix development server
         "/app/": dynamicUrl,
         "^/@id/.*remix.*": dynamicUrl,
