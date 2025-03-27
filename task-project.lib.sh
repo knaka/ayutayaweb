@@ -32,6 +32,7 @@ task_dev() { # Start the development environment
   task_astro__dev
 }
 
+# Recursively link the contents of the source directory to the destination directory. Overwrites the destination existing files.
 subcmd_reclink() {
   local src="$1"
   local dst="$2"
@@ -46,6 +47,7 @@ task_merge() { # Merge the output of the Astro and Remix builds
   rm -fr "$dist_dir_path"
   mkdir -p "$dist_dir_path"
   subcmd_reclink build/client "$dist_dir_path"
+  # Files in SSG are prioritized.
   subcmd_reclink ssg/dist "$dist_dir_path"
   pop_dir
 }
