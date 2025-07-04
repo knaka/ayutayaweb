@@ -52,7 +52,7 @@ task_merge() { # Merge the output of the Astro and Remix builds
   pop_dir
 }
 
-task_build() { # Build all
+task_build() { # Build all components
   task_remix__build
   task_astro__build
   task_merge
@@ -66,7 +66,7 @@ task_prod__deploy() { # Deploy the production build
   task_workers__prod__deploy "$@"
 }
 
-task_prev__deploy() { # Deploy the previous build
+task_prev__deploy() { # Deploy the preview build
   task_workers__prev__deploy "$@"
 }
 
@@ -74,7 +74,7 @@ task_prod__tail() { # Tail the production logs
   task_workers__prod__tail "$@"
 }
 
-task_prev__tail() { # Tail the previous logs
+task_prev__tail() { # Tail the preview logs
   task_workers__prev__tail "$@"
 }
 

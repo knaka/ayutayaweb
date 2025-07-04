@@ -11,7 +11,7 @@
 ## Development server
 
 - `./task dev` launches development server.
-- Which launches Remix development server in background and launches Astro development server in front and the latter redirects access to dynamic paths to the former. It is configured in `ssg/astro.config.ts`.
+- It launches Remix development server in background and launches Astro development server in foreground. The latter redirects access to dynamic paths to the former. This is configured in `ssg/astro.config.ts`.
 
 ## Testing
 
@@ -50,7 +50,7 @@
 
 # Guide for Claude
 
-## Documentation
+## Documentation, Comments or strings in program code
 
 - Written in simple, technical English.
 - If there is an unnatural expression in the English text, correct it to a natural expression.
