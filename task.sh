@@ -4,26 +4,29 @@
 "${sourced_897a0c7-false}" && return 0; sourced_897a0c7=true
 
 # --------------------------------------------------------------------------
-# Constants.
+# Constants
 # --------------------------------------------------------------------------
 
+# Return code when a delegate task does not provide the task
 # shellcheck disable=SC2034
 rc_delegate_task_not_found=10
 
+# Return code when a test is skipped
 # shellcheck disable=SC2034
 rc_test_skipped=11
 
 # --------------------------------------------------------------------------
-# Temporary directory.
+# Temporary directory and cleaning up
 # --------------------------------------------------------------------------
 
 TEMP_DIR="$(mktemp -d)"
 # shellcheck disable=SC2064
 trap "rm -fr '$TEMP_DIR'" EXIT
 
+# Base name of the script file that contains the statements to be called when finalizing
 readonly stmts_file_base="$TEMP_DIR"/b6a5748
 
-# Chain traps to not overwrite the previous trap.
+# Chain traps to avoid overwriting the previous trap.
 # shellcheck disable=SC2064
 chaintrap() {
   local stmts="$1"
@@ -87,20 +90,11 @@ verbose() {
   "$VERBOSE"
 }
 
-# Cache directory.
-: "${CACHE_DIR:="$HOME"/.cache}"
-
+# Cache directory path for the task runner
 cache_dir_path() {
   local global_cache_dir_path="$HOME/.cache"
-  # if is_windows
-  # then
-  #   global_cache_dir_path="$LOCALAPPDATA"
-  # elif is_macos
-  # then
-  #   global_cache_dir_path="$HOME/Library/Caches"
-  # fi
-  mkdir -p "$global_cache_dir_path"/task_sh
-  echo "$global_cache_dir_path"/task_sh
+  mkdir -p "$global_cache_dir_path"/task-sh
+  echo "$global_cache_dir_path"/task-sh
 }
 
 # --------------------------------------------------------------------------
@@ -196,23 +190,23 @@ hex_restore() {
 # shellcheck disable=SC2034
 readonly unit_sep=""
 
-# Unit separator.
+# Unit separator (US), Information Separator One (0x1F)
 # shellcheck disable=SC2034
 readonly us=""
-
-# Information separator one.
 # shellcheck disable=SC2034
-readonly is1=""
+readonly is="$us"
+# shellcheck disable=SC2034
+readonly is1="$us"
 
-# Information separator two.
+# Information Separator Two (0x1E)
 # shellcheck disable=SC2034
 readonly is2=""
 
-# Information separator three.
+# Information Separator Three (0x1D)
 # shellcheck disable=SC2034
 readonly is3=""
 
-# Information separator four.
+# Information Separator Four (0x1C)
 # shellcheck disable=SC2034
 readonly is4=""
 
@@ -281,7 +275,7 @@ push_dir() {
   local pwd="$PWD"
   if ! cd "$1"
   then
-    echo "No such directory: $1" >&2
+    echo "Directory does not exist: $1" >&2
     return 1
   fi
   psv_dirs_4c15d80="$pwd|$psv_dirs_4c15d80"
@@ -291,7 +285,7 @@ push_dir() {
 pop_dir() {
   if test -z "$psv_dirs_4c15d80"
   then
-    echo "Directory stack is empty." >&2
+    echo "Directory stack is empty" >&2
     return 1
   fi
   local dir="${psv_dirs_4c15d80%%|*}"
@@ -327,8 +321,300 @@ restore_shell_flags() {
 }
 
 # --------------------------------------------------------------------------
-# Misc.
-# --------------------------------------------------------------------------s
+# Map (associative array) functions. "IFS-Separated Map"
+# --------------------------------------------------------------------------
+
+# Put a value in an associative array implemented as a property list.
+ifsm_put() {
+  local plist="$1"
+  local target_key="$2"
+  local value="$3"
+  local found=false
+  local key=
+  local i=0
+  local item
+  for item in $plist
+  do
+    if test $((i % 2)) -eq 0
+    then
+      key="$item"
+    else
+      if test "$key" = "$target_key"
+      then
+        found=true
+        printf "%s%s%s%s" "$target_key" "$IFS" "$value" "$IFS"
+      else
+        printf "%s%s%s%s" "$key" "$IFS" "$item" "$IFS"
+      fi
+    fi
+    i=$((i + 1))
+  done
+  if ! "$found"
+  then
+    printf "%s%s%s%s" "$target_key" "$IFS" "$value" "$IFS"
+  fi
+}
+
+# Get a value from an associative array implemented as a property list.
+ifsm_get() {
+  local plist="$1"
+  local target_key="$2"
+  local key=
+  local i=0
+  for item in $plist
+  do
+    if test $((i % 2)) -eq 0
+    then
+      key="$item"
+    else
+      if test "$key" = "$target_key"
+      then
+        printf "%s" "$item"
+        return
+      fi
+    fi
+    i=$((i + 1))
+  done
+  return 1
+}
+
+# Keys of an associative array implemented as a property list.
+ifsm_keys() {
+  local plist="$1"
+  local i=0
+  local item
+  for item in $plist
+  do
+    if test $((i % 2)) -eq 0
+    then
+      printf "%s%s" "$item" "$IFS"
+    fi
+    i=$((i + 1))
+  done
+}
+
+# Values of an associative array implemented as a property list.
+ifsm_values() {
+  local plist="$1"
+  local i=0
+  local item
+  for item in $plist
+  do
+    if test $((i % 2)) -eq 1
+    then
+      printf "%s%s" "$item" "$IFS"
+    fi
+    i=$((i + 1))
+  done
+}
+
+# --------------------------------------------------------------------------
+# Package command registration
+# --------------------------------------------------------------------------
+
+# Map: command name -> Homebrew package ID
+usm_brew_id=
+
+# Map: command name -> WinGet package ID
+usm_winget_id=
+
+# Map: command name -> Debian package ID
+usm_deb_id=
+
+# Map: command name -> pipe-separated vector of commands
+usm_psv_cmd=
+
+# Register a command with optional package IDs for various package managers.
+# This function maps a command name to package IDs for installation via different package managers.
+# The first argument is treated as the main command name, and subsequent arguments are alternative command name or command paths.
+# Options:
+#   --brew-id=<id>    Package ID for Homebrew (macOS)
+#   --deb-id=<id>     Package ID for Debian/Ubuntu package manager
+#   --winget-id=<id>  Package ID for Windows Package Manager
+require_cmd() {
+  local brew_id=
+  local deb_id=
+  local winget_id=
+  OPTIND=1; while getopts _-: OPT
+  do
+    if test "$OPT" = "-"
+    then
+      OPT="${OPTARG%%=*}"
+      # shellcheck disable=SC2030
+      OPTARG="${OPTARG#"$OPT"}"
+      OPTARG="${OPTARG#=}"
+    fi
+    case "$OPT" in
+      (brew-id) brew_id=$OPTARG;;
+      (deb-id) deb_id=$OPTARG;;
+      (winget-id) winget_id=$OPTARG;;
+      (\?) exit 1;;
+      (*) echo "Unexpected option: $OPT" >&2; exit 1;;
+    esac
+  done
+  shift $((OPTIND-1))
+
+  # 1st argument is treated as the command name.
+  local cmd_name=
+  local psv_cmd=
+  local cmd
+  for cmd in "$@"
+  do
+    if test -z "$cmd_name"
+    then
+      cmd_name="$cmd"
+    fi
+    psv_cmd="$psv_cmd|$cmd"
+  done
+  test -n "$brew_id" && usm_brew_id="$usm_brew_id$cmd_name$us$brew_id$us"
+  test -n "$winget_id" && usm_winget_id="$usm_winget_id$cmd_name$us$winget_id$us"
+  test -n "$deb_id" && usm_deb_id="$usm_deb_id$cmd_name$us$deb_id$us"
+  usm_psv_cmd="$usm_psv_cmd$cmd_name$us$psv_cmd$us"
+}
+
+# For Windows
+: "${LOCALAPPDATA:=e06a91c}"
+
+run_required_cmd() {
+  local cmd_name="$1"
+  shift
+  local saved_IFS="$IFS"; IFS="|"
+  local cmd
+  for cmd in $(IFS="$us" ifsm_get "$usm_psv_cmd" "$cmd_name")
+  do
+    if command -v "$cmd" >/dev/null
+    then
+      IFS="$saved_IFS"
+      invoke "$cmd" "$@"
+      return $?
+    fi
+  done
+  IFS="$saved_IFS"
+  echo "Command not found: $cmd_name." >&2
+  echo >&2
+  if is_macos
+  then
+    echo "Run \"devinstall\" task or the following command to install necessary packages for this development environment:" >&2
+    echo >&2
+    printf "  brew install" >&2
+    local saved_ifs="$IFS"; IFS="$us"
+    # shellcheck disable=SC2046
+    # shellcheck disable=SC2086
+    printf " %s" $(ifsm_values "$usm_brew_id") >&2
+    IFS="$saved_ifs"
+  fi
+  echo >&2
+  echo >&2
+  return 1
+}
+
+task_devinstall() { # Install necessary packages for this development environment.
+  if is_macos
+  then
+    set - brew install
+    local saved_ifs="$IFS"; IFS="$us"
+    # shellcheck disable=SC2046
+    set -- "$@" $(ifsm_values "$usm_brew_id")
+    IFS="$saved_ifs"
+    invoke "$@"
+  fi
+}
+
+# --------------------------------------------------------------------------
+# Fetching
+# --------------------------------------------------------------------------
+
+require_cmd \
+  --deb-id=curl \
+  curl
+
+curl() {
+  run_required_cmd curl "$@"
+}
+
+subcmd_curl() { # Run curl(1).
+  curl "$@"
+}
+
+go_os() {
+  case "$(uname -s)" in
+    Linux) echo "linux" ;;
+    Darwin) echo "darwin" ;;
+    Windows) echo "windows" ;;    
+    *)
+      echo "Unknown OS: $(uname -s)"
+      return 1
+      ;;
+  esac
+}
+
+go_arch() {
+  case "$(uname -m)" in
+    x86_64) echo "amd64" ;;
+    aarch64) echo "arm64" ;;
+    armv7l) echo "arm" ;;
+    i386) echo "386" ;;
+    *)
+      echo "Unknown architecture: $(uname -m)"
+      return 1
+      ;;
+  esac
+}
+
+# --------------------------------------------------------------------------
+# Environment variable management
+# --------------------------------------------------------------------------
+
+# Load environment variables from the specified file.
+load_env_file() {
+  if ! test -r "$1"
+  then
+    return 0
+  fi
+  local line
+  local key
+  local value
+  while read -r line
+  do
+    key="${line%%=*}"
+    if test -z "$key" || test "$key" = "$line"
+    then
+      continue
+    fi
+    value="$(eval "echo \"\${$key:=}\"")"
+    # Not to overwrite the existing, previously set value.
+    if test -n "$value"
+    then
+      continue
+    fi
+    eval "$line"
+  done <"$1"
+}
+
+# Load environment variables from multiple files
+load_env() {
+  # Load the files in the order of priority.
+  if test "${APP_ENV+set}" = set
+  then
+    load_env_file "$PROJECT_DIR"/.env."$APP_ENV".session
+    load_env_file "$PROJECT_DIR"/.env."$APP_ENV".local
+  fi
+  if test "${APP_ENV+set}" != set || test "${APP_ENV}" != "test"
+  then
+    load_env_file "$PROJECT_DIR"/.env.session
+    load_env_file "$PROJECT_DIR"/.env.local
+  fi
+  if test "${APP_ENV+set}" = set
+  then
+    load_env_file "$PROJECT_DIR"/.env."$APP_ENV"
+  fi
+  # shellcheck disable=SC1091
+  load_env_file "$PROJECT_DIR"/.env
+}
+
+# --------------------------------------------------------------------------
+# Misc
+# --------------------------------------------------------------------------
 
 # shuf(1) for MacOS environment.
 if ! command -v shuf >/dev/null 2>&1
@@ -343,6 +629,13 @@ exe_ext() {
     echo ".exe"
   fi
 }
+
+exe_ext=
+if is_windows
+then
+  # shellcheck disable=SC2034
+  exe_ext=".exe"
+fi
 
 if is_macos
 then
@@ -469,7 +762,7 @@ is_bash() {
   test "$(shell_name)" = "bash"
 }
 
-# Check if the file(s)/directory(s) is/are newer than the destination.
+# Check if the file(s)/directory(s) are newer than the destination.
 newer() {
   local found_than=false
   local dest=
@@ -489,12 +782,12 @@ newer() {
   done
   if test -z "$dest"
   then
-    echo "No --than option" >&2
+    echo "Missing --than option" >&2
     exit 1
   fi
   if test "$#" -eq 0
   then
-    echo "No source files" >&2
+    echo "No source files specified" >&2
     exit 1
   fi
   # If the destination does not exist, it is considered newer than the destination.
@@ -515,7 +808,7 @@ newer() {
   fi
   if test -z "$dest"
   then
-    echo "No destination file" >&2
+    echo "No destination file found" >&2
     return 0
   fi
   test -n "$(find "$@" -newer "$dest" 2>/dev/null)"
@@ -635,9 +928,9 @@ invoke() {
       exec "$@"
       ;;
     (exec-sub) exec "$@";;
-    (background) "$@" &;;
+    (background) command "$@" &;;
     (standard)
-      "$@"
+      command "$@"
       ;;
     (*)
       echo "Unknown invocation mode: $invocation_mode" >&2
@@ -663,283 +956,24 @@ browse() {
   fi
 }
 
-# Ensure the command is installed.
-install_pkg_cmd() {
-  local apk_id=
-  local deb_id=
-  local cmd=
-  local winget_id=
-  local win_cmd_path=
-  local scoop_id=
-  local brew_id=
-  local mac_cmd_path=
-  OPTIND=1; while getopts _-: OPT
-  do
-    if test "$OPT" = "-"
-    then
-      OPT="${OPTARG%%=*}"
-      # shellcheck disable=SC2030
-      OPTARG="${OPTARG#"$OPT"}"
-      OPTARG="${OPTARG#=}"
-    fi
-    case "$OPT" in
-      (apk-id) apk_id=$OPTARG;;
-      (brew-id) brew_id=$OPTARG;;
-      (mac-cmd-path) mac_cmd_path=$OPTARG;;
-      (cmd) cmd=$OPTARG;;
-      (deb-id) deb_id=$OPTARG;;
-      (winget-id) winget_id=$OPTARG;;
-      (win-cmd-path) win_cmd_path=$OPTARG;;
-      (scoop-id) scoop_id=$OPTARG;;
-      (\?) exit 1;;
-      (*) echo "Unexpected option: $OPT" >&2; exit 1;;
-    esac
-  done
-  shift $((OPTIND-1))
-
-  # If found, do not install.
-  if command -v "$cmd" >/dev/null 2>&1
-  then
-    :
-  # Otherwise, install.
-  elif is_windows
-  then
-    if test -n "$win_cmd_path"
-    then
-      cmd="$win_cmd_path"
-    fi
-    if command -v "$cmd" >/dev/null 2>&1
-    then
-      :
-    elif test -n "$scoop_id"
-    then
-      if ! command -v scoop > /dev/null 2>&1
-      then
-        powershell -Command "Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser; Invoke-RestMethod -Uri https://get.scoop.sh | Invoke-Expression" 1>&2
-      fi
-      scoop install "$scoop_id" 1>&2
-    elif test -n "$winget_id"
-    then
-      winget install --accept-package-agreements --accept-source-agreements --exact --id "$winget_id" 2>&1
-    else
-      echo "No package ID for Windows specified." >&2
-      exit 1
-    fi
-  elif is_macos
-  then
-    if test -n "$mac_cmd_path"
-    then
-      cmd="$mac_cmd_path"
-    fi
-    if command -v "$cmd" >/dev/null 2>&1
-    then
-      :
-    elif test -n "$brew_id"
-    then
-      brew install "$brew_id" 1>&2
-    else
-      echo "No package ID for macOS specified." >&2
-      exit 1
-    fi
-  elif is_linux
-  then
-    local sudo=
-    if command -v sudo >/dev/null 2>&1 && sudo -n true 2>/dev/null
-    then
-      sudo=sudo
-    fi
-    if command -v apt-get >/dev/null 2>&1
-    then
-      if ! test -d /var/lib/apt/lists || is_dir_empty /var/lib/apt/lists
-      then
-        $sudo apt-get update 1>&2
-      fi
-      $sudo apt-get install -y "$deb_id" 1>&2
-    elif command -v apk >/dev/null 2>&1
-    then
-      apk add "$apk_id" 1>&2
-    fi
-  else
-    echo "Unsupported OS: $(uname -s)" >&2
-    exit 1
-  fi
-
-  if command -v "$cmd" >/dev/null 2>&1
-  then
-    command -v "$cmd"
-  else
-    echo "Command not installed: $cmd" >&2
-    return 1
-  fi
-}
-
-# Run a command after ensuring it is installed.
-run_pkg_cmd() {
-  local cmd_path=
-  cmd_path="$(install_pkg_cmd "$@")"
-  while test $# -gt 0
-  do
-    if test "$1" = "--"
-    then
-      shift
-      break
-    fi
-    shift
-  done
-  invoke "$cmd_path" "$@"
-}
-
-subcmd_curl() { # Run curl(1). This will be deprecated. Use `fetch` instead.
-  run_pkg_cmd \
-    --cmd=curl \
-    --deb-id=curl \
-    --apk-id=curl \
-    -- "$@"
-}
-
-subcmd_apt_download() {
-  ! is_debian && return 1
-  local apt_conf_path="$TEMP_DIR"/apt.conf
-  printf "%s\n" \
-    'Acquire::https::Verify-Peer "false";' \
-    'Acquire::https::Verify-Host "false";' \
-    >"$apt_conf_path"
-  /usr/lib/apt/apt-helper -c "$apt_conf_path" download-file "$1" "$2" 1>&2
-}
-
-subcmd_fetch() { # Fetch data from the URL to the standard output.
-  if test $# -eq 0
-  then
-    echo "No URL specified." >&2
-    exit 1
-  fi
-  if command -v wget >/dev/null 2>&1
-  then
-    # wget(1) follows redirects by default.
-    invoke wget --quiet --output-document=- "$@"
-    return $?
-  fi
-  local curl_path=
-  if command -v curl >/dev/null 2>&1
-  then
-    curl_path="$(command -v curl)"
-  elif test -x "$(cache_dir_path)"/curl
-  then
-    curl_path="$(cache_dir_path)"/curl
-  elif is_linux && test -x /usr/lib/apt/apt-helper
-  then
-    # Release v8.11.0 · moparisthebest/static-curl https://github.com/moparisthebest/static-curl/releases/tag/v8.11.0
-    local curl_version=v8.11.0
-    # Copied from `sha256sum.txt`
-    local curl_sha256sums='
-d18aa1f4e03b50b649491ca2c401cd8c5e89e72be91ff758952ad2ab5a83135d  ./curl-amd64
-1a4747fd88b31b93bf48bcace9d1e3ebf348afbbf8c0a6f4e1751795ea6ff39b  ./curl-i386
-1b050abd1669f9a2ac29b34eb022cdeafb271dce5a4fb57d8ef8fadff6d7be1f  ./curl-aarch64
-779a1bd9f486fd5ff1da25d5e5bb99c58bc79ded22344f2b7ff366cf645a6630  ./curl-armv7
-b92dc31e0d614e04230591377837f44ff2c98430c821d93a5aaa0fae30c0fd1c  ./curl-armhf
-50be538158f06fa71a4751d9f3f06932dc90337d43768b4963af51e84ebb65ac  ./curl-ppc64le
-'
-    curl_path="$(cache_dir_path)"/curl
-    local arch=
-    case "$(uname -m)" in
-      (x86_64) arch=amd64;;
-      (aarch64) arch=aarch64;;
-      (*) echo "Unsupported architecture: $(uname -m)" >&2; return 1;;
-    esac
-    mkdir -p "$(dirname "$curl_path")"
-    local curl_url="https://github.com/moparisthebest/static-curl/releases/download/$curl_version/curl-$arch"
-    subcmd_apt_download "$curl_url" "$curl_path"
-    if ! echo "$(echo "$curl_sha256sums" | grep "$(basename "$curl_url")" | cut -d' ' -f1)" "$curl_path" | sha256sum --check --status
-    then
-      echo "curl checksum mismatch." >&2
-      return 1
-    fi
-    chmod +x "$curl_path"
-  else
-    echo "Neither wget nor curl is available." >&2
-    return 1
-  fi
-  if ! test -d /etc/ssl
-  then
-    # curl - Extract CA Certs from Mozilla https://curl.se/docs/caextract.html
-    local cacert_url="https://curl.se/ca/cacert-2024-12-31.pem"
-    local cacert_sha256sum="a3f328c21e39ddd1f2be1cea43ac0dec819eaa20a90425d7da901a11531b3aa5"
-    invoke "$curl_path" --insecure --location --output "$(cache_dir_path)"/cacert.pem "$cacert_url"
-    if ! echo "$cacert_sha256sum" "$(cache_dir_path)"/cacert.pem | sha256sum --check --status 1>&2
-    then
-      echo "cacert.pem checksum mismatch." >&2
-      return 1
-    fi
-    set -- --cacert "$(cache_dir_path)"/cacert.pem "$@"
-  fi
-  invoke "$curl_path" --location --output - "$@"
-}
-
-# Load environment variables from the specified file.
-load_env_file() {
-  if ! test -r "$1"
-  then
-    return 0
-  fi
-  local line
-  local key
-  local value
-  while read -r line
-  do
-    key="${line%%=*}"
-    if test -z "$key" || test "$key" = "$line"
-    then
-      continue
-    fi
-    value="$(eval "echo \"\${$key:=}\"")"
-    # Not to overwrite the existing, previously set value.
-    if test -n "$value"
-    then
-      continue
-    fi
-    eval "$line"
-  done <"$1"
-}
-
-# Load environment variables.
-load_env() {
-  # Load the files in the order of priority.
-  if test "${APP_ENV+set}" = set
-  then
-    load_env_file "$PROJECT_DIR"/.env."$APP_ENV".session
-    load_env_file "$PROJECT_DIR"/.env."$APP_ENV".local
-  fi
-  if test "${APP_ENV+set}" != set || test "${APP_ENV}" != "test"
-  then
-    load_env_file "$PROJECT_DIR"/.env.session
-    load_env_file "$PROJECT_DIR"/.env.local
-  fi
-  if test "${APP_ENV+set}" = set
-  then
-    load_env_file "$PROJECT_DIR"/.env."$APP_ENV"
-  fi
-  # shellcheck disable=SC1091
-  load_env_file "$PROJECT_DIR"/.env
-}
-
 # Get a key from the user without echoing.
 get_key() {
   if is_linux || is_macos
   then
-    local saved_stty
-    saved_stty="$(stty -g)"
+    local saved_stty="$(stty -g)"
     stty -icanon -echo
     dd bs=1 count=1 2>/dev/null
     stty "$saved_stty"
     return
   fi
   local key
-  # Bash POSIX Shell and BusyBox Ash provides `-s` (silent mode) option.
+  # Bash and BusyBox Ash provides `-s` (silent mode) option.
   if test is_ash || is_bash
   then
     # shellcheck disable=SC3045
     read -rsn1 key
     return
+  # Otherwise, the input is echoed
   else
     read -r key
   fi
@@ -1000,15 +1034,15 @@ ensure_file() {
   local file_path="$1"
   if test -f "$file_path"
   then
-    echo "File $file_path already exists. Skipping the creation." >&2
+    echo "File $file_path already exists. Skipping creation." >&2
     return 0
   fi
-  echo "Creating the $file_path file." >&2
+  echo "Creating file $file_path." >&2
   mkdir -p "$(dirname "$file_path")"
   cat >"$file_path"
 }
 
-# Guard against multiple calls.
+# Guard against multiple calls. $1 is a unique ID
 first_call() {
   if eval "test \"\${called_$1-}\" = true"
   then
@@ -1097,7 +1131,7 @@ menu() {
   done
 }
 
-# Get the space-separated n-th (1-based) field.
+# Get the space-separated nth (1-based) field.
 field() {
   # shellcheck disable=SC2046
   printf "%s\n" $(cat) | head -n "$1" | tail -n 1
@@ -1111,7 +1145,7 @@ then
   }
 fi
 
-# Encode positional parameters into a string which can be passed to `eval` to restore the positional parameters.
+# Encode positional parameters into a string that can be passed to `eval` to restore the positional parameters.
 #
 # Example:
 #   local eval_args="$(make_eval_args "$@")"
@@ -1135,7 +1169,7 @@ make_eval_args() {
   done
 }
 
-# Check if the directory is empty.
+# Check if a directory is empty.
 is_dir_empty() {
   if ! test -d "$1"
   then
@@ -1214,7 +1248,7 @@ task_tasks() ( # List tasks.
   done | sort
 )
 
-usage() ( # Show help message.
+task_sh_usage() ( # Show help message.
   cat <<EOF
 Usage:
   $ARG0BASE [options] <subcommand> [args...]
@@ -1233,7 +1267,7 @@ $(task_tasks | while IFS= read -r line; do echo "  $line"; done)
 EOF
 )
 
-subcmd_exec() { # Execute a command in task.sh context.
+subcmd_task__exec() { # Execute a command in task.sh context.
   backup_shell_flags
   set +o errexit
   "$@"
@@ -1328,7 +1362,7 @@ main() {
         parent_dir="$(realpath "$dir"/..)"
         if test "$dir" = "$parent_dir"
         then
-          echo "Project directory not found." >&2
+          echo "Project directory not found" >&2
           exit 1
         fi
         dir="$parent_dir"
@@ -1365,7 +1399,7 @@ main() {
     ARG0BASE="$(basename "$0")"
   fi
 
-  # Load all the task files in the tasks directory and the project directory. All the task files are sourced in the TASKS directory context.
+  # Load all task files in the tasks directory and the project directory. All task files are sourced in the TASKS directory context.
   psv_task_file_paths_4a5f3ab="$(realpath "$0")|"
   load_tasks_in_dir() {
     push_dir "$TASKS_DIR"
@@ -1411,7 +1445,7 @@ main() {
       (s|skip-missing) skip_missing=true;;
       (i|ignore-missing) ignore_missing=true;;
       (v|verbose) VERBOSE=true;;
-      (\?) usage; exit 1;;
+      (\?) task_sh_usage; exit 1;;
       (*) echo "Unexpected option: $OPT" >&2; exit 1;;
     esac
   done
@@ -1420,7 +1454,7 @@ main() {
   # Show help message and exit.
   if $shows_help || test "${1+set}" != "set"
   then
-    usage
+    task_sh_usage
     exit 0
   fi
 
