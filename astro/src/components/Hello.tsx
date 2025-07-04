@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { hc } from 'hono/client';
-import type { AppType } from '#ssr/api.js';
+import type { AppType } from '#remix/api.js';
 
 const client = hc<AppType>("/");
 

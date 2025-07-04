@@ -55,7 +55,7 @@ export default defineConfig((process.env.NODE_ENV === "development")? {
         "/var/": dynamicUrl,
         "/ssg/": dynamicUrl,
         // Remix development server
-        "/app/": dynamicUrl,
+        "/remix/": dynamicUrl,
         "^/@id/.*remix.*": dynamicUrl,
         "^/.*vite-remix.*": dynamicUrl,
       },

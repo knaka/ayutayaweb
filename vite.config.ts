@@ -30,7 +30,7 @@ export default defineConfig({
     }),
     remix({
       // Defaults to `./app/`
-      appDirectory: "app",
+      appDirectory: "remix",
       future: {
         v3_fetcherPersist: true,
         v3_relativeSplatPath: true,

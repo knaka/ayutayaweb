@@ -4,7 +4,7 @@
 
 . ./task-node.lib.sh
 . ./task-astro.lib.sh
-  set_astro_project_dir "$PROJECT_DIR"/ssg
+  set_astro_project_dir "$PROJECT_DIR"/astro
 . ./task-remix.lib.sh
 . ./task-workers.lib.sh
 . ./task-dev-session.lib.sh
@@ -48,7 +48,7 @@ task_merge() { # Merge the output of the Astro and Remix builds
   mkdir -p "$dist_dir_path"
   subcmd_reclink build/client "$dist_dir_path"
   # Files in SSG are prioritized.
-  subcmd_reclink ssg/dist "$dist_dir_path"
+  subcmd_reclink astro/dist "$dist_dir_path"
   pop_dir
 }
 

@@ -14,7 +14,7 @@
     "paths": {
       "#/*": ["./src/*"],
       "#lib/*": ["./lib/*"],
-      "#ssr/*": ["../app/*"],
+      "#remix/*": ["../remix/*"],
     },
     "strict": true,
   },
