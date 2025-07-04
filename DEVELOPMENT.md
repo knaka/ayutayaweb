@@ -42,6 +42,7 @@
 
 ## Deploying
 
+- `./task wrangler login` performs OAuth authentication to allow Wrangler CLI to operate on Cloudflare environments.
 - There are two deployment environments: preview environment (`prev`) and production environment (`prod`).
-- Task `prev:deploy` to deploy to the Cloudflare Workers preview environment, while `prod:deploy` to production env.
+- Task `prev:deploy` deploys to the Cloudflare Workers preview environment, while `prod:deploy` deploys to the production environment.
 - Assets directory (`assets` in `wrangler.toml`) points to the output directory from merging above (`./dist`).

@@ -69,7 +69,7 @@ export default defineConfig((process.env.NODE_ENV === "development")? {
   build: {
     format: 'file',
   },
-  outDir: "./dist",
+  outDir: "./build",
   experimental:{
     contentCollectionCache: true,
   },

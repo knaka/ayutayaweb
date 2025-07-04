@@ -48,7 +48,7 @@ task_merge() { # Merge the output of the Astro and Remix builds
   mkdir -p "$dist_dir_path"
   subcmd_reclink build/client "$dist_dir_path"
   # Files in SSG are prioritized.
-  subcmd_reclink astro/dist "$dist_dir_path"
+  subcmd_reclink astro/build "$dist_dir_path"
   pop_dir
 }
 

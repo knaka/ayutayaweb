@@ -66,8 +66,6 @@ export default defineConfig({
     mainFields: ["browser", "module", "main"],
   },
   build: {
-    // Defaults to `dist`
-    outDir: "dist",
     minify: true,
     assetsDir: "_remix",
     watch: null,
