@@ -1,3 +1,5 @@
+// This is essentially a Remix configuration file despite of the file name // vite.config.ts | Remix https://remix.run/docs/en/main/file-conventions/vite-config
+
 import { defineConfig } from "vite";
 import {
   vitePlugin as remix,
