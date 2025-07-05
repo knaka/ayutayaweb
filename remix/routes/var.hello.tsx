@@ -1,3 +1,28 @@
+import type { LoaderFunctionArgs } from "@remix-run/cloudflare";
+import { useLoaderData } from "@remix-run/react";
+import { issuesAsync } from "db/sqlcgen/querier";
+
+interface Env {
+  DB: D1Database;
+}
+
+export const loader = async ({ context }: LoaderFunctionArgs) => {
+  let env = context.cloudflare.env as Env;
+  let { results } = await issuesAsync(env.DB);
+  return results;
+};
+
 export default function Hello() {
-  return <h1>Hello, World!</h1>
+  const results = useLoaderData<typeof loader>();
+  return (
+    <div>
+      <h1>Hello</h1>
+      <div>
+        A value from D1:
+        {
+          results.map((r, i) => <div key={i}>{r.title}</div>)
+        }
+      </div>
+    </div>
+  );
 }
