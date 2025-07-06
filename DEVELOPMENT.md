@@ -38,7 +38,7 @@
 - Contains React components, routes, and application logic.
 - Uses Vite Compiler (not Remix Classic Compiler), configured via `vite.config.ts`.
 - App directory configured via `appDirectory` option in `vite.config.ts`. Default is `remix`.
-- Build output goes to `build/` (configured via `build.outDir` in `vite.config.ts`).
+- Build output goes to `build/` (this appears to be non-configurable).
 - The Remix development environment runs on Vite and uses the `cloudflareDevProxyVitePlugin` plugin as configured in `vite.config.ts`, enabling execution of code that uses Cloudflare and Miniflare bundles.
 
 ## Merging the output of SSG and static part of SSR

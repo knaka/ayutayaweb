@@ -91,10 +91,12 @@ verbose() {
 }
 
 # Cache directory path for the task runner
+CACHE_DIR="$HOME/.cache/task-sh"
+mkdir -p "$CACHE_DIR"
+
+# Cache directory path for the task runner
 cache_dir_path() {
-  local global_cache_dir_path="$HOME/.cache"
-  mkdir -p "$global_cache_dir_path"/task-sh
-  echo "$global_cache_dir_path"/task-sh
+  echo "$CACHE_DIR"
 }
 
 # --------------------------------------------------------------------------
@@ -409,6 +411,140 @@ ifsm_values() {
 }
 
 # --------------------------------------------------------------------------
+# Fetch and run a command from an archive
+# --------------------------------------------------------------------------
+
+map_os() {
+  ifsm_get "$1" "$(uname -s)"
+}
+
+map_arch() {
+  ifsm_get "$1" "$(uname -m)"
+}
+
+# Fetch and run a command from a remote archive
+# Usage: fetch_cmd_run [OPTIONS] -- [COMMAND_ARGS...]
+# Options:
+#   --name=NAME           Application name. Used as the directory name to store the command.
+#   --ver=VERSION         Application version
+#   --cmd=COMMAND         Command name to execute
+#   --cmd-rel-path=PATH   Relative path within archive to the directory containing the command (default: ".")
+#   --url-template=TEMPLATE URL template string with ${ver}, ${os}, ${arch}, ${ext}, ${exe_ext} (=`.exe` on Windows) variables
+#   --os-map=MAP          OS name mapping (IFS-separated key-value pairs)
+#   --arch-map=MAP        Architecture name mapping (IFS-separated key-value pairs)
+#   --ext-map=MAP         Archive extension mapping (IFS-separated key-value pairs). If not specified, "url-format" points to a command binary directly rather than an archive file
+fetch_cmd_run() {
+  local name=
+  local ver=
+  local cmd=
+  local cmd_rel_path=.
+  local url_template=
+  local os_map=
+  local arch_map=
+  local ext_map=
+  OPTIND=1; while getopts _-: OPT
+  do
+    if test "$OPT" = "-"
+    then
+      OPT="${OPTARG%%=*}"
+      # shellcheck disable=SC2030
+      OPTARG="${OPTARG#"$OPT"}"
+      OPTARG="${OPTARG#=}"
+    fi
+    case "$OPT" in
+      (name) name=$OPTARG;;
+      (ver) ver=$OPTARG;;
+      (cmd) cmd=$OPTARG;;
+      (cmd-rel-path) cmd_rel_path=$OPTARG;;
+      (url-template) url_template=$OPTARG;;
+      (os-map) os_map=$OPTARG;;
+      (arch-map) arch_map=$OPTARG;;
+      (ext-map) ext_map=$OPTARG;;
+      (\?) exit 1;;
+      (*) echo "Unexpected option: $OPT" >&2; exit 1;;
+    esac
+  done
+  shift $((OPTIND-1))
+
+  local app_dir_path="$CACHE_DIR"/"$name"@"$ver"
+  mkdir -p "$app_dir_path"
+  local cmd_path="$app_dir_path"/"$cmd""$exe_ext"
+  if ! command -v "$cmd_path" >/dev/null 2>&1
+  then
+    local ver="$ver"
+    # shellcheck disable=SC2034
+    local os="$(map_os "$os_map")"
+    # shellcheck disable=SC2034
+    local arch="$(map_arch "$arch_map")"
+    local ext=
+    if test -n "$ext_map"
+    then
+      ext="$(map_os "$ext_map")"
+    fi
+    local url="$(eval echo "$url_template")"
+    local out_file_path="$TEMP_DIR"/"$name""$ext"
+    if ! curl --fail --location "$url" --output "$out_file_path"
+    then
+      echo Failed to download: "$url" >&2
+      return 1
+    fi
+    local work_dir_path="$TEMP_DIR"/"$name"ec85463
+    mkdir -p "$work_dir_path"
+    push_dir "$work_dir_path"
+    case "$ext" in
+      (.zip) unzip "$out_file_path" ;;
+      (.tar.gz) tar -xf "$out_file_path" ;;
+      (*) ;;
+    esac
+    pop_dir
+    if test -n "$ext_map"
+    then
+      mv "$work_dir_path"/"$cmd_rel_path"/* "$app_dir_path"
+    else
+      mv "$out_file_path" "$cmd_path"
+    fi
+    chmod +x "$cmd_path"
+  fi
+  "$cmd_path" "$@"
+}
+
+# Uname kernel name -> GOOS mapping
+# Installing Go from source - The Go Programming Language https://go.dev/doc/install/source#environment
+# shellcheck disable=SC2140
+# shellcheck disable=SC2034
+goos_map=\
+"Linux linux "\
+"Darwin darwin "\
+"Windows windows "\
+#nop
+
+# Uname kernel name -> GOOS in CamelCase mapping
+# shellcheck disable=SC2140
+# shellcheck disable=SC2034
+goos_camel_map=\
+"Linux Linux "\
+"Darwin Darwin "\
+"Windows Windows "\
+#nop
+
+# Uname architecture name -> GOARCH mapping
+# shellcheck disable=SC2140
+# shellcheck disable=SC2034
+goarch_map=\
+"x86_64 amd64 "\
+"aarch64 arm64 "\
+#nop
+
+# Uname kernel name -> generally used archive file extension mapping
+# shellcheck disable=SC2140
+# shellcheck disable=SC2034
+archive_ext_map=\
+"Linux .tar.gz "\
+"Darwin .tar.gz "\
+"Windows .zip "\
+#nop
+
+# --------------------------------------------------------------------------
 # Package command registration
 # --------------------------------------------------------------------------
 
@@ -482,7 +618,7 @@ run_required_cmd() {
   local cmd
   for cmd in $(IFS="$us" ifsm_get "$usm_psv_cmd" "$cmd_name")
   do
-    if command -v "$cmd" >/dev/null
+    if which "$cmd" >/dev/null
     then
       IFS="$saved_IFS"
       invoke "$cmd" "$@"
