@@ -15,7 +15,6 @@
   set_db_seed_path "$PROJECT_DIR"/db/seed.sql
 . ./task-sqlc.lib.sh
 . ./task-sqlc-ts.lib.sh
-. ./task-fswatch.lib.sh
 
 task_dev() { # Start the development environment
   cleanup_session_env

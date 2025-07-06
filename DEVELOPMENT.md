@@ -17,6 +17,12 @@
 - `./task test` runs Vitest test runner.
 - Vitest runs in watch mode by default. If you would like to disable it, use `--run` option.
 
+## Database
+
+- Uses Cloudflare's D1 database. For local development, it uses Miniflare's development D1 database.
+- Database schema is defined in `db/schema.sql`. Use task `d1:local:migrate` for local database and `d1:prod:migrate` for production database schema migration. Schema migration uses sqldef, so there's no need to manage schema diffs manually.
+- Database access code generation for TypeScript uses [sqlc](https://github.com/sqlc-dev/sqlc). Access queries are located in `db/queries/`. Task `db:gen` generates access code to `db/sqlcgen/`.
+
 ## Astro application (SSG)
 
 - The source directory is `astro/`.

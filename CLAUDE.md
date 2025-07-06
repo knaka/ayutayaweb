@@ -6,7 +6,7 @@
 - Running `./task` without argument shows available tasks/subcommands.
 - Tasks `foo:bar` and `baz` are executed with `./task foo:bar baz[arg1,arg2]`. Arguments are passed in brackets.
 - Task runner is written with shell script and the task `foo:bar` is implemented in shell script function `task_foo__bar`.
-- Subcommand `qux` is executed as `./task qux arg1 arg2` and which is implemented as shell script function `subcmd_qux`.
+- Subcommand `qux` is executed as `./task qux arg1 arg2` and is implemented as shell script function `subcmd_qux`.
 
 ## Development server
 
@@ -17,6 +17,12 @@
 
 - `./task test` runs Vitest test runner.
 - Vitest runs in watch mode by default. If you would like to disable it, use `--run` option.
+
+## Database
+
+- Uses Cloudflare's D1 database. For local development, it uses Miniflare's development D1 database.
+- Database schema is defined in `db/schema.sql`. Use task `d1:local:migrate` for local database and `d1:prod:migrate` for production database schema migration. Schema migration uses sqldef, so there's no need to manage schema diffs manually.
+- Database access code generation for TypeScript uses [sqlc](https://github.com/sqlc-dev/sqlc). Access queries are located in `db/queries/`. Task `db:gen` generates access code to `db/sqlcgen/`.
 
 ## Astro application (SSG)
 
@@ -34,6 +40,7 @@
 - Uses Vite Compiler (not Remix Classic Compiler), configured via `vite.config.ts`.
 - App directory configured via `appDirectory` option in `vite.config.ts`. Default is `remix`.
 - Build output goes to `build/` (configured via `build.outDir` in `vite.config.ts`).
+- The Remix development environment runs on Vite and uses the `cloudflareDevProxyVitePlugin` plugin as configured in `vite.config.ts`, enabling execution of code that uses Miniflare bundles.
 
 ## Merging the output of SSG and static part of SSR
 
