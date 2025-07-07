@@ -3,6 +3,7 @@
 "${sourced_9da69a1-false}" && return 0; sourced_9da69a1=true
 
 . ./task.sh
+. ./task-node.lib.sh
 
 : "${remix_project_dir_b4b3371:=$PROJECT_DIR}"
 
