@@ -11,8 +11,16 @@ subcmd_rr() { # Run `react-router`.
   run_node_modules_bin @react-router dev/bin.js "$@"
 }
 
+alias react-router=subcmd_rr
+
+alias subcmd_react-router=subcmd_rr
+
 task_rr__build() { # Build
-  subcmd_rr vite:build
+  react-router build "$PROJECT_DIR"
+}
+
+task_rr__routes() { # List routes
+  react-router routes "$PROJECT_DIR"
 }
 
 task_rr__dev() { # Start development server
@@ -21,5 +29,5 @@ task_rr__dev() { # Start development server
   local port="${RR_DEV_PORT:-3000}"
   set -- "$@" --host "$host"
   set -- "$@" --port "$port"
-  subcmd_rr dev "$@"
+  react-router dev "$@" "$PROJECT_DIR"
 }

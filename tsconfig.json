@@ -12,9 +12,9 @@
   "compilerOptions": {
     "lib": ["DOM", "DOM.Iterable", "ES2022"],
     "types": [
-      "@remix-run/cloudflare",
-      "@cloudflare/workers-types",
-      "vite/client"
+      "./worker-configuration.d.ts",
+      "vite/client",
+      "@cloudflare/workers-types"
     ],
     "isolatedModules": true,
     "esModuleInterop": true,
@@ -28,11 +28,9 @@
     "forceConsistentCasingInFileNames": true,
     "baseUrl": ".",
     "paths": {
-      "#/*": ["./remix/*"],
+      "#/*": ["./rrapp/*"],
       "#ssg/*": ["./astro/src/*"],
     },
-
-    // Remix takes care of building everything in `remix build`.
     "noEmit": true
   }
 }

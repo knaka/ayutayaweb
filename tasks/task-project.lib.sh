@@ -5,7 +5,7 @@
 . ./task-node.lib.sh
 . ./task-astro.lib.sh
   set_astro_project_dir "$PROJECT_DIR"/astro
-. ./task-rr.lib.sh
+. ./task-react-router.lib.sh
 . ./task-workers.lib.sh
 . ./task-dev-session.lib.sh
 . ./task-astro-dev.lib.sh
@@ -24,7 +24,7 @@ task_dev() { # Start the development environment
     "ASTRO_DEV_PORT" "$astro_dev_port" \
     "ASTRO_DYNAMIC_PORT" "$rr_dev_port" \
     "RR_DEV_PORT" "$rr_dev_port" \
-    # NOP
+    # nop
   chaintrap cleanup_session_env INT EXIT
   # Launch the React Router dev server.
   task_rr__dev --invocation-mode=background </dev/null
