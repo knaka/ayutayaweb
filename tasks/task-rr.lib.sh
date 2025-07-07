@@ -2,17 +2,12 @@
 # shellcheck shell=sh
 "${sourced_9da69a1-false}" && return 0; sourced_9da69a1=true
 
+# React Router (formerly Remix) https://reactrouter.com/
+
 . ./task.sh
 . ./task-node.lib.sh
 
-: "${rr_project_dir_b4b3371:=$PROJECT_DIR}"
-
-set_rr_project_dir() {
-  rr_project_dir_b4b3371="$1"
-}
-
-subcmd_rr() { # Run rr.
-  # run_node_modules_bin @react-router dev/bin.js "$@" "$rr_project_dir_b4b3371"
+subcmd_rr() { # Run `react-router`.
   run_node_modules_bin @react-router dev/bin.js "$@"
 }
 
