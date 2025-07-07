@@ -1,7 +1,7 @@
 import type { Config } from "@react-router/dev/config";
 
 export default {
-  appDirectory: "rr",
+  appDirectory: "rrapp",
   ssr: true,
   future: {
     unstable_viteEnvironmentApi: true,
