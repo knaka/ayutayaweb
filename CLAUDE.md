@@ -11,7 +11,7 @@
 ## Development server
 
 - `./task dev` launches development server.
-- It launches Remix development server in background and launches Astro development server in foreground. The latter redirects access to dynamic paths to the former. This is configured in `astro/astro.config.ts`.
+- It launches React Router development server in background and launches Astro development server in foreground. The latter redirects access to dynamic paths to the former. This is configured in `astro/astro.config.ts`.
 
 ## Testing
 
@@ -32,15 +32,15 @@
 - The directory is pointed in `task-project.lib.sh` as `set_astro_project_dir "$PROJECT_DIR"/astro`.
 - Build output goes to `astro/dist/` (configured via `outDir` in `astro/astro.config.ts`).
 
-## Remix application (SSR)
+## React Router application (SSR)
 
-- The source directory is `remix/`.
-- Built with `remix:build` task.
+- The source directory is `rrapp/`.
+- Built with `rr:build` task.
 - Contains React components, routes, and application logic.
-- Uses Vite Compiler (not Remix Classic Compiler), configured via `vite.config.ts`.
-- App directory configured via `appDirectory` option in `vite.config.ts`. Default is `remix`.
-- Build output goes to `build/` (configured via `build.outDir` in `vite.config.ts`).
-- The Remix development environment runs on Vite and uses the `cloudflareDevProxyVitePlugin` plugin as configured in `vite.config.ts`, enabling execution of code that uses Miniflare bundles.
+- Uses Vite and React Router, configured via `vite.config.ts` and `react-router.config.ts`.
+- App directory configured via `appDirectory` option in `react-router.config.ts`. Set to `rrapp`.
+- Build output goes to `build/` (this appears to be non-configurable).
+- The React Router development environment runs on Vite and uses the `cloudflare` plugin as configured in `vite.config.ts`, enabling execution of code that uses Cloudflare bundles.
 
 ## Merging the output of SSG and static part of SSR
 
