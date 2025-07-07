@@ -1,7 +1,7 @@
 #:schema node_modules/wrangler/config-schema.json
 name = "ayutayaweb"
 compatibility_date = "2025-03-11"
-main = "./server.ts"
+main = "./workers/app.ts"
 # Configuration and Bindings · Cloudflare Workers docs https://developers.cloudflare.com/workers/static-assets/binding/
 assets = { directory = "./dist" }
 

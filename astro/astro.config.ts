@@ -12,18 +12,19 @@ const common = {
   integrations: [react()],
 };
 
+  // css: {
+  //   preprocessorOptions: {
+  //     scss: {
+  //       api: 'modern',
+  //     },
+  //     sass: {
+  //       api: 'modern',
+  //     },
+  //   }
+  // },
+
 const viteCommon = {
   envDir: "..",
-  css: {
-    preprocessorOptions: {
-      scss: {
-        api: 'modern',
-      },
-      sass: {
-        api: 'modern',
-      },
-    }
-  },
   plugins: [
     tsconfigPaths(),
   ],
@@ -70,7 +71,5 @@ export default defineConfig((process.env.NODE_ENV === "development")? {
     format: 'file',
   },
   outDir: "./build",
-  experimental:{
-    contentCollectionCache: true,
-  },
 });
+

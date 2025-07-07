@@ -1,6 +1,6 @@
-import type { LoaderFunctionArgs } from "@remix-run/cloudflare";
-import { useLoaderData } from "@remix-run/react";
-import { issuesAsync } from "db/sqlcgen/querier";
+import { useLoaderData, LoaderFunctionArgs } from "react-router";
+import { issuesAsync } from "../../db/sqlcgen/querier";
+import { D1Database } from "@cloudflare/workers-types/2022-11-30";
 
 interface Env {
   DB: D1Database;
