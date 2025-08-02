@@ -2,16 +2,27 @@
 # shellcheck shell=sh
 "${sourced_4bfdf93-false}" && return 0; sourced_4bfdf93=true
 
+. ./task-node.lib.sh
+. ./task-yq.lib.sh
+
 : "${wrangler_toml_path:=$PROJECT_DIR/wrangler.toml}"
 
-subcmd_wrangler() { # Run the Cloudflare Wrangler command.
+wrangler() {
   run_node_modules_bin wrangler bin/wrangler.js "$@"
 }
 
+subcmd_wrangler() { # Run the Cloudflare Wrangler command.
+  wrangler "$@"
+}
+
 subcmd_cf__name() { # Show the name of the Cloudflare project.
-  subcmd_yq --exit-status eval ".name" "$wrangler_toml_path"
+  yq --exit-status eval ".name" "$wrangler_toml_path"
 }
 
 subcmd_cf__typegen() { # Generate TypeScript types for the Cloudflare project.
-  subcmd_wrangler types
+  wrangler types
+}
+
+task_cf__whoami() { # Show the Cloudflare account information which is logged in.
+  wrangler whoami
 }
