@@ -1,4 +1,5 @@
-import { useLoaderData, LoaderFunctionArgs } from "react-router";
+import { useLoaderData } from "react-router";
+import type { LoaderFunctionArgs } from "react-router";
 // import { issuesAsync } from "#root/db/sqlcgen/querier";
 import { issuesAsync } from "../../db/sqlcgen/querier"
 import { D1Database } from "@cloudflare/workers-types/2022-11-30";

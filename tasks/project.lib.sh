@@ -4,6 +4,11 @@
 
 . ./task.sh
 
-task_foo() {
-  echo Hello, Foo.
+task_help() {
+cat <<EOF >&2
+Usage: task [options] [taskname] [taskname] ...
+Run tasks defined in the project.
+Options:
+  -h, --help    Show this help message and exit.
+EOF
 }
