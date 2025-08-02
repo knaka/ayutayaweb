@@ -1,0 +1,37 @@
+---
+import PlainLayout from "#/components/PlainLayout.astro";
+import { obtainStore, Markdown, Order } from 'lib/posts.js';
+import styles from './PostRecentPage.module.scss';
+import { postsPath } from '#/endpoints.js';
+
+const store = obtainStore()
+const posts = await store.postsAsync();
+const yearPosts: Map<number, Markdown[]> = new Map();
+posts.forEach((post) => {
+  const year = post.createdAt.year;
+  if (!yearPosts.has(year)) {
+    yearPosts.set(year, []);
+  }
+  yearPosts.get(year).push(post);
+});
+const years = Array.from(yearPosts.keys()).sort((a, b) => b - a);
+---
+<PlainLayout title="'No title">
+  <div class={styles.recent_content}>
+    <header class={styles.all_posts}>
+      <a target="_top" href={`${postsPath}`}>All posts</a>
+    </header>
+    {years.map((year) => (
+      <header>
+        <a class={styles.recent_year} target="_top" href={`${postsPath}/year-${year}`}>{year}</a>
+      </header>
+      <ul class={styles.recent_list} >
+        {yearPosts.get(year).map((post) => (
+          <li class={styles.recent_item}>
+            <a class={styles.recent_title} target="_top" href={`${postsPath}/${post.id}`}>{post.title}</a> ({post.createdAt.toISODate()})
+          </li>
+        ))}
+      </ul>
+    ))}
+  </div>
+</PlainLayout>

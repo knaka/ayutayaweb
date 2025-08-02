@@ -1,0 +1,40 @@
+---
+// import RootLayout from '#/components/RootLayout.astro';
+import PageLayout from '#/components/PageLayout.astro';
+import PostRecentFrame from '#/components/PostRecentFrame.astro';
+import { path as tmplIssuePath } from './tmpl/_issue.js';
+import { path as tmplIssuesPath } from './tmpl/_issues.js';
+
+const title = "Top page"
+
+---
+<PageLayout title={title}>
+	<div slot="main">
+		<h1>{title}</h1>
+		<p>This is the top page.</p>
+		<h2>Posts:</h2>
+		<p><a href='/posts'>Posts</a></p>
+	
+		{(import.meta.env.DEV)? 
+			<div>
+				<p><img src='/doc/astro-logo.png' style='width: 100px; height: auto; background-color: #b0b0b0;'></p>
+				<h2>For dev:</h2>
+				<p>Templates:</p>
+				<ul>
+					<li><a href={tmplIssuePath}>Issue</a></li>
+					<li><a href={tmplIssuesPath}>Issues</a></li>
+				</ul>
+				<p>VARs:</p>
+				<ul>
+					<li><a href='/var/hello'>Hello</a></li>
+					<li><a href='/var/issues'>Issues</a></li>
+				</ul>
+				<p>APIs:</p>
+				<ul>
+					<li><a href='/api/add-go'>Add Wasm in Go</a></li>
+				</ul>
+			</div>
+		: "" }
+	</div>
+	<PostRecentFrame slot="sidebar" />
+</PageLayout>

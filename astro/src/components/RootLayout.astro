@@ -1,0 +1,20 @@
+---
+// import { postsPath } from '#/endpoints';
+import styles from './styles.module.scss';
+import { Topbar } from './ReactTopbar.jsx';
+
+const { title } = Astro.props;
+---
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<title>{title}</title>
+	</head>
+	<body class={styles.root}>
+		<Topbar />
+		<main class={styles.mainContent}>
+			<slot />
+		</main>
+	</body>
+</html>

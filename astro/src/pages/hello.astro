@@ -1,0 +1,8 @@
+---
+import PageLayout from '#/components/PageLayout.astro';
+import { Hello as ReactHello } from '#/components/Hello';
+
+---
+<PageLayout title='Hello'>
+  <ReactHello slot='main' client:only />
+</PageLayout>

@@ -1,0 +1,32 @@
+.navigator {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  font-size: 0.9em;
+}
+
+@mixin nav-items {
+  margin: 0;
+  padding: 0;
+  display: flex;
+  list-style: none;
+  padding: 0;
+
+  li {
+    margin-right: 0.4em;
+  }
+}
+
+.pages {
+  @include nav-items;
+  justify-content: right;
+  flex-grow: 1;
+}
+
+.tools {
+  @include nav-items;
+  justify-content: flex-end;
+  margin-left: 0.6em;
+} 

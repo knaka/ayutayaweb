@@ -1,0 +1,11 @@
+---
+import RootLayout from '#/components/RootLayout.astro';
+import ReactIssue from '#/components/ReactIssue'
+
+import { path } from './_issue.js';
+import { ensureEndpointPathCorrect } from '#/misc';
+ensureEndpointPathCorrect(path, import.meta.url);
+---
+<RootLayout title="Issue">
+  <ReactIssue client:only />
+</RootLayout>

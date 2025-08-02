@@ -1,0 +1,12 @@
+---
+import styles from './PostItemPage.module.scss';
+import PageLayout from '#/components/PageLayout.astro';
+import PostRecentFrame from './PostRecentFrame.astro'
+
+---
+<PageLayout title='About'>
+  <article slot="main">
+    About the company.
+  </article>
+  <PostRecentFrame slot="sidebar" />    
+</PageLayout>

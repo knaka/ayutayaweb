@@ -15,6 +15,7 @@ astro_project_dir() {
   echo "$astro_project_dir_0135e32"
 }
 
+<<<<<<< HEAD
 astro() {
   run_node_modules_bin astro astro.js "$@"
 }
@@ -25,4 +26,12 @@ subcmd_astro() { # Execute Astro command
 
 task_astro__build() { # Build Astro application
   astro --root "$astro_project_dir_0135e32" build "$@"
+=======
+subcmd_astro() { # Execute Astro command
+  run_node_modules_bin astro astro.js --root "$astro_project_dir_0135e32" "$@"
+}
+
+task_astro__build() { # Build Astro application
+  subcmd_astro build
+>>>>>>> 04af7bbf54dd65d19bc35dc42cc714ecad21e213
 }

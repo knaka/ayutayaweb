@@ -23,7 +23,11 @@ TEMP_DIR="$(mktemp -d)"
 # shellcheck disable=SC2064
 trap "rm -fr '$TEMP_DIR'" EXIT
 
+<<<<<<< HEAD
 # Base name of the script file containing the statements to be called during finalization
+=======
+# Base name of the script file that contains the statements to be called when finalizing
+>>>>>>> 04af7bbf54dd65d19bc35dc42cc714ecad21e213
 readonly stmts_file_base="$TEMP_DIR"/b6a5748
 
 # Chain traps to avoid overwriting the previous trap.
@@ -333,6 +337,7 @@ restore_shell_flags() {
 
 # Put a value in an associative array implemented as a property list.
 ifsm_put() {
+<<<<<<< HEAD
   local key="$2"
   local value="$3"
   # shellcheck disable=SC2086
@@ -344,10 +349,40 @@ ifsm_put() {
     shift 2
   done
   printf "%s%s%s%s" "$key" "$delim" "$value" "$delim"
+=======
+  local plist="$1"
+  local target_key="$2"
+  local value="$3"
+  local found=false
+  local key=
+  local i=0
+  local item
+  for item in $plist
+  do
+    if test $((i % 2)) -eq 0
+    then
+      key="$item"
+    else
+      if test "$key" = "$target_key"
+      then
+        found=true
+        printf "%s%s%s%s" "$target_key" "$IFS" "$value" "$IFS"
+      else
+        printf "%s%s%s%s" "$key" "$IFS" "$item" "$IFS"
+      fi
+    fi
+    i=$((i + 1))
+  done
+  if ! "$found"
+  then
+    printf "%s%s%s%s" "$target_key" "$IFS" "$value" "$IFS"
+  fi
+>>>>>>> 04af7bbf54dd65d19bc35dc42cc714ecad21e213
 }
 
 # Get a value from an associative array implemented as a property list.
 ifsm_get() {
+<<<<<<< HEAD
   local key="$2"
   # shellcheck disable=SC2086
   set -- $1
@@ -355,12 +390,32 @@ ifsm_get() {
   do
     test "$1" = "$key" && printf "%s" "$2" && return
     shift 2
+=======
+  local plist="$1"
+  local target_key="$2"
+  local key=
+  local i=0
+  for item in $plist
+  do
+    if test $((i % 2)) -eq 0
+    then
+      key="$item"
+    else
+      if test "$key" = "$target_key"
+      then
+        printf "%s" "$item"
+        return
+      fi
+    fi
+    i=$((i + 1))
+>>>>>>> 04af7bbf54dd65d19bc35dc42cc714ecad21e213
   done
   return 1
 }
 
 # Keys of an associative array implemented as a property list.
 ifsm_keys() {
+<<<<<<< HEAD
   # shellcheck disable=SC2086
   set -- $1
   local delim="${IFS%"${IFS#?}"}"
@@ -368,11 +423,24 @@ ifsm_keys() {
   do
     printf "%s%s" "$1" "$delim"
     shift 2
+=======
+  local plist="$1"
+  local i=0
+  local item
+  for item in $plist
+  do
+    if test $((i % 2)) -eq 0
+    then
+      printf "%s%s" "$item" "$IFS"
+    fi
+    i=$((i + 1))
+>>>>>>> 04af7bbf54dd65d19bc35dc42cc714ecad21e213
   done
 }
 
 # Values of an associative array implemented as a property list.
 ifsm_values() {
+<<<<<<< HEAD
   # shellcheck disable=SC2086
   set -- $1
   local delim="${IFS%"${IFS#?}"}"
@@ -380,6 +448,18 @@ ifsm_values() {
   do
     printf "%s%s" "$2" "$delim"
     shift 2
+=======
+  local plist="$1"
+  local i=0
+  local item
+  for item in $plist
+  do
+    if test $((i % 2)) -eq 1
+    then
+      printf "%s%s" "$item" "$IFS"
+    fi
+    i=$((i + 1))
+>>>>>>> 04af7bbf54dd65d19bc35dc42cc714ecad21e213
   done
 }
 
@@ -387,6 +467,7 @@ ifsm_values() {
 # Fetch and run a command from an archive
 # --------------------------------------------------------------------------
 
+<<<<<<< HEAD
 uname_s() {
   local os_name="$(uname -s)"
   case "$os_name" in
@@ -397,6 +478,10 @@ uname_s() {
 
 map_os() {
   ifsm_get "$1" "$(uname_s)"
+=======
+map_os() {
+  ifsm_get "$1" "$(uname -s)"
+>>>>>>> 04af7bbf54dd65d19bc35dc42cc714ecad21e213
 }
 
 map_arch() {
@@ -411,6 +496,7 @@ map_arch() {
 #   --cmd=COMMAND         Command name to execute. If not specified, the application name is used.
 #   --os-map=MAP          OS name mapping (IFS-separated key-value pairs)
 #   --arch-map=MAP        Architecture name mapping (IFS-separated key-value pairs)
+<<<<<<< HEAD
 #   --ext=EXTENSION       Archive file extension (e.g., ".zip", ".tar.gz"). Takes precedence over --ext-map.
 #   --ext-map=MAP         Archive extension mapping (IFS-separated key-value pairs). Used when --ext is not specified. If neither option is provided, the URL template points directly to a command binary rather than an archive file
 #   --url-template=TEMPLATE URL template string to generate the download URL with ${ver}, ${os}, ${arch}, ${ext}, ${exe_ext} (=.exe on Windows) variables
@@ -418,17 +504,29 @@ map_arch() {
 #   --print-dir           Print the directory path where the command is installed instead of executing the command
 #   --macos-remove-signature      Remove code signature from the downloaded binary on macOS to bypass security checks
 run_fetched_cmd() {
+=======
+#   --ext-map=MAP         Archive extension mapping (IFS-separated key-value pairs). If not specified, "url-format" points to a command binary directly rather than an archive file
+#   --url-template=TEMPLATE URL template string to generate the download URL with ${ver}, ${os}, ${arch}, ${ext}, ${exe_ext} (=`.exe` on Windows) variables
+#   --rel-dir-path=PATH   Relative path within archive to the directory containing the command (default: ".")
+fetch_cmd_run() {
+>>>>>>> 04af7bbf54dd65d19bc35dc42cc714ecad21e213
   local name=
   local ver=
   local cmd=
   local os_map=
   local arch_map=
+<<<<<<< HEAD
   local ext=
   local ext_map=
   local url_template=
   local rel_dir_template=.
   local print_dir=false
   local macos_remove_signature=false
+=======
+  local ext_map=
+  local url_template=
+  local rel_dir_path=.
+>>>>>>> 04af7bbf54dd65d19bc35dc42cc714ecad21e213
   OPTIND=1; while getopts _-: OPT
   do
     if test "$OPT" = "-"
@@ -444,12 +542,18 @@ run_fetched_cmd() {
       (cmd) cmd=$OPTARG;;
       (os-map) os_map=$OPTARG;;
       (arch-map) arch_map=$OPTARG;;
+<<<<<<< HEAD
       (ext) ext=$OPTARG;;
       (ext-map) ext_map=$OPTARG;;
       (url-template) url_template=$OPTARG;;
       (rel-dir-template) rel_dir_template=$OPTARG;;
       (print-dir) print_dir=true;;
       (macos-remove-signature) macos_remove_signature=true;;
+=======
+      (ext-map) ext_map=$OPTARG;;
+      (url-template) url_template=$OPTARG;;
+      (rel-dir-path) rel_dir_path=$OPTARG;;
+>>>>>>> 04af7bbf54dd65d19bc35dc42cc714ecad21e213
       (\?) exit 1;;
       (*) echo "Unexpected option: $OPT" >&2; exit 1;;
     esac
@@ -470,7 +574,12 @@ run_fetched_cmd() {
     local os="$(map_os "$os_map")"
     # shellcheck disable=SC2034
     local arch="$(map_arch "$arch_map")"
+<<<<<<< HEAD
     if test -z "$ext" -a -n "$ext_map"
+=======
+    local ext=
+    if test -n "$ext_map"
+>>>>>>> 04af7bbf54dd65d19bc35dc42cc714ecad21e213
     then
       ext="$(map_os "$ext_map")"
     fi
@@ -490,14 +599,20 @@ run_fetched_cmd() {
       (*) ;;
     esac
     pop_dir
+<<<<<<< HEAD
     if test -n "$ext"
     then
       local rel_dir_path="$(eval echo "$rel_dir_template")"
+=======
+    if test -n "$ext_map"
+    then
+>>>>>>> 04af7bbf54dd65d19bc35dc42cc714ecad21e213
       mv "$work_dir_path"/"$rel_dir_path"/* "$app_dir_path"
     else
       mv "$out_file_path" "$cmd_path"
     fi
     chmod +x "$cmd_path"
+<<<<<<< HEAD
     if is_macos && "$macos_remove_signature"
     then
       codesign --remove-signature "$cmd_path"
@@ -509,6 +624,10 @@ run_fetched_cmd() {
   else
     "$cmd_path" "$@"
   fi
+=======
+  fi
+  "$cmd_path" "$@"
+>>>>>>> 04af7bbf54dd65d19bc35dc42cc714ecad21e213
 }
 
 # Uname kernel name -> GOOS mapping
@@ -536,8 +655,11 @@ goos_camel_map=\
 goarch_map=\
 "x86_64 amd64 "\
 "aarch64 arm64 "\
+<<<<<<< HEAD
 "armv7l arm "\
 "i386 386 "\
+=======
+>>>>>>> 04af7bbf54dd65d19bc35dc42cc714ecad21e213
 #nop
 
 # Uname kernel name -> generally used archive file extension mapping
@@ -567,12 +689,20 @@ usm_psv_cmd=
 
 # Register a command with optional package IDs for various package managers.
 # This function maps a command name to package IDs for installation via different package managers.
+<<<<<<< HEAD
 # The rest arguments are treated as the command paths to be tried in order. The last argument is treated as the command name.
+=======
+# The first argument is treated as the main command name, and subsequent arguments are alternative command name or command paths.
+>>>>>>> 04af7bbf54dd65d19bc35dc42cc714ecad21e213
 # Options:
 #   --brew-id=<id>    Package ID for Homebrew (macOS)
 #   --deb-id=<id>     Package ID for Debian/Ubuntu package manager
 #   --winget-id=<id>  Package ID for Windows Package Manager
+<<<<<<< HEAD
 require_pkg_cmd() {
+=======
+require_cmd() {
+>>>>>>> 04af7bbf54dd65d19bc35dc42cc714ecad21e213
   local brew_id=
   local deb_id=
   local winget_id=
@@ -595,13 +725,24 @@ require_pkg_cmd() {
   done
   shift $((OPTIND-1))
 
+<<<<<<< HEAD
   # Last argument is treated as the command name.
+=======
+  # 1st argument is treated as the command name.
+>>>>>>> 04af7bbf54dd65d19bc35dc42cc714ecad21e213
   local cmd_name=
   local psv_cmd=
   local cmd
   for cmd in "$@"
   do
+<<<<<<< HEAD
     cmd_name="$cmd"
+=======
+    if test -z "$cmd_name"
+    then
+      cmd_name="$cmd"
+    fi
+>>>>>>> 04af7bbf54dd65d19bc35dc42cc714ecad21e213
     psv_cmd="$psv_cmd|$cmd"
   done
   test -n "$brew_id" && usm_brew_id="$usm_brew_id$cmd_name$us$brew_id$us"
@@ -613,7 +754,11 @@ require_pkg_cmd() {
 # For Windows
 : "${LOCALAPPDATA:=e06a91c}"
 
+<<<<<<< HEAD
 run_pkg_cmd() {
+=======
+run_required_cmd() {
+>>>>>>> 04af7bbf54dd65d19bc35dc42cc714ecad21e213
   local cmd_name="$1"
   shift
   local saved_IFS="$IFS"; IFS="|"
@@ -640,6 +785,7 @@ run_pkg_cmd() {
     # shellcheck disable=SC2086
     printf " %s" $(ifsm_values "$usm_brew_id") >&2
     IFS="$saved_ifs"
+<<<<<<< HEAD
   elif is_windows
   then
     printf "  winget install" >&2
@@ -648,6 +794,8 @@ run_pkg_cmd() {
     # shellcheck disable=SC2086
     printf " %s" $(ifsm_values "$usm_winget_id") >&2
     IFS="$saved_ifs"
+=======
+>>>>>>> 04af7bbf54dd65d19bc35dc42cc714ecad21e213
   fi
   echo >&2
   echo >&2
@@ -663,6 +811,7 @@ task_devinstall() { # Install necessary packages for this development environmen
     set -- "$@" $(ifsm_values "$usm_brew_id")
     IFS="$saved_ifs"
     invoke "$@"
+<<<<<<< HEAD
   elif is_windows
   then
     set - winget install
@@ -671,6 +820,8 @@ task_devinstall() { # Install necessary packages for this development environmen
     set -- "$@" $(ifsm_values "$usm_winget_id")
     IFS="$saved_ifs"
     invoke "$@"
+=======
+>>>>>>> 04af7bbf54dd65d19bc35dc42cc714ecad21e213
   fi
 }
 
@@ -678,19 +829,55 @@ task_devinstall() { # Install necessary packages for this development environmen
 # Fetching
 # --------------------------------------------------------------------------
 
+<<<<<<< HEAD
 # curl(1) is available on MacOS and Window as default.
 require_pkg_cmd \
+=======
+require_cmd \
+>>>>>>> 04af7bbf54dd65d19bc35dc42cc714ecad21e213
   --deb-id=curl \
   curl
 
 curl() {
+<<<<<<< HEAD
   run_pkg_cmd curl "$@"
+=======
+  run_required_cmd curl "$@"
+>>>>>>> 04af7bbf54dd65d19bc35dc42cc714ecad21e213
 }
 
 subcmd_curl() { # Run curl(1).
   curl "$@"
 }
 
+<<<<<<< HEAD
+=======
+go_os() {
+  case "$(uname -s)" in
+    Linux) echo "linux" ;;
+    Darwin) echo "darwin" ;;
+    Windows) echo "windows" ;;    
+    *)
+      echo "Unknown OS: $(uname -s)"
+      return 1
+      ;;
+  esac
+}
+
+go_arch() {
+  case "$(uname -m)" in
+    x86_64) echo "amd64" ;;
+    aarch64) echo "arm64" ;;
+    armv7l) echo "arm" ;;
+    i386) echo "386" ;;
+    *)
+      echo "Unknown architecture: $(uname -m)"
+      return 1
+      ;;
+  esac
+}
+
+>>>>>>> 04af7bbf54dd65d19bc35dc42cc714ecad21e213
 # --------------------------------------------------------------------------
 # Environment variable management
 # --------------------------------------------------------------------------
@@ -1094,6 +1281,10 @@ get_key() {
   then
     # shellcheck disable=SC3045
     read -rsn1 key
+<<<<<<< HEAD
+=======
+    return
+>>>>>>> 04af7bbf54dd65d19bc35dc42cc714ecad21e213
   # Otherwise, the input is echoed
   else
     read -r key

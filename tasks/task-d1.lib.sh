@@ -6,7 +6,11 @@ test "${sourced_ce1c863-}" = true && return 0; sourced_ce1c863=true
 . ./task-sqldef.lib.sh
 . ./task-sqlite3.lib.sh
 . ./task-node.lib.sh
+<<<<<<< HEAD
 . ./task-cloudflare.lib.sh
+=======
+. ./task-cf.lib.sh
+>>>>>>> 04af7bbf54dd65d19bc35dc42cc714ecad21e213
 
 db_schema_path_d4253e5="$TASKS_DIR/schema.sql"
 

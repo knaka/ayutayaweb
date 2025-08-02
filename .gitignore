@@ -1,1 +1,10 @@
-/node_modules
+node_modules
+/.env.session
+/dist
+node_modules
+/.wrangler
+/build
+.dev.vars
+.env*.local
+/.cache
+/.react-router/
