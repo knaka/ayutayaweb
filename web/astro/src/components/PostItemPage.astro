@@ -1,0 +1,30 @@
+---
+import styles from './PostItemPage.module.scss';
+import PageLayout from '#astro//components/PageLayout.astro';
+import PostRecentFrame from './PostRecentFrame.astro'
+
+const { post } = Astro.props as { post: Markdown };
+const bodyHtml = await post.bodyHtml()
+import { toSafeString } from '#astro//lib/posts.js';
+
+import { Markdown } from 'lib/posts';
+---
+<PageLayout title={post.title}>
+  <article slot="main">
+    <section class={styles.date}>
+      <time datetime={post.createdAt.toISODate()}>{post.createdAt.toISODate()}</time>
+    </section>
+    <h1 class={styles.title}>{post.title}</h1>
+    <section>
+      <ul class={styles.tag_list}>
+        {post.tags.map(tag => (
+          <li class={styles.tag_item}><a href={`./tag-${toSafeString(tag)}`}>{tag}</a></li>
+        ))}
+      </ul>
+    </section>
+    <section>
+      <div class={styles.body} set:html={bodyHtml} />
+    </section>
+  </article>
+  <PostRecentFrame slot="sidebar" />    
+</PageLayout>

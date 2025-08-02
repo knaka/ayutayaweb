@@ -1,0 +1,56 @@
+---
+import { Markdown } from '#astro//lib/posts';
+import styles from './PostList.module.scss';
+import { Page } from 'astro';
+import PageNavigator from '#astro//components/PageNavigator.astro';
+import { toSafeString } from '#astro//lib/posts';
+
+const {
+  posts,
+  page = null,
+  currentTag = null, 
+} = Astro.props as {
+  posts: Markdown[],
+  page: Page | null,
+  currentTag: string | null,
+};
+
+import { postsPath } from '#astro//endpoints.js';
+---
+<div>
+  <PageNavigator page={page} />
+  <ul class={styles.post_list}>
+    {(page.url.prev)?
+      <li class={styles.post_item_dots}>
+        <a href={page.url.prev} title="Previous">⋮</a>
+      </li>:
+      null
+    }
+    {posts.map((post) => (
+      <li class={styles.post_item}>
+        <time datetime={post.createdAt.toISO()}>{post.createdAt.toISODate()}</time>
+        <a class={styles.post_title} href={`${postsPath}/${post.id}`}>{post.title}</a>
+        <div class={styles.tags}>
+          {/* <span class={styles.tags_label}>Tags:</span> */}
+          <ul class={styles.tag_list}>
+            {post.tags.map((tag) => {
+              const tagOnPath = toSafeString(tag);
+              return <li class={styles.tag_item}>{
+                (tagOnPath === currentTag)?
+                  tag:
+                  <a href={`${postsPath}/tag-${tagOnPath}`}>{tag}</a>
+              }</li>
+            })}
+          </ul>
+        </div>
+      </li>
+    ))}
+    {(page.url.next)?
+      <li class={styles.post_item_dots}>
+        <a href={page.url.next} title="Next">⋮</a>
+      </li>:
+      null
+    }
+  </ul>
+  <PageNavigator page={page} />
+</div>

@@ -1,0 +1,46 @@
+{
+  "include": [
+    "worker-configuration.d.ts",
+    "env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "**/.server/**/*.ts",
+    "**/.server/**/*.tsx",
+    "**/.client/**/*.ts",
+    "**/.client/**/*.tsx"
+  ],
+  "references": [
+    { "path": "./tsconfig.node.json" },
+    { "path": "./tsconfig.cloudflare.json" }
+  ],
+  "compilerOptions": {
+    "checkJs": true,
+    "verbatimModuleSyntax": true,
+    "skipLibCheck": true,
+    "strict": true,
+    // "noEmit": true,
+    "lib": ["DOM", "DOM.Iterable", "ES2022"],
+    "types": [
+      "./worker-configuration.d.ts",
+      "vite/client",
+      "@cloudflare/workers-types"
+    ],
+    "isolatedModules": true,
+    "esModuleInterop": true,
+    "jsx": "react-jsx",
+    "module": "ES2022",
+    "moduleResolution": "Bundler",
+    "resolveJsonModule": true,
+    "target": "ES2022",
+    // "strict": true,
+    "allowJs": true,
+    // "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "baseUrl": ".",
+    "paths": {
+      "#root/*": ["./*"],
+      "#rr/*": ["./app/*"],
+      "#astro/*": ["./astro/src/*"],
+    },
+  }
+}

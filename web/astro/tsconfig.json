@@ -1,0 +1,21 @@
+// Astro needs the tsconfig.json in the root of the project to work properly.
+{
+  "compilerOptions": {
+    "module": "NodeNext",
+    "moduleResolution": "nodenext",
+    "esModuleInterop": true,
+    // To use JSX syntax in *.tsx files.
+    "jsx": "react-jsx",
+    "types": [
+      // "bun-types"
+      "astro/types",
+    ],
+    "baseUrl": ".",
+    "paths": {
+      "#root/*": ["../*"],
+      "#astro/*": ["./src/*"],
+      "#rr/*": ["../app/*"],
+    },
+    "strict": true,
+  },
+}

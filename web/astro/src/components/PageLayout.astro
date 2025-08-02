@@ -1,0 +1,38 @@
+---
+// Page layout component
+
+import RootLayout from './RootLayout.astro';
+import Topbar from './Topbar.astro';
+import styles from './styles.module.scss';
+
+const { title } = Astro.props;
+---
+<RootLayout title={title}>
+  <div class={styles.container}>
+    <div class={styles.middle}>
+      {Astro.slots.has('left_sidebar') && (
+        <aside class={styles.left_sidebar}>
+          <slot name="left_sidebar"></slot>
+        </aside>
+      )}
+      <main class={styles.main}>
+        <slot name="main"></slot>
+      </main>
+      {Astro.slots.has('sidebar') && (
+        <aside class={styles.right_sidebar}>
+          <slot name="sidebar"></slot>
+        </aside>
+      )}
+      {Astro.slots.has('right_sidebar') && (
+        <aside class={styles.right_sidebar}>
+          <slot name="right_sidebar"></slot>
+        </aside>
+      )}
+    </div>
+    {Astro.slots.has('bottombar') && (
+      <div class={styles.bottombar}>
+        <slot name="bottombar"></slot>
+      </div>
+    )}
+  </div>
+</RootLayout>

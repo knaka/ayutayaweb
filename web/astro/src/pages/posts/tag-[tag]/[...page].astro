@@ -1,0 +1,17 @@
+---
+import PostListPage from '#astro//components/PostListPage.astro';
+import { getStaticPathsSub } from '#astro//lib/posts';
+
+export async function getStaticPaths({ paginate }) {
+  return await getStaticPathsSub({ paginate, param: 'tag' });
+}
+
+const { tag } = Astro.params as { tag: string };
+const { page } = Astro.props;
+
+let title = `Posts tagged with “${tag}”`;
+if (page.lastPage > 1) {
+  title += ` (Page ${page.currentPage} of ${page.lastPage})`;
+}
+--- 
+<PostListPage title={title} page={page} />

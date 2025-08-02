@@ -1,0 +1,24 @@
+version: "2"
+cloud:
+  project: "swh"
+plugins:
+- name: ts-d1
+  wasm:
+    url: https://github.com/orisano/sqlc-gen-ts-d1/releases/download/v0.0.0-a/sqlc-gen-ts-d1.wasm
+    # sha256: "$(curl -sSL https://github.com/orisano/sqlc-gen-ts-d1/releases/download/v0.0.0-a/sqlc-gen-ts-d1.wasm.sha256)"
+    sha256: dfd4bfef4736967ca17cc23d18de20920fbd196998fe7aa191a205439d63fb58
+sql:
+  - engine: "sqlite"
+    queries: "./queries/*"
+    schema: "schema.sql"
+    # database:
+    #   managed: true
+    # codegen:
+    # - out: sqlcgen
+    #   plugin: ts
+    #   options:
+    #     runtime: node
+    #     driver: better-sqlite3
+    codegen:
+    - out: sqlcgen
+      plugin: ts-d1 

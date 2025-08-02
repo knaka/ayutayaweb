@@ -1,0 +1,33 @@
+---
+import styles from './styles.module.scss';
+import Header from './Header.js';
+import Footer from './Footer.js'
+
+const { title } = Astro.props;
+---
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<title>{title}</title>
+	</head>
+	<body class={styles.root}>
+		<Header className={styles.header} />
+		<div class={styles.mainArea}>
+      {Astro.slots.has('leftSidebar') && (
+        <aside class={styles.leftSidebar}>
+          <slot name="leftSidebar"></slot>
+        </aside>
+      )}
+      <main class={styles.mainContent}>
+        <slot name="mainContent"></slot>
+      </main>
+      {Astro.slots.has('sidebar') && (
+        <aside class={styles.sidebar}>
+          <slot name="sidebar"></slot>
+        </aside>
+      )}
+		</div>
+		<Footer className={styles.footer} />
+	</body>
+</html>

@@ -1,0 +1,38 @@
+---
+import styles from './PageNavigator.module.scss';
+import { Page } from 'astro';
+
+// Number of page links to show on each side of the current page
+const PAGE_LINKS_RANGE = 3;
+
+const {
+  page,
+} = Astro.props as {
+  page: Page,
+};
+
+import { postsPath } from '#astro//endpoints.js';
+---
+<div class={styles.navigator}>
+  <ul class={styles.pages}>
+    {[...Array(page.lastPage)].map((_, i) => i + 1).flatMap(p => {
+      const fn = () => [((page.currentPage === p)? <li>{p}</li>: <li><a href={(p === 1)? page.url.first :`${postsPath}/${p}`}>{p}</a></li>)]
+      if (p === 1 || p === page.lastPage) {
+        return fn() 
+      }
+      if (Math.abs(p - page.currentPage) === PAGE_LINKS_RANGE) {
+        return [<li>...</li>]
+      }
+      if (Math.abs(p - page.currentPage) < PAGE_LINKS_RANGE) {
+        return fn()
+      }
+      return []
+    })}
+  </ul>
+  <ul class={styles.tools}>
+    <li>{page.url.first ? <a href={page.url.first} title="First">⏮</a> : '⏮'}</li>
+    <li>{page.url.prev ? <a href={page.url.prev} title="Previous">◀</a> : '◀'}</li>
+    <li>{page.url.next ? <a href={page.url.next} title="Next">▶</a> : '▶'}</li>
+    <li>{page.url.last ? <a href={page.url.last} title="Last">⏭</a> : '⏭'}</li>
+  </ul>
+</div>

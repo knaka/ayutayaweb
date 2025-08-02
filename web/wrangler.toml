@@ -1,0 +1,25 @@
+#:schema node_modules/wrangler/config-schema.json
+name = "ayutayaweb"
+compatibility_date = "2025-04-04"
+main = "./workers/app.ts"
+# Configuration and Bindings · Cloudflare Workers docs https://developers.cloudflare.com/workers/static-assets/binding/
+assets = { directory = "./dist" }
+
+# Workers Logs
+# Docs: https://developers.cloudflare.com/workers/observability/logs/workers-logs/
+# Configuration: https://developers.cloudflare.com/workers/observability/logs/workers-logs/#enable-workers-logs
+[observability]
+enabled = true
+
+[[d1_databases]]
+binding = "DB"
+database_name = "ayutayaweb"
+database_id = "aca89336-ab7c-4a8d-a6f4-22d258fd86dd"
+
+[[env.preview.d1_databases]]
+binding = "DB"
+database_name = "ayutayaweb-preview"
+database_id = "e2793deb-aa87-44be-8881-66bdb8762353"
+
+[triggers]
+crons = ["*/3 * * * *"]

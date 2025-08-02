@@ -1,0 +1,11 @@
+---
+import PageLayout from '#astro//components/PageLayout.astro';
+import ReactIssues from '#astro//components/ReactIssues';
+
+import { path } from './_issues.js';
+import { ensureEndpointPathCorrect } from '#astro//misc';
+ensureEndpointPathCorrect(path, import.meta.url);
+---
+<PageLayout title='Issues'>
+  <ReactIssues slot="main" client:only />
+</PageLayout>

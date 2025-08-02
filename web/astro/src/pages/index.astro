@@ -1,0 +1,82 @@
+---
+// import PageLayout from '#astro//components/PageLayout.astro';
+import RootLayout from "#astro/components/RootLayout.astro";
+import PostRecentFrame from '#astro//components/PostRecentFrame.astro';
+import Header from '#astro/components/Header.js';
+import { path as tmplIssuePath } from './tmpl/_issue.js';
+import { path as tmplIssuesPath } from './tmpl/_issues.js';
+
+const title = "Top page"
+---
+<RootLayout title={title}>
+	<div slot="mainContent">
+		<h1>{title}</h1>
+		<p>This is the top page.</p>
+		<h2>Posts:</h2>
+		<p><a href='/posts'>Posts</a></p>
+		{(import.meta.env.DEV)? 
+			<div>
+				<p><img src='/doc/astro-logo.png' style='width: 100px; height: auto; background-color: #b0b0b0;'></p>
+				<h2>For dev:</h2>
+				<p>Templates:</p>
+				<ul>
+					<li><a href={tmplIssuePath}>Issue</a></li>
+					<li><a href={tmplIssuesPath}>Issues</a></li>
+				</ul>
+				<p>VARs:</p>
+				<ul>
+					<li><a href='/var/hello'>Hello</a></li>
+					<li><a href='/var/issues'>Issues</a></li>
+				</ul>
+				<p>APIs:</p>
+				<ul>
+					<li><a href='/api/add-go'>Add Wasm in Go</a></li>
+				</ul>
+				<p>foo bar</p>
+				<p>foo bar</p>
+				<p>foo bar</p>
+				<p>foo bar</p>
+				<p>foo bar</p>
+				<p>foo bar</p>
+				<p>foo bar</p>
+				<p>foo bar</p>
+				<p>foo bar</p>
+				<p>foo bar</p>
+				<p>foo bar</p>
+				<p>foo bar</p>
+				<p>foo bar</p>
+				<p>foo bar</p>
+				<p>foo bar</p>
+				<p>foo bar</p>
+				<p>foo bar</p>
+				<p>foo bar</p>
+				<p>foo bar</p>
+				<p>foo bar</p>
+				<p>foo bar</p>
+				<p>foo bar</p>
+				<p>foo bar</p>
+				<p>foo bar</p>
+				<p>foo bar</p>
+				<p>foo bar</p>
+				<p>foo bar</p>
+				<p>foo bar</p>
+				<p>foo bar</p>
+				<p>foo bar</p>
+				<p>foo bar</p>
+				<p>foo bar</p>
+				<p>foo bar</p>
+				<p>foo bar</p>
+				<p>foo bar</p>
+				<p>foo bar</p>
+				<p>foo bar</p>
+				<p>foo bar</p>
+				<p>foo bar</p>
+				<p>foo bar</p>
+				<p>foo bar</p>
+				<p>foo bar</p>
+
+			</div>
+		: "" }
+	</div>
+	<PostRecentFrame slot="sidebar" />
+</RootLayout>
